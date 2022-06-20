@@ -10,8 +10,8 @@ public class LocalGameSource : IGameSource
     public string Description => "Games added manually will be shown using this plugin";
     public string Version => "v0.1";
     public string SlugServiceName => "local-games";
-    public List<BaseCommand> GameCommands { get; private set; }
-    public List<BaseCommand> GlobalCommands { get; private set; }
+    public List<Command> GameCommands { get; private set; }
+    public List<Command> GlobalCommands { get; private set; }
 
     public async Task Initialize(IApp app)
     {
@@ -19,9 +19,9 @@ public class LocalGameSource : IGameSource
         GameCommands = new();
         GlobalCommands = new();
         
-        GlobalCommands.Add(new BaseCommand("Sup"));
-        GlobalCommands.Add(new SeparatorCommand());
-        GlobalCommands.Add(new ActionCommand("Attempt a log", () => app.Logger.Log("Test", LogType.Info, "LocalGames")));
+        GlobalCommands.Add(new Command("Sup"));
+        GlobalCommands.Add(new Command());
+        GlobalCommands.Add(new Command("Attempt a log", () => app.Logger.Log("Test", LogType.Info, "LocalGames")));
         
         await Task.Delay(1);
     }
@@ -31,7 +31,7 @@ public class LocalGameSource : IGameSource
         throw new NotImplementedException();
     }
 
-    public Task Command(string command, IGame? game)
+    public Task CustomCommand(string command, IGame? game)
     {
         throw new NotImplementedException();
     }

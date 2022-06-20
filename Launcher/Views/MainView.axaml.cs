@@ -1,4 +1,5 @@
 ﻿using System.Collections.Generic;
+using System.Linq;
 using Avalonia;
 using Avalonia.Controls;
 using Avalonia.Controls.Primitives;
@@ -49,33 +50,8 @@ public partial class MainView : UserControlExt<MainView>
                 {
                     Header = x.ServiceName
                 };
-                List<TemplatedControl> rootItems = new();
-                
-                x.GlobalCommands.ForEach(y =>
-                {
-                    if (y.IsSeperatorCommand())
-                    {
-                        rootItems.Add(new Separator());
-                        return;
-                    }
-                    
-                    MenuItem item = new MenuItem();
-                    
-                    if (y.IsActionCommand())
-                    {
-                        ActionCommand command = y.GetActionCommand()!;
-                        item.Command = new LambdaCommand(_ => command.Action());
-                    }
-                    else
-                    {
-                        item.IsEnabled = false;
-                    }
-
-                    item.Header = y.Text;
-                    rootItems.Add(item);
-                });
-
-                root.Items = rootItems;
+                List<TemplatedControl> controls = x.GlobalCommands.Select(x => x.ToTemplatedControl()).ToList();
+                root.Items = controls;
                 items.Add(root);
             }
         });
