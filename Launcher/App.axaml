@@ -6,6 +6,9 @@
         <Style Selector="Label,Button,MenuItem">
             <Setter Property="FontFamily" Value="/Assets/Fonts/Roboto-Regular.ttf"/>
         </Style>
+        <Style Selector="ListBoxItem">
+            <Setter Property="Padding" Value="0"/>
+        </Style>
         <Style Selector="MenuItem.ButtonLike">
             <Setter Property="Background" Value="{DynamicResource ButtonBackground}" />
             <Setter Property="Foreground" Value="{DynamicResource ButtonForeground}" />

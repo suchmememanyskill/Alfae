@@ -12,7 +12,7 @@ public interface IGameSource
     List<Command> GlobalCommands { get; }
 
     public Task Initialize(IApp app);
-    public Task<IGame> GetGames();
+    public Task<List<IGame>> GetGames();
     public Task CustomCommand(string command, IGame? game);
     public Task Start(IGame game);
     

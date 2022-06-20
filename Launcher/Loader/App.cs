@@ -1,6 +1,7 @@
 ﻿using System;
 using System.Collections.Generic;
 using System.IO;
+using System.Linq;
 using System.Threading.Tasks;
 using Avalonia;
 using Avalonia.Controls;
@@ -26,6 +27,12 @@ public class App : IApp
     public List<IGameSource> GameSources { get; private set; } = new();
     public MainWindow MainWindow { get; set; }
     public MainView MainView { get; set; }
+    public List<IGame> Games { get; set; }
+
+    public List<IInstalledGame> InstalledGames =>
+        Games.Where(x => x is IInstalledGame).Select(x => x as IInstalledGame).ToList();
+
+    public List<IGame> NotInstalledGames => Games.Where(x => !(x is IInstalledGame)).ToList();
 
     public async Task InitializeGameSources()
     {
@@ -72,6 +79,20 @@ public class App : IApp
         MainView.Overlay.IsVisible = false;
         MainView.Overlay.Children.Clear();
     }
+
+    public void ReloadGames() => Dispatcher.UIThread.Post(ReloadGames2);
+
+    public async Task ReloadGames2Task()
+    {
+        Games = new();
+        List<Task<List<IGame>>> tasks = new();
+        GameSources.ForEach(x => tasks.Add(x.GetGames()));
+        await Task.WhenAll(tasks);
+        tasks.ForEach(x => Games.AddRange(x.Result));
+        MainView.ListBox.Items = Games.Select(x => new GameViewSmall(x));
+    }
+
+    public async void ReloadGames2() => await ReloadGames2Task();
 
     private App()
     { }

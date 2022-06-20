@@ -26,6 +26,7 @@ namespace Launcher
             await app.InitializeGameSources();
             app.MainView = new MainView();
             Content = app.MainView;
+            await app.ReloadGames2Task();
         }
     }
 }

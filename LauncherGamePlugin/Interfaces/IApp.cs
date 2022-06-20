@@ -9,4 +9,5 @@ public interface IApp
     public Logger Logger { get; }
     void ShowForm(Form form);
     void HideOverlay();
+    void ReloadGames();
 }

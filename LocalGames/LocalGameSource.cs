@@ -17,6 +17,7 @@ public class LocalGameSource : IGameSource
     public List<Command> GlobalCommands { get; private set; }
 
     private IApp _app;
+    private List<LocalGame> Games = new();
     
     public async Task Initialize(IApp app)
     {
@@ -111,13 +112,16 @@ public class LocalGameSource : IGameSource
         localGame.ExecPath = execPath;
         localGame.Size = Utils.DirSize(new DirectoryInfo(localGame.InstalledPath));
         Log($"{gameName}'s size is {localGame.ReadableSize()}");
+        Games.Add(localGame);
+        Log($"Added game {gameName}");
+        _app.ReloadGames();
     }
 
     public void Log(string message, LogType type = LogType.Info) => _app.Logger.Log(message, type, "LocalGames");
 
-    public Task<IGame> GetGames()
+    public async Task<List<IGame>> GetGames()
     {
-        throw new NotImplementedException();
+        return Games.Select(x => (IGame)x).ToList();
     }
 
     public Task CustomCommand(string command, IGame? game)
