@@ -23,7 +23,7 @@ public partial class FilePicker : UserControl
         Label.Content = formEntry.Name;
         TextBox.Text = formEntry.Value;
         Button.Command = new LambdaCommand(x => Dispatcher.UIThread.Post(OnBrowse));
-        TextBox.TextInput += (_, _) => formEntry.Value = TextBox.Text;
+        TextBox.KeyUp += (_, _) => formEntry.Value = TextBox.Text;
     }
 
     public async void OnBrowse()

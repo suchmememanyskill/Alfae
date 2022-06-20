@@ -6,6 +6,7 @@ using Avalonia;
 using Avalonia.Controls;
 using Avalonia.Layout;
 using Avalonia.Media;
+using Avalonia.Threading;
 using Launcher.Extensions;
 using Launcher.Forms;
 using Launcher.Utils;
@@ -40,7 +41,9 @@ public class App : IApp
         GameSources = sources;
     }
 
-    public void ShowForm(List<FormEntry> elements)
+    public void ShowForm(Form form) => Dispatcher.UIThread.Post(() => ShowForm2(form));
+
+    private void ShowForm2(Form form)
     {
         Panel panel = new();
         panel.Background = new SolidColorBrush(new Color(128, 0, 0, 0));
@@ -57,12 +60,14 @@ public class App : IApp
         stackPanel.Spacing = 10;
         scrollViewer.Content = stackPanel;
         border.Child = scrollViewer;
-        elements.ForEach(x => stackPanel.Children.Add(x.ToTemplatedControl()));
+        form.FormEntries.ForEach(x => stackPanel.Children.Add(x.ToTemplatedControl()));
         MainView.Overlay.Children.Add(border);
         MainView.Overlay.IsVisible = true;
     }
 
-    public void HideOverlay()
+    public void HideOverlay() => Dispatcher.UIThread.Post(HideOverlay2);
+
+    private void HideOverlay2()
     {
         MainView.Overlay.IsVisible = false;
         MainView.Overlay.Children.Clear();

@@ -20,6 +20,7 @@ public class FormEntry
     public Action<FormEntry> LinkClick { get; set; }
     public List<string> DropdownOptions { get; set; }
     public Dictionary<string, Action<FormEntry>> ButtonList { get; set; }
+    public Form ContainingForm { get; set; }
 
     public FormEntry(FormEntryType type, string name, string value = "", List<string> dropdownOptions = null,
         Dictionary<string, Action<FormEntry>> buttonList = null, Action<FormEntry> linkClick = null)

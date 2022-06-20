@@ -7,6 +7,6 @@ public interface IApp
 {
     public string ConfigDir { get; }
     public Logger Logger { get; }
-    void ShowForm(List<FormEntry> elements);
+    void ShowForm(Form form);
     void HideOverlay();
 }

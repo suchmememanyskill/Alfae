@@ -1,7 +1,9 @@
 ﻿using LauncherGamePlugin;
 using LauncherGamePlugin.Commands;
+using LauncherGamePlugin.Extensions;
 using LauncherGamePlugin.Forms;
 using LauncherGamePlugin.Interfaces;
+using LocalGames.Data;
 
 namespace LocalGames;
 
@@ -27,6 +29,7 @@ public class LocalGameSource : IGameSource
         GlobalCommands.Add(new Command());
         GlobalCommands.Add(new Command("Attempt a log", () => Log("Test")));
         GlobalCommands.Add(new Command("Show all kinds of controls", ShowAllForm));
+        GlobalCommands.Add(new Command("Add a game", () => AddGameForm()));
         
         await Task.Delay(1);
     }
@@ -50,7 +53,64 @@ public class LocalGameSource : IGameSource
             })
         };
         
-        _app.ShowForm(entries);
+        _app.ShowForm(new(entries));
+    }
+
+    public void AddGameForm(string possibleWarn = "", string gameName = "", string execPath = "")
+    {
+        List<FormEntry> entries = new()
+        {
+            new FormEntry(FormEntryType.TextBox, "Add a local game", "Bold"),
+            new FormEntry(FormEntryType.TextInput, "Game name:", gameName),
+            new FormEntry(FormEntryType.FilePicker, "Game executable:", execPath),
+            new FormEntry(FormEntryType.ButtonList, "", buttonList: new()
+            {
+                {"Cancel", entry => _app.HideOverlay()},
+                {
+                    "Add", entry =>
+                    {
+                        _app.HideOverlay();
+                        new Thread(() => AddGame(entry.ContainingForm)).Start();
+                    }
+                }
+            })
+        };
+        
+        if (possibleWarn != "")
+            entries.Add(new(FormEntryType.TextBox, possibleWarn, "Bold"));
+        
+        _app.ShowForm(new(entries));
+    }
+
+    public void AddGame(Form form)
+    {
+        string gameName = form.FormEntries.Find(x => x.Name == "Game name:").Value;
+        string execPath = form.FormEntries.Find(x => x.Name == "Game executable:").Value;
+
+        if (string.IsNullOrWhiteSpace(gameName))
+        {
+            AddGameForm("Please fill in the game name", gameName, execPath);
+            return;
+        }
+
+        if (string.IsNullOrWhiteSpace(execPath))
+        {
+            AddGameForm("Please fill in the executable path", gameName, execPath);
+            return;
+        }
+
+        if (!File.Exists(execPath))
+        {
+            AddGameForm("Executable path does not exist!", gameName, execPath);
+            return;
+        }
+        
+        Log($"Calculating game {gameName} size at path {execPath}");
+        LocalGame localGame = new LocalGame();
+        localGame.Name = gameName;
+        localGame.ExecPath = execPath;
+        localGame.Size = Utils.DirSize(new DirectoryInfo(localGame.InstalledPath));
+        Log($"{gameName}'s size is {localGame.ReadableSize()}");
     }
 
     public void Log(string message, LogType type = LogType.Info) => _app.Logger.Log(message, type, "LocalGames");
