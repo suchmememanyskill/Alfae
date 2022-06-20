@@ -22,11 +22,6 @@ public partial class MainView : UserControlExt<MainView>
         UpdateView();
     }
 
-    private void InitializeComponent()
-    {
-        AvaloniaXamlLoader.Load(this);
-    }
-
     private List<TemplatedControl> GenerateMenuItems()
     {
         Loader.App app = Loader.App.GetInstance();

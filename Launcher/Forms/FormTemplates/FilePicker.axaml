@@ -1,0 +1,12 @@
+﻿<UserControl xmlns="https://github.com/avaloniaui"
+             xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
+             xmlns:d="http://schemas.microsoft.com/expression/blend/2008"
+             xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006"
+             mc:Ignorable="d" d:DesignWidth="800" d:DesignHeight="40"
+             x:Class="Launcher.Forms.FormTemplates.FilePicker">
+    <DockPanel Height="40">
+        <Button DockPanel.Dock="Right" Margin="10,0,0,0" VerticalAlignment="Center" Name="Button" Background="OrangeRed">Browse</Button>
+        <Label VerticalAlignment="Center" Margin="0,0,10,0" DockPanel.Dock="Left" Name="Label">Label</Label>
+        <TextBox VerticalAlignment="Center" Watermark="Enter path here" Name="TextBox"></TextBox>
+    </DockPanel>
+</UserControl>

@@ -2,6 +2,6 @@
 
 public interface IInstalledGame : IGame
 {
-    public string InstalledVersion { get; }
+    public string? InstalledVersion { get; }
     public string InstalledPath { get; }
 }

@@ -16,9 +16,9 @@
                     </Menu>
                 </StackPanel>
             </DockPanel>
-            <Panel>
-                
+            <Panel Name="MainContent">
             </Panel>
         </DockPanel>
+        <Panel Name="Overlay" IsVisible="False" />
     </Panel>
 </UserControl>

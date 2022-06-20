@@ -10,7 +10,7 @@ public static class GameExtensions
     public static string ReadableSize(this IGame game)
     {
         int type = 0;
-            double bytesLeft = game.Size;
+            double bytesLeft = game.Size!.Value;
             while (bytesLeft >= 1024)
             {
                 type++;

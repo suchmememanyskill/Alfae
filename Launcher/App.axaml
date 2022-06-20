@@ -16,5 +16,17 @@
             <Setter Property="FontWeight" Value="Normal" />
             <Setter Property="FontSize" Value="{DynamicResource ControlContentThemeFontSize}" />
         </Style>
+        <Style Selector="Button.url">
+            <Setter Property="Foreground" Value="Coral"/>
+        </Style>
+        <Style Selector="Button.invisible">
+            <Setter Property="Background" Value="Transparent"/>
+        </Style>
+        <Style Selector="Button.invisible:pointerover /template/ ContentPresenter">
+            <Setter Property="Background" Value="Transparent"/>
+        </Style>
+        <Style Selector="Button.invisible:pressed /template/ ContentPresenter">
+            <Setter Property="Background" Value="Transparent"/>
+        </Style>
     </Application.Styles>
 </Application>
