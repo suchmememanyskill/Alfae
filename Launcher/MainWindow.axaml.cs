@@ -1,7 +1,10 @@
 using System.Collections.Generic;
 using System.Diagnostics;
+using System.Threading.Tasks;
 using Avalonia.Controls;
+using Avalonia.Threading;
 using Launcher.Loader;
+using Launcher.Views;
 using LauncherGamePlugin.Interfaces;
 
 namespace Launcher
@@ -11,13 +14,18 @@ namespace Launcher
         public MainWindow()
         {
             InitializeComponent();
-            List<IGameSource> sources = PluginLoader.GetGameSources();
-            Loader.App app = new Loader.App();
-            sources.ForEach(x =>
-            {
-                Debug.WriteLine($"Initialising {x.ServiceName}...");
-                x.Initialize(app);
-            });
+            Loader.App app = Loader.App.GetInstance();
+            app.MainWindow = this;
+            Dispatcher.UIThread.Post(Initialize);
+            Content = new LoadingScreen();
+        }
+
+        private async void Initialize()
+        {
+            Loader.App app = Loader.App.GetInstance();
+            await app.InitializeGameSources();
+            app.MainView = new MainView();
+            Content = app.MainView;
         }
     }
 }

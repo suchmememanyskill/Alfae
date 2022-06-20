@@ -6,6 +6,7 @@ namespace Launcher
 {
     public partial class App : Application
     {
+        public static IClassicDesktopStyleApplicationLifetime Desktop { get; private set; }
         public override void Initialize()
         {
             AvaloniaXamlLoader.Load(this);
@@ -15,6 +16,7 @@ namespace Launcher
         {
             if (ApplicationLifetime is IClassicDesktopStyleApplicationLifetime desktop)
             {
+                Desktop = desktop;
                 desktop.MainWindow = new MainWindow();
             }
 

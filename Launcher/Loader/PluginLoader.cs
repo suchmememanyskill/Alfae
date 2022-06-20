@@ -13,10 +13,14 @@ public static class PluginLoader
     public static List<string> AvailablePlugins()
     {
         string path = Path.Join(AppContext.BaseDirectory, "plugins");
-        if (!Directory.Exists(path))
-            return new();
-
         List<string> items = new();
+        
+        #if DEBUG
+            items.Add(Path.GetFullPath(Path.Join(path, "..", "..", "..", "..", "..", "LocalGames", "bin", "Debug", "net6.0", "LocalGames.dll")));
+        #endif
+        
+        if (!Directory.Exists(path))
+            return items;
 
         foreach (var x in Directory.EnumerateDirectories(path))
         {
@@ -30,9 +34,9 @@ public static class PluginLoader
         return items;
     }
 
-    public static Assembly LoadPluginAssembly(string pluginPath)
+    public static Assembly LoadPluginAssembly(string pluginPath, IApp app)
     {
-        Debug.WriteLine($"Reading {pluginPath}...");
+        app.Logger.Log($"Reading {pluginPath}...");
         PluginLoadContext ctx = new(pluginPath);
         return ctx.LoadFromAssemblyName(new AssemblyName(Path.GetFileNameWithoutExtension(pluginPath)));
     }
@@ -61,7 +65,7 @@ public static class PluginLoader
         }
     }
 
-    public static List<IGameSource> GetGameSources()
+    public static List<IGameSource> GetGameSources(IApp app)
     {
         List<IGameSource> sources = new();
         
@@ -69,7 +73,7 @@ public static class PluginLoader
         {
             try
             {
-                Assembly assembly = LoadPluginAssembly(x);
+                Assembly assembly = LoadPluginAssembly(x, app);
                 foreach (var y in GetGameSourcesFromAssembly(assembly))
                 {
                     sources.Add(y);
@@ -77,7 +81,7 @@ public static class PluginLoader
             }
             catch (Exception e)
             {
-                Debug.WriteLine($"Exception during loading of {x}: {e.Message}");
+                app.Logger.Log($"Exception during loading of {x}: {e.Message}");
             }
         });
 
