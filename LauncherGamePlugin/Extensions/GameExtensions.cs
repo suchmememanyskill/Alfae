@@ -4,8 +4,6 @@ namespace LauncherGamePlugin.Extensions;
 
 public static class GameExtensions
 {
-    public static IInstalledGame? GetInstalledGame(this IGame game) => game as IInstalledGame;
-    public static bool IsInstalled(this IGame game) => game.GetInstalledGame() != null;
     private static readonly string[] gameSizes = { "B", "KB", "MB", "GB" };
     public static string ReadableSize(this IGame game)
     {

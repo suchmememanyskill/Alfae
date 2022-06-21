@@ -29,10 +29,10 @@ public class App : IApp
     public MainView MainView { get; set; }
     public List<IGame> Games { get; set; }
 
-    public List<IInstalledGame> InstalledGames =>
-        Games.Where(x => x is IInstalledGame).Select(x => x as IInstalledGame).ToList();
+    public List<IGame> InstalledGames =>
+        Games.Where(x => x.InstalledStatus == InstalledStatus.Installed).ToList();
 
-    public List<IGame> NotInstalledGames => Games.Where(x => !(x is IInstalledGame)).ToList();
+    public List<IGame> NotInstalledGames => Games.Where(x => x.InstalledStatus == InstalledStatus.NotInstalled).ToList();
 
     public async Task InitializeGameSources()
     {
@@ -89,8 +89,11 @@ public class App : IApp
         GameSources.ForEach(x => tasks.Add(x.GetGames()));
         await Task.WhenAll(tasks);
         tasks.ForEach(x => Games.AddRange(x.Result));
-        MainView.ListBox.Items = Games.Select(x => new GameViewSmall(x));
+        GameViews = Games.Select(x => new GameViewSmall(x)).ToList();
+        MainView.ListBox.Items = GameViews;
     }
+    
+    public List<GameViewSmall> GameViews { get; private set; }
 
     public async void ReloadGames2() => await ReloadGames2Task();
 

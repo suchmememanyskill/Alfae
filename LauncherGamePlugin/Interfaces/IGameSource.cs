@@ -8,12 +8,10 @@ public interface IGameSource
     string Description { get; }
     string Version { get; }
     string SlugServiceName { get; }
-    List<Command> GameCommands { get; }
     List<Command> GlobalCommands { get; }
 
     public Task Initialize(IApp app);
     public Task<List<IGame>> GetGames();
     public Task CustomCommand(string command, IGame? game);
-    public Task Start(IGame game);
-    
+    public List<Command> GetGameCommands(IGame game);
 }

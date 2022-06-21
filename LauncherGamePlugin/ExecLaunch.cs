@@ -1,4 +1,6 @@
-﻿namespace LauncherGamePLugin;
+﻿using LauncherGamePlugin;
+
+namespace LauncherGamePLugin;
 
 public class ExecLaunch
 {
@@ -9,6 +11,7 @@ public class ExecLaunch
     public string Arguments { get; }
     public Dictionary<string, string> EnvironmentOverrides { get; }
     public string WorkingDirectory { get; }
+    public Platform Platform { get; }
 
     public ExecLaunch(string executable, string arguments, Dictionary<string, string> environmentOverrides, string workingDirectory)
     {

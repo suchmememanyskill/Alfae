@@ -129,8 +129,9 @@ public class LocalGameSource : IGameSource
         throw new NotImplementedException();
     }
 
-    public Task Start(IGame game)
+    public List<Command> GetGameCommands(IGame game)
     {
-        throw new NotImplementedException();
+        //if ()
+        return null;
     }
 }
