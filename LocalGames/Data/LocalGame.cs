@@ -29,10 +29,10 @@ public class LocalGame : IGame
     }
 
     [JsonIgnore] public InstalledStatus InstalledStatus => InstalledStatus.Installed;
-    [JsonIgnore] public ProgressStatus ProgressStatus { get; set; }
-
+    [JsonIgnore] public ProgressStatus? ProgressStatus { get; set; }
     [JsonIgnore] public string InstalledPath => Path.GetDirectoryName(ExecPath);
+    [JsonIgnore] public IGameSource Source { get; set; }
     
-    [JsonIgnore]
-    public IGameSource Source { get; set; }
+    public event Action? OnUpdate;
+    public void InvokeOnUpdate() => OnUpdate?.Invoke();
 }

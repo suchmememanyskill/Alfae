@@ -137,10 +137,34 @@ public class LocalGameSource : IGameSource
 
     public List<Command> GetGameCommands(IGame game)
     {
+        LocalGame localGame = game as LocalGame;
+
         return new()
         {
             new Command("Play", () => Log("Play")),
-            new Command("Delete", () => Log("Delete"))
+            new Command("Delete", () => Log("Delete")),
+            new("Set download active", () =>
+            {
+                localGame.ProgressStatus = new ProgressStatus();
+                localGame.ProgressStatus.Percentage = 0;
+                localGame.ProgressStatus.Line1 = "Line 1";
+                localGame.InvokeOnUpdate();
+            }),
+            new("Set download inactive", () =>
+            {
+                localGame.ProgressStatus = null;
+                localGame.InvokeOnUpdate();
+            }),
+            new Command("Set download to 50%", () =>
+            {
+                localGame.ProgressStatus.Percentage = 50;
+                localGame.ProgressStatus.InvokeOnUpdate();
+            }),
+            new Command("Set download to 100%", () =>
+            {
+                localGame.ProgressStatus.Percentage = 100;
+                localGame.ProgressStatus.InvokeOnUpdate();
+            })
         };
     }
 }

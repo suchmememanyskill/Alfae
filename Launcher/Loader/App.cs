@@ -91,11 +91,13 @@ public class App : IApp
         GameSources.ForEach(x => tasks.Add(x.GetGames()));
         await Task.WhenAll(tasks);
         tasks.ForEach(x => Games.AddRange(x.Result));
+        
+        GameViews.ForEach(x => x.Destroy());
         GameViews = Games.Select(x => new GameViewSmall(x)).ToList();
         MainView.ListBox.Items = GameViews;
     }
-    
-    public List<GameViewSmall> GameViews { get; private set; }
+
+    public List<GameViewSmall> GameViews { get; private set; } = new();
 
     public async void ReloadGames2() => await ReloadGames2Task();
 

@@ -22,6 +22,7 @@ public partial class GameViewSmall : UserControlExt<GameViewSmall>
     private IGame _game;
 
     [Binding(nameof(BottomPanel), "Background")]
+    [Binding(nameof(TopPanel), "Background")]
     public IBrush HalfTransparency => new SolidColorBrush(new Color(128, 0, 0, 0));
 
     [Binding(nameof(GameLabel), "Content")]
@@ -32,6 +33,9 @@ public partial class GameViewSmall : UserControlExt<GameViewSmall>
 
     [Binding(nameof(ButtonPanel), "IsVisible")]
     public bool IsSelected => _isSelected;
+
+    [Binding(nameof(TopPanel), "IsVisible")]
+    public bool HasProgress => _game.ProgressStatus != null;
     
     private bool _menuSet = false;
     private bool _isSelected = false;
@@ -46,8 +50,8 @@ public partial class GameViewSmall : UserControlExt<GameViewSmall>
     {
         _game = game;
         SetControls();
-        UpdateView();
-        Dispatcher.UIThread.Post(GetCoverImage);
+        OnUpdate();
+        game.OnUpdate += OnUpdate;
     }
 
     public void Selected()
@@ -61,6 +65,37 @@ public partial class GameViewSmall : UserControlExt<GameViewSmall>
     {
         _isSelected = false;
         UpdateView();
+    }
+
+    private void OnUpdate()
+    {
+        if (_isSelected)
+            SetMenu();
+        
+        UpdateView();
+        Dispatcher.UIThread.Post(GetCoverImage);
+
+        if (HasProgress)
+        {
+            _game.ProgressStatus.OnUpdate -= OnProgressUpdate;
+            _game.ProgressStatus.OnUpdate += OnProgressUpdate;
+            
+            OnProgressUpdate();
+        }
+    }
+
+    private void OnProgressUpdate()
+    {
+        ProgressBar.Value = _game.ProgressStatus.Percentage;
+        TopLabel1.IsVisible = !string.IsNullOrWhiteSpace(_game.ProgressStatus.Line1);
+        if (TopLabel1.IsVisible)
+            TopLabel1.Content = _game.ProgressStatus.Line1;
+        
+        TopLabel2.IsVisible = !string.IsNullOrWhiteSpace(_game.ProgressStatus.Line2);
+        if (TopLabel2.IsVisible)
+            TopLabel2.Content = _game.ProgressStatus.Line2;
+        
+        SetMenu();
     }
 
     public async void GetCoverImage()
@@ -109,5 +144,13 @@ public partial class GameViewSmall : UserControlExt<GameViewSmall>
             }
         });
         MoreMenu.Items = commands.Select(x => x.ToTemplatedControl());
+        Menu.Close();
+    }
+
+    public void Destroy()
+    {
+        _game.OnUpdate -= OnUpdate;
+        if (_game.ProgressStatus != null)
+            _game.ProgressStatus.OnUpdate -= OnProgressUpdate;
     }
 }

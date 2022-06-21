@@ -8,5 +8,6 @@ public interface IGame
     public Task<byte[]?> CoverImage();
     public Task<byte[]?> BackgroundImage();
     public InstalledStatus InstalledStatus { get; }
-    public ProgressStatus ProgressStatus { get; }
+    public ProgressStatus? ProgressStatus { get; }
+    public event Action? OnUpdate;
 }
