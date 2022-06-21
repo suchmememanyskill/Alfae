@@ -14,15 +14,24 @@ using Launcher.Utils;
 using Launcher.Views;
 using LauncherGamePlugin.Interfaces;
 using LauncherGamePlugin;
-using LauncherGamePLugin;
 using LauncherGamePlugin.Forms;
 
 namespace Launcher.Loader;
 
 public class App : IApp
 {
-    public string ConfigDir =>
-        Path.Join(Environment.GetFolderPath(Environment.SpecialFolder.ApplicationData), "Launcher");
+    public string ConfigDir
+    {
+        get
+        {
+            string path = Path.Join(Environment.GetFolderPath(Environment.SpecialFolder.ApplicationData), "Launcher");
+            if (!Directory.Exists(path))
+                Directory.CreateDirectory(path);
+
+            return path;
+        }
+    }
+
     public Logger Logger { get; } = new();
 
     public List<IGameSource> GameSources { get; private set; } = new();

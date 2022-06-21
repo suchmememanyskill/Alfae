@@ -1,7 +1,6 @@
 ﻿using System;
 using System.Diagnostics;
 using LauncherGamePlugin;
-using LauncherGamePLugin;
 
 namespace Launcher.Launcher;
 

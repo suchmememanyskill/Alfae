@@ -3,6 +3,7 @@
 public interface IGame
 {
     public string Name { get; }
+    public string InternalName => Name;
     public IGameSource Source { get; }
     public long? Size { get; }
     public Task<byte[]?> CoverImage();

@@ -1,6 +1,4 @@
-﻿using LauncherGamePlugin;
-
-namespace LauncherGamePLugin;
+﻿namespace LauncherGamePlugin;
 
 public class ExecLaunch
 {

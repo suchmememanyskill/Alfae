@@ -1,6 +1,4 @@
-﻿using LauncherGamePlugin;
-using LauncherGamePLugin;
-using LauncherGamePlugin.Forms;
+﻿using LauncherGamePlugin.Forms;
 
 namespace LauncherGamePlugin.Interfaces;
 

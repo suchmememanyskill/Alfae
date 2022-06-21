@@ -1,7 +1,6 @@
-﻿using System.Text.Json.Serialization;
-using LauncherGamePlugin;
-using LauncherGamePLugin;
+﻿using LauncherGamePlugin;
 using LauncherGamePlugin.Interfaces;
+using Newtonsoft.Json;
 
 namespace LocalGames.Data;
 
@@ -10,10 +9,10 @@ public class LocalGame : IGame
     public string Name { get; set; }
     public string ExecPath { get; set; }
     public long? Size { get; set; }
-    public string? CoverImagePath { get; set; }
-    public string? BackgroundImagePath { get; set; }
-    public string? LaunchArgs { get; set; }
-    
+    public string? CoverImagePath { get; set; } = "";
+    public string? BackgroundImagePath { get; set; } = "";
+    public string? LaunchArgs { get; set; } = "";
+
     public async Task<byte[]?> CoverImage()
     {
         if (string.IsNullOrWhiteSpace(CoverImagePath) || !File.Exists(CoverImagePath))

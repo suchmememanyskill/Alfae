@@ -1,9 +1,11 @@
-﻿using LauncherGamePlugin;
+﻿using System.Text.Json.Serialization;
+using LauncherGamePlugin;
 using LauncherGamePlugin.Commands;
 using LauncherGamePlugin.Extensions;
 using LauncherGamePlugin.Forms;
 using LauncherGamePlugin.Interfaces;
 using LocalGames.Data;
+using Newtonsoft.Json;
 
 namespace LocalGames;
 
@@ -13,55 +15,63 @@ public class LocalGameSource : IGameSource
     public string Description => "Games added manually will be shown using this plugin";
     public string Version => "v0.1";
     public string SlugServiceName => "local-games";
-    public List<Command> GameCommands { get; private set; }
     public List<Command> GlobalCommands { get; private set; }
 
     private IApp _app;
-    private List<LocalGame> Games = new();
+    private List<LocalGame> _games = new();
+    private string _configPath;
     
     public async Task Initialize(IApp app)
     {
         _app = app;
+
+        _configPath = Path.Join(_app.ConfigDir, "localgames.json");
+        if (File.Exists(_configPath))
+        {
+            string json = await File.ReadAllTextAsync(_configPath);
+            _games = JsonConvert.DeserializeObject<List<LocalGame>>(json);
+        }
+        
         Log("Hello World!");
-        GameCommands = new();
-        GlobalCommands = new();
-        
-        GlobalCommands.Add(new Command("Sup"));
-        GlobalCommands.Add(new Command());
-        GlobalCommands.Add(new Command("Attempt a log", () => Log("Test")));
-        GlobalCommands.Add(new Command("Show all kinds of controls", ShowAllForm));
-        GlobalCommands.Add(new Command("Add a game", () => AddGameForm()));
-        
-        await Task.Delay(1);
-    }
-
-    public void ShowAllForm()
-    {
-        List<FormEntry> entries = new()
+        GlobalCommands = new()
         {
-            new FormEntry(FormEntryType.TextBox, "hello this is a piece of text", "Bold"),
-            new FormEntry(FormEntryType.ClickableLinkBox, "Open google", "https://google.com",
-                linkClick: entry => Utils.OpenUrl(entry.Value)),
-            new FormEntry(FormEntryType.TextInput, "Input some text!", "Test"),
-            new FormEntry(FormEntryType.Toggle, "Hello i'm a toggle", "1"),
-            new FormEntry(FormEntryType.FilePicker, "Pick File:"),
-            new FormEntry(FormEntryType.FolderPicker, "Pick Folder:"),
-            new FormEntry(FormEntryType.Dropdown, "Pick an option", "b", new() {"a", "b", "c"}),
-            new FormEntry(FormEntryType.ButtonList, "", buttonList: new Dictionary<string, Action<FormEntry>>()
-            {
-                {"button1", x => Log("button1")},
-                {"Back", x => _app.HideOverlay()}
-            })
+            new Command($"Loaded {_games.Count} games"),
+            new Command(),
+            new Command("Add a game", () => AddGameForm())
         };
-        
-        _app.ShowForm(new(entries));
     }
 
-    public void AddGameForm(string possibleWarn = "", string gameName = "", string execPath = "", string coverImage = "", string backgroundImage = "", string args = "")
+    public async Task Save()
     {
+        string json = JsonConvert.SerializeObject(_games);
+        await File.WriteAllTextAsync(_configPath, json);
+    }
+    
+    public void AddGameForm(string possibleWarn = "", string gameName = "", string execPath = "", string coverImage = "", string backgroundImage = "", string args = "", LocalGame? game = null)
+    {
+        string addOrEdit = game == null ? "Add" : "Edit";
+
+        if (game != null)
+        {
+            if (gameName == "")
+                gameName = game.Name;
+
+            if (execPath == "")
+                execPath = game.ExecPath;
+
+            if (coverImage == "")
+                coverImage = game.CoverImagePath;
+
+            if (backgroundImage == "")
+                backgroundImage = game.BackgroundImagePath;
+
+            if (args == "")
+                args = game.LaunchArgs;
+        }
+
         List<FormEntry> entries = new()
         {
-            new FormEntry(FormEntryType.TextBox, "Add a local game", "Bold"),
+            new FormEntry(FormEntryType.TextBox, $"{addOrEdit} a local game", "Bold"),
             new FormEntry(FormEntryType.TextInput, "Game name:", gameName),
             new FormEntry(FormEntryType.FilePicker, "Game executable:", execPath),
             new FormEntry(FormEntryType.TextBox, "\nOptional", "Bold"),
@@ -72,7 +82,7 @@ public class LocalGameSource : IGameSource
             {
                 {"Cancel", entry => _app.HideOverlay()},
                 {
-                    "Add", entry =>
+                    addOrEdit, entry =>
                     {
                         _app.HideOverlay();
                         new Thread(() => AddGame(entry.ContainingForm)).Start();
@@ -84,7 +94,13 @@ public class LocalGameSource : IGameSource
         if (possibleWarn != "")
             entries.Add(new(FormEntryType.TextBox, possibleWarn, "Bold"));
         
-        _app.ShowForm(new(entries));
+        Form form = new(entries);
+        if (game != null)
+        {
+            form.Game = game;
+            form.Background = game.BackgroundImage;
+        }
+        _app.ShowForm(form);
     }
 
     public void AddGame(Form form)
@@ -113,12 +129,18 @@ public class LocalGameSource : IGameSource
 
         if (errMessage != "")
         {
-            AddGameForm(errMessage, gameName, execPath,coverImage);
+            AddGameForm(errMessage, gameName, execPath,coverImage, backgroundImage, args, form.Game as LocalGame);
             return;
         }
         
         Log($"Calculating game {gameName} size at path {execPath}");
-        LocalGame localGame = new LocalGame();
+        LocalGame localGame;
+        
+        if (form.Game == null)
+            localGame = new LocalGame();
+        else
+            localGame = (form.Game as LocalGame)!;
+
         localGame.Name = gameName;
         localGame.ExecPath = execPath;
         localGame.Size = Utils.DirSize(new DirectoryInfo(localGame.InstalledPath));
@@ -126,39 +148,30 @@ public class LocalGameSource : IGameSource
         localGame.BackgroundImagePath = backgroundImage;
         localGame.LaunchArgs = args;
         Log($"{gameName}'s size is {localGame.ReadableSize()}");
-        Games.Add(localGame);
-        Log($"Added game {gameName}");
+        
+        if (form.Game == null)
+        {
+            _games.Add(localGame);
+            Log($"Added game {gameName}");
+        }
+
         _app.ReloadGames();
+        Save();
     }
 
     public void Log(string message, LogType type = LogType.Info) => _app.Logger.Log(message, type, "LocalGames");
 
     public async Task<List<IGame>> GetGames()
     {
-        Games.ForEach(x => x.Source = this);
-        return Games.Select(x => (IGame)x).ToList();
+        _games.ForEach(x => x.Source = this);
+        return _games.Select(x => (IGame)x).ToList();
     }
 
     public Task CustomCommand(string command, IGame? game)
     {
         throw new NotImplementedException();
     }
-
-    public void EditGameForm(IGame game)
-    {
-        List<FormEntry> entries = new()
-        {
-            new FormEntry(FormEntryType.ButtonList, "", buttonList: new()
-            {
-                {"Back", x => _app.HideOverlay()}
-            })
-        };
-
-        Form form = new(entries);
-        form.Background = game.BackgroundImage;
-        _app.ShowForm(form);
-    }
-
+    
     public List<Command> GetGameCommands(IGame game)
     {
         LocalGame localGame = game as LocalGame;
@@ -170,34 +183,28 @@ public class LocalGameSource : IGameSource
                 Log($"Starting {localGame.Name}");
                 _app.Launch(localGame.ToExecLaunch());
             }),
-            new Command("Delete", () =>
+            new Command("Edit", () => AddGameForm(game: localGame)),
+            new Command("Remove From Launcher", () =>
             {
-                Games.Remove(localGame);
-                _app.ReloadGames();
+                _app.ShowForm(new(new()
+                {
+                    new(FormEntryType.TextBox, $"Are you sure you want to remove '{localGame.Name}' from the launcher?"),
+                    new(FormEntryType.ButtonList, "", buttonList: new()
+                    {
+                        {"Remove", x =>
+                        {
+                            _games.Remove(localGame);
+                            _app.ReloadGames();
+                            _app.HideOverlay();
+                            Save();
+                        }},
+                        {"Back", x => _app.HideOverlay()}
+                    })
+                }));
             }),
-            new("Set download active", () =>
+            new Command("Delete on disk", () =>
             {
-                localGame.ProgressStatus = new ProgressStatus();
-                localGame.ProgressStatus.Percentage = 0;
-                localGame.ProgressStatus.Line1 = "Line 1";
-                localGame.InvokeOnUpdate();
             }),
-            new("Set download inactive", () =>
-            {
-                localGame.ProgressStatus = null;
-                localGame.InvokeOnUpdate();
-            }),
-            new Command("Set download to 50%", () =>
-            {
-                localGame.ProgressStatus.Percentage = 50;
-                localGame.ProgressStatus.InvokeOnUpdate();
-            }),
-            new Command("Set download to 100%", () =>
-            {
-                localGame.ProgressStatus.Percentage = 100;
-                localGame.ProgressStatus.InvokeOnUpdate();
-            }),
-            new Command("Edit", () => EditGameForm(game)),
         };
     }
 }
