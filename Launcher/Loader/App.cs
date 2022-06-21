@@ -69,7 +69,21 @@ public class App : IApp
     public void Launch(ExecLaunch launch)
     {
         Launcher.Launcher l = new();
-        l.Launch(launch);
+        try
+        {
+            l.Launch(launch);
+        }
+        catch (Exception e)
+        {
+            ShowForm(new Form(new()
+            {
+                new FormEntry(FormEntryType.TextBox, $"Failed to launch game\n{e.Message}"),
+                new FormEntry(FormEntryType.ButtonList, "", buttonList: new()
+                {
+                    {"Back", x => HideOverlay()}
+                })
+            }));
+        }
     }
 
     public async Task ReloadGames2Task()
@@ -81,8 +95,20 @@ public class App : IApp
         tasks.ForEach(x => Games.AddRange(x.Result));
         
         GameViews.ForEach(x => x.Destroy());
-        GameViews = Games.Select(x => new GameViewSmall(x)).ToList();
-        MainView.ListBox.Items = GameViews;
+
+        bool anyInstalledGames = InstalledGames.Count != 0;
+        bool anyNotInstalledGames = NotInstalledGames.Count != 0;
+
+        MainView.InstalledLabel.IsVisible = anyInstalledGames;
+        MainView.InstalledListBox.IsVisible = anyInstalledGames;
+        MainView.NotInstalledLabel.IsVisible = anyNotInstalledGames;
+        MainView.NotInstalledListBox.IsVisible = anyNotInstalledGames;
+        
+        if (anyInstalledGames)
+            MainView.InstalledListBox.Items = InstalledGames.Select(x => new GameViewSmall(x)).ToList();
+        
+        if (anyNotInstalledGames)
+            MainView.NotInstalledListBox.Items = NotInstalledGames.Select(x => new GameViewSmall(x)).ToList();
     }
 
     public List<GameViewSmall> GameViews { get; private set; } = new();
