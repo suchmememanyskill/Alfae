@@ -61,11 +61,13 @@ public class App : IApp
         border.Margin = new Thickness(20);
         border.Width = 600;
         border.HorizontalAlignment = HorizontalAlignment.Center;
+        border.VerticalAlignment = VerticalAlignment.Center;
         ScrollViewer scrollViewer = new ScrollViewer();
         scrollViewer.Padding = new Thickness(10);
         StackPanel stackPanel = new StackPanel();
         stackPanel.Spacing = 10;
         scrollViewer.Content = stackPanel;
+        scrollViewer.VerticalAlignment = VerticalAlignment.Center;
         border.Child = scrollViewer;
         form.FormEntries.ForEach(x => stackPanel.Children.Add(x.ToTemplatedControl()));
         MainView.Overlay.Children.Add(border);
@@ -90,7 +92,15 @@ public class App : IApp
         await Task.WhenAll(tasks);
         tasks.ForEach(x => Games.AddRange(x.Result));
         GameViews = Games.Select(x => new GameViewSmall(x)).ToList();
-        MainView.ListBox.Items = GameViews;
+        
+        MainView.ListBox.Items = GameViews.Select(x =>
+        {
+            var item = new ListBoxItem();
+            item.Content = x;
+            return item;
+        }).ToList();
+        
+        //MainView.ListBox.Items = GameViews;
     }
     
     public List<GameViewSmall> GameViews { get; private set; }

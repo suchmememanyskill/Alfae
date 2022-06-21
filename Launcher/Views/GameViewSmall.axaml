@@ -4,7 +4,7 @@
              xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006"
              mc:Ignorable="d" d:DesignWidth="800" d:DesignHeight="450"
              x:Class="Launcher.Views.GameViewSmall"
-             Margin="12,9,12,12">
+             Margin="12,9,12,12" Width="200" Height="300" Name="Control">
     <Panel Width="200" Height="300">
         <Rectangle Fill="OrangeRed" />
         <DockPanel>
@@ -12,7 +12,14 @@
                 <Label HorizontalAlignment="Center" Name="GameLabel">Game</Label>
                 <Label HorizontalAlignment="Center" Name="SizeLabel">Size</Label>
             </StackPanel>
-            <Panel></Panel>
+            <StackPanel HorizontalAlignment="Center" VerticalAlignment="Center" Spacing="10" Name="ButtonPanel">
+                <Button FontSize="20" Width="150" Name="PrimaryButton" Classes="darker">
+                    <Label HorizontalAlignment="Center" Name="PrimaryButtonLabel">Play</Label>
+                </Button>
+                <Menu Height="45" Name="Menu">
+                    <MenuItem Header="        More" Classes="ButtonLike" FontSize="20" Width="150" Name="MoreMenu"></MenuItem>
+                </Menu>
+            </StackPanel>
         </DockPanel>
     </Panel>
 </UserControl>

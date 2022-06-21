@@ -1,4 +1,5 @@
-﻿using LauncherGamePlugin.Interfaces;
+﻿using LauncherGamePlugin.Commands;
+using LauncherGamePlugin.Interfaces;
 
 namespace LauncherGamePlugin.Extensions;
 
@@ -17,4 +18,6 @@ public static class GameExtensions
 
         return $"{bytesLeft:0.00} {gameSizes[type]}";
     }
+
+    public static List<Command> GetCommands(this IGame game) => game.Source.GetGameCommands(game);
 }

@@ -31,5 +31,14 @@
         <Style Selector="Button.invisible:pressed /template/ ContentPresenter">
             <Setter Property="Background" Value="Transparent"/>
         </Style>
+        <Style Selector="Button.darker">
+            <Setter Property="Background" Value="{Binding ThreeFourthsTransparency}"/>
+        </Style>
+        <Style Selector="Button.darker:pointerover /template/ ContentPresenter">
+            <Setter Property="Background" Value="{Binding HalfTransparency}"/>
+        </Style>
+        <Style Selector="Button.darker:pressed /template/ ContentPresenter">
+            <Setter Property="Background" Value="Black"/>
+        </Style>
     </Application.Styles>
 </Application>

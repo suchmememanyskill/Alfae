@@ -14,12 +14,30 @@ namespace Launcher.Views;
 public partial class MainView : UserControlExt<MainView>
 {
     [Binding(nameof(PluginMenu), "Items")] public List<TemplatedControl> MenuItems => GenerateMenuItems();
+
+    private GameViewSmall _currentSelection;
     
     public MainView()
     {
         InitializeComponent();
         SetControls();
         UpdateView();
+        ListBox.SelectionChanged += (_, _) =>
+        {
+            ListBoxItem? item = ListBox.SelectedItem as ListBoxItem;
+            if (item?.Content is not GameViewSmall gameViewSmall)
+                return;
+            if (_currentSelection != null)
+            {
+                if (Equals(_currentSelection, gameViewSmall))
+                    return;
+                
+                _currentSelection.Deselected();
+            }
+
+            _currentSelection = gameViewSmall;
+            _currentSelection.Selected();
+        };
     }
 
     private List<TemplatedControl> GenerateMenuItems()

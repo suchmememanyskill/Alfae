@@ -121,6 +121,7 @@ public class LocalGameSource : IGameSource
 
     public async Task<List<IGame>> GetGames()
     {
+        Games.ForEach(x => x.Source = this);
         return Games.Select(x => (IGame)x).ToList();
     }
 
@@ -131,7 +132,10 @@ public class LocalGameSource : IGameSource
 
     public List<Command> GetGameCommands(IGame game)
     {
-        //if ()
-        return null;
+        return new()
+        {
+            new Command("Play", () => Log("Play")),
+            new Command("Delete", () => Log("Delete"))
+        };
     }
 }
