@@ -15,7 +15,6 @@ public class LocalGameSource : IGameSource
     public string Description => "Games added manually will be shown using this plugin";
     public string Version => "v0.1";
     public string SlugServiceName => "local-games";
-    public List<Command> GlobalCommands { get; private set; }
 
     private IApp _app;
     private List<LocalGame> _games = new();
@@ -33,12 +32,6 @@ public class LocalGameSource : IGameSource
         }
         
         Log("Hello World!");
-        GlobalCommands = new()
-        {
-            new Command($"Loaded {_games.Count} games"),
-            new Command(),
-            new Command("Add a game", () => AddGameForm())
-        };
     }
 
     public async Task Save()
@@ -207,4 +200,11 @@ public class LocalGameSource : IGameSource
             }),
         };
     }
+
+    public List<Command> GetGlobalCommands() => new()
+    {
+        new Command($"Loaded {_games.Count} games"),
+        new Command(),
+        new Command("Add a game", () => AddGameForm())
+    };
 }

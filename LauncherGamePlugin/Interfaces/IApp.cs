@@ -9,5 +9,6 @@ public interface IApp
     void ShowForm(Form form);
     void HideOverlay();
     void ReloadGames();
+    void ReloadGlobalCommands();
     void Launch(ExecLaunch launch);
 }

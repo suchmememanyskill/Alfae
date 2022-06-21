@@ -75,6 +75,8 @@ public class App : IApp
     }
 
     public void ReloadGames() => Dispatcher.UIThread.Post(ReloadGames2);
+    public void ReloadGlobalCommands() => Dispatcher.UIThread.Post(() => MainView.UpdateView());
+
     public void Launch(ExecLaunch launch)
     {
         Launcher.Launcher l = new();
@@ -118,6 +120,8 @@ public class App : IApp
         
         if (anyNotInstalledGames)
             MainView.NotInstalledListBox.Items = NotInstalledGames.Select(x => new GameViewSmall(x)).ToList();
+        
+        ReloadGlobalCommands();
     }
 
     public List<GameViewSmall> GameViews { get; private set; } = new();

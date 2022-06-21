@@ -60,13 +60,15 @@ public partial class MainView : UserControlExt<MainView>
         
         app.GameSources.ForEach(x =>
         {
-            if (x.GlobalCommands.Count > 0)
+            List<Command> commands = x.GetGlobalCommands();
+            
+            if (commands.Count > 0)
             {
                 MenuItem root = new()
                 {
                     Header = x.ServiceName
                 };
-                List<TemplatedControl> controls = x.GlobalCommands.Select(x => x.ToTemplatedControl()).ToList();
+                List<TemplatedControl> controls = commands.Select(x => x.ToTemplatedControl()).ToList();
                 root.Items = controls;
                 items.Add(root);
             }
