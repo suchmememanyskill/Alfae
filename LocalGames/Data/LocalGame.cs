@@ -9,16 +9,23 @@ public class LocalGame : IGame
     public string Name { get; set; }
     public string ExecPath { get; set; }
     public long? Size { get; set; }
-
+    public string? CoverImagePath { get; set; }
+    public string? BackgroundImagePath { get; set; }
     
-    public Task<byte[]> CoverImage()
+    public async Task<byte[]?> CoverImage()
     {
-        throw new NotImplementedException();
+        if (string.IsNullOrWhiteSpace(CoverImagePath) || !File.Exists(CoverImagePath))
+            return null;
+
+        return await File.ReadAllBytesAsync(CoverImagePath);
     }
 
-    public Task<byte[]> BackgroundImage()
+    public async Task<byte[]?> BackgroundImage()
     {
-        throw new NotImplementedException();
+        if (string.IsNullOrWhiteSpace(BackgroundImagePath) || !File.Exists(BackgroundImagePath))
+            return null;
+
+        return await File.ReadAllBytesAsync(BackgroundImagePath);
     }
 
     [JsonIgnore] public InstalledStatus InstalledStatus => InstalledStatus.Installed;

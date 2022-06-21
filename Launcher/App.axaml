@@ -9,7 +9,7 @@
         <Style Selector="ListBoxItem">
             <Setter Property="Padding" Value="0"/>
         </Style>
-        <Style Selector="MenuItem.ButtonLike">
+        <Style Selector="MenuItem.ButtonLike,Menu.ButtonLike">
             <Setter Property="Background" Value="{DynamicResource ButtonBackground}" />
             <Setter Property="Foreground" Value="{DynamicResource ButtonForeground}" />
             <Setter Property="BorderBrush" Value="{DynamicResource ButtonBorderBrush}" />
@@ -32,13 +32,25 @@
             <Setter Property="Background" Value="Transparent"/>
         </Style>
         <Style Selector="Button.darker">
-            <Setter Property="Background" Value="{Binding ThreeFourthsTransparency}"/>
+            <Setter Property="Background" Value="#C4000000"/>
         </Style>
         <Style Selector="Button.darker:pointerover /template/ ContentPresenter">
-            <Setter Property="Background" Value="{Binding HalfTransparency}"/>
+            <Setter Property="Background" Value="#80000000"/>
         </Style>
         <Style Selector="Button.darker:pressed /template/ ContentPresenter">
             <Setter Property="Background" Value="Black"/>
+        </Style>
+        <Style Selector="Menu.darker">
+            <Setter Property="Background" Value="#C4000000"/>
+        </Style>
+        <Style Selector="Menu.darker:pointerover /template/ ContentPresenter">
+            <Setter Property="Background" Value="#80000000"/>
+        </Style>
+        <Style Selector="Menu.darker:pressed /template/ ContentPresenter">
+            <Setter Property="Background" Value="Black"/>
+        </Style>
+        <Style Selector="MenuItem.CenterAccessText>AccessText">
+            <Setter Property="HorizontalAlignment" Value="Center"/>
         </Style>
     </Application.Styles>
 </Application>

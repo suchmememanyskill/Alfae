@@ -92,15 +92,7 @@ public class App : IApp
         await Task.WhenAll(tasks);
         tasks.ForEach(x => Games.AddRange(x.Result));
         GameViews = Games.Select(x => new GameViewSmall(x)).ToList();
-        
-        MainView.ListBox.Items = GameViews.Select(x =>
-        {
-            var item = new ListBoxItem();
-            item.Content = x;
-            return item;
-        }).ToList();
-        
-        //MainView.ListBox.Items = GameViews;
+        MainView.ListBox.Items = GameViews;
     }
     
     public List<GameViewSmall> GameViews { get; private set; }

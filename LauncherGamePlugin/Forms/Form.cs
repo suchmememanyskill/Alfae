@@ -10,4 +10,6 @@ public class Form
         FormEntries = entries;
         SetContainingForm();
     }
+
+    public string? GetValue(string name) => FormEntries.Find(x => x.Name == name)?.Value;
 }

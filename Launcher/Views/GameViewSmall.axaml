@@ -7,6 +7,7 @@
              Margin="12,9,12,12" Width="200" Height="300" Name="Control">
     <Panel Width="200" Height="300">
         <Rectangle Fill="OrangeRed" />
+        <Image Width="200" Stretch="UniformToFill" Name="CoverImage" />
         <DockPanel>
             <StackPanel DockPanel.Dock="Bottom" Name="BottomPanel">
                 <Label HorizontalAlignment="Center" Name="GameLabel">Game</Label>
@@ -16,8 +17,8 @@
                 <Button FontSize="20" Width="150" Name="PrimaryButton" Classes="darker">
                     <Label HorizontalAlignment="Center" Name="PrimaryButtonLabel">Play</Label>
                 </Button>
-                <Menu Height="45" Name="Menu">
-                    <MenuItem Header="        More" Classes="ButtonLike" FontSize="20" Width="150" Name="MoreMenu"></MenuItem>
+                <Menu Height="45" Name="Menu" Classes="darker ButtonLike" Padding="0">
+                    <MenuItem Header="More" Classes="CenterAccessText" Background="Transparent" FontSize="20" Width="150" Name="MoreMenu"></MenuItem>
                 </Menu>
             </StackPanel>
         </DockPanel>

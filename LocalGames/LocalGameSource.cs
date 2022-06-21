@@ -57,13 +57,15 @@ public class LocalGameSource : IGameSource
         _app.ShowForm(new(entries));
     }
 
-    public void AddGameForm(string possibleWarn = "", string gameName = "", string execPath = "")
+    public void AddGameForm(string possibleWarn = "", string gameName = "", string execPath = "", string coverImage = "")
     {
         List<FormEntry> entries = new()
         {
             new FormEntry(FormEntryType.TextBox, "Add a local game", "Bold"),
             new FormEntry(FormEntryType.TextInput, "Game name:", gameName),
             new FormEntry(FormEntryType.FilePicker, "Game executable:", execPath),
+            new FormEntry(FormEntryType.TextBox, "\nOptional", "Bold"),
+            new FormEntry(FormEntryType.FilePicker, "Cover Image:", coverImage),
             new FormEntry(FormEntryType.ButtonList, "", buttonList: new()
             {
                 {"Cancel", entry => _app.HideOverlay()},
@@ -85,24 +87,26 @@ public class LocalGameSource : IGameSource
 
     public void AddGame(Form form)
     {
-        string gameName = form.FormEntries.Find(x => x.Name == "Game name:").Value;
-        string execPath = form.FormEntries.Find(x => x.Name == "Game executable:").Value;
-
+        string? gameName = form.GetValue("Game name:");
+        string? execPath = form.GetValue("Game executable:");
+        string? coverImage = form.GetValue("Cover Image:");
+        string errMessage = "";
+        
         if (string.IsNullOrWhiteSpace(gameName))
-        {
-            AddGameForm("Please fill in the game name", gameName, execPath);
-            return;
-        }
+            errMessage = "Please fill in the game name";
 
-        if (string.IsNullOrWhiteSpace(execPath))
-        {
-            AddGameForm("Please fill in the executable path", gameName, execPath);
-            return;
-        }
+        if (string.IsNullOrWhiteSpace(execPath) && errMessage == "")
+            errMessage = "Please fill in the executable path";
 
-        if (!File.Exists(execPath))
+        if (!File.Exists(execPath) && errMessage == "")
+            errMessage = "Executable path does not exist!";
+
+        if (errMessage == "" && coverImage != "" && !File.Exists(coverImage))
+            errMessage = "Cover image path does not exist!";
+
+        if (errMessage != "")
         {
-            AddGameForm("Executable path does not exist!", gameName, execPath);
+            AddGameForm(errMessage, gameName, execPath,coverImage);
             return;
         }
         
@@ -111,6 +115,7 @@ public class LocalGameSource : IGameSource
         localGame.Name = gameName;
         localGame.ExecPath = execPath;
         localGame.Size = Utils.DirSize(new DirectoryInfo(localGame.InstalledPath));
+        localGame.CoverImagePath = coverImage;
         Log($"{gameName}'s size is {localGame.ReadableSize()}");
         Games.Add(localGame);
         Log($"Added game {gameName}");

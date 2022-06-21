@@ -6,6 +6,8 @@ using Avalonia;
 using Avalonia.Controls;
 using Avalonia.Markup.Xaml;
 using Avalonia.Media;
+using Avalonia.Media.Imaging;
+using Avalonia.Threading;
 using Launcher.Extensions;
 using Launcher.Utils;
 using LauncherGamePlugin.Commands;
@@ -45,6 +47,7 @@ public partial class GameViewSmall : UserControlExt<GameViewSmall>
         _game = game;
         SetControls();
         UpdateView();
+        Dispatcher.UIThread.Post(GetCoverImage);
     }
 
     public void Selected()
@@ -58,6 +61,24 @@ public partial class GameViewSmall : UserControlExt<GameViewSmall>
     {
         _isSelected = false;
         UpdateView();
+    }
+
+    public async void GetCoverImage()
+    {
+        try
+        {
+            byte[]? img = await _game.CoverImage();
+
+            if (img == null)
+                throw new InvalidDataException();
+
+            Stream stream = new MemoryStream(img);
+            CoverImage.Source = Bitmap.DecodeToHeight(stream, 300);
+        }
+        catch
+        {
+            Loader.App.GetInstance().Logger.Log($"Failed to get cover of {_game.Name}");
+        }
     }
     
     private void SetMenu()

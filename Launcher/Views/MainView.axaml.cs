@@ -24,9 +24,10 @@ public partial class MainView : UserControlExt<MainView>
         UpdateView();
         ListBox.SelectionChanged += (_, _) =>
         {
-            ListBoxItem? item = ListBox.SelectedItem as ListBoxItem;
-            if (item?.Content is not GameViewSmall gameViewSmall)
+            GameViewSmall? gameViewSmall = ListBox.SelectedItem as GameViewSmall;
+            if (gameViewSmall == null)
                 return;
+            
             if (_currentSelection != null)
             {
                 if (Equals(_currentSelection, gameViewSmall))

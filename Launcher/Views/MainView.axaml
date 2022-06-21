@@ -19,7 +19,11 @@
             <ScrollViewer Margin="10">
                 <StackPanel Name="MainContent">
                     <ListBox HorizontalAlignment="Center" Name="ListBox" Background="Transparent">
-
+                        <ListBox.ItemsPanel>
+                            <ItemsPanelTemplate>
+                                <WrapPanel />
+                            </ItemsPanelTemplate>
+                        </ListBox.ItemsPanel>
                     </ListBox>
                 </StackPanel>
             </ScrollViewer>
