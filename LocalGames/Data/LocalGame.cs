@@ -1,5 +1,6 @@
 ﻿using System.Text.Json.Serialization;
 using LauncherGamePlugin;
+using LauncherGamePLugin;
 using LauncherGamePlugin.Interfaces;
 
 namespace LocalGames.Data;
@@ -11,6 +12,7 @@ public class LocalGame : IGame
     public long? Size { get; set; }
     public string? CoverImagePath { get; set; }
     public string? BackgroundImagePath { get; set; }
+    public string? LaunchArgs { get; set; }
     
     public async Task<byte[]?> CoverImage()
     {
@@ -35,4 +37,10 @@ public class LocalGame : IGame
     
     public event Action? OnUpdate;
     public void InvokeOnUpdate() => OnUpdate?.Invoke();
+
+    public ExecLaunch ToExecLaunch()
+    {
+        ExecLaunch launch = new ExecLaunch(ExecPath, LaunchArgs, InstalledPath);
+        return launch;
+    }
 }

@@ -14,6 +14,7 @@ using Launcher.Utils;
 using Launcher.Views;
 using LauncherGamePlugin.Interfaces;
 using LauncherGamePlugin;
+using LauncherGamePLugin;
 using LauncherGamePlugin.Forms;
 
 namespace Launcher.Loader;
@@ -52,25 +53,7 @@ public class App : IApp
 
     private void ShowForm2(Form form)
     {
-        Panel panel = new();
-        panel.Background = new SolidColorBrush(new Color(128, 0, 0, 0));
-        MainView.Overlay.Children.Add(panel);
-        Border border = new Border();
-        border.CornerRadius = new CornerRadius(5);
-        border.Background = new SolidColorBrush(new Color(255, 34, 34, 34));
-        border.Margin = new Thickness(20);
-        border.Width = 600;
-        border.HorizontalAlignment = HorizontalAlignment.Center;
-        border.VerticalAlignment = VerticalAlignment.Center;
-        ScrollViewer scrollViewer = new ScrollViewer();
-        scrollViewer.Padding = new Thickness(10);
-        StackPanel stackPanel = new StackPanel();
-        stackPanel.Spacing = 10;
-        scrollViewer.Content = stackPanel;
-        scrollViewer.VerticalAlignment = VerticalAlignment.Center;
-        border.Child = scrollViewer;
-        form.FormEntries.ForEach(x => stackPanel.Children.Add(x.ToTemplatedControl()));
-        MainView.Overlay.Children.Add(border);
+        MainView.Overlay.Children.Add(new FormOverlay(form));
         MainView.Overlay.IsVisible = true;
     }
 
@@ -83,6 +66,11 @@ public class App : IApp
     }
 
     public void ReloadGames() => Dispatcher.UIThread.Post(ReloadGames2);
+    public void Launch(ExecLaunch launch)
+    {
+        Launcher.Launcher l = new();
+        l.Launch(launch);
+    }
 
     public async Task ReloadGames2Task()
     {

@@ -57,7 +57,7 @@ public class LocalGameSource : IGameSource
         _app.ShowForm(new(entries));
     }
 
-    public void AddGameForm(string possibleWarn = "", string gameName = "", string execPath = "", string coverImage = "")
+    public void AddGameForm(string possibleWarn = "", string gameName = "", string execPath = "", string coverImage = "", string backgroundImage = "", string args = "")
     {
         List<FormEntry> entries = new()
         {
@@ -66,6 +66,8 @@ public class LocalGameSource : IGameSource
             new FormEntry(FormEntryType.FilePicker, "Game executable:", execPath),
             new FormEntry(FormEntryType.TextBox, "\nOptional", "Bold"),
             new FormEntry(FormEntryType.FilePicker, "Cover Image:", coverImage),
+            new FormEntry(FormEntryType.FilePicker, "Background Image:", backgroundImage),
+            new FormEntry(FormEntryType.TextInput, "CLI Arguments:", args),
             new FormEntry(FormEntryType.ButtonList, "", buttonList: new()
             {
                 {"Cancel", entry => _app.HideOverlay()},
@@ -90,6 +92,8 @@ public class LocalGameSource : IGameSource
         string? gameName = form.GetValue("Game name:");
         string? execPath = form.GetValue("Game executable:");
         string? coverImage = form.GetValue("Cover Image:");
+        string? backgroundImage = form.GetValue("Background Image:");
+        string? args = form.GetValue("CLI Arguments:");
         string errMessage = "";
         
         if (string.IsNullOrWhiteSpace(gameName))
@@ -104,6 +108,9 @@ public class LocalGameSource : IGameSource
         if (errMessage == "" && coverImage != "" && !File.Exists(coverImage))
             errMessage = "Cover image path does not exist!";
 
+        if (errMessage == "" && coverImage != "" && !File.Exists(backgroundImage))
+            errMessage = "Background image path does not exist!";
+
         if (errMessage != "")
         {
             AddGameForm(errMessage, gameName, execPath,coverImage);
@@ -116,6 +123,8 @@ public class LocalGameSource : IGameSource
         localGame.ExecPath = execPath;
         localGame.Size = Utils.DirSize(new DirectoryInfo(localGame.InstalledPath));
         localGame.CoverImagePath = coverImage;
+        localGame.BackgroundImagePath = backgroundImage;
+        localGame.LaunchArgs = args;
         Log($"{gameName}'s size is {localGame.ReadableSize()}");
         Games.Add(localGame);
         Log($"Added game {gameName}");
@@ -135,14 +144,37 @@ public class LocalGameSource : IGameSource
         throw new NotImplementedException();
     }
 
+    public void EditGameForm(IGame game)
+    {
+        List<FormEntry> entries = new()
+        {
+            new FormEntry(FormEntryType.ButtonList, "", buttonList: new()
+            {
+                {"Back", x => _app.HideOverlay()}
+            })
+        };
+
+        Form form = new(entries);
+        form.Background = game.BackgroundImage;
+        _app.ShowForm(form);
+    }
+
     public List<Command> GetGameCommands(IGame game)
     {
         LocalGame localGame = game as LocalGame;
 
         return new()
         {
-            new Command("Play", () => Log("Play")),
-            new Command("Delete", () => Log("Delete")),
+            new Command("Play", () =>
+            {
+                Log($"Starting {localGame.Name}");
+                _app.Launch(localGame.ToExecLaunch());
+            }),
+            new Command("Delete", () =>
+            {
+                Games.Remove(localGame);
+                _app.ReloadGames();
+            }),
             new("Set download active", () =>
             {
                 localGame.ProgressStatus = new ProgressStatus();
@@ -164,7 +196,8 @@ public class LocalGameSource : IGameSource
             {
                 localGame.ProgressStatus.Percentage = 100;
                 localGame.ProgressStatus.InvokeOnUpdate();
-            })
+            }),
+            new Command("Edit", () => EditGameForm(game)),
         };
     }
 }

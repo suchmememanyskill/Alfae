@@ -1,0 +1,16 @@
+﻿<UserControl xmlns="https://github.com/avaloniaui"
+             xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
+             xmlns:d="http://schemas.microsoft.com/expression/blend/2008"
+             xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006"
+             mc:Ignorable="d" d:DesignWidth="800" d:DesignHeight="450"
+             x:Class="Launcher.Forms.FormOverlay">
+    <Panel>
+        <Panel Background="#80000000" />
+        <Image Name="Image" Stretch="UniformToFill" Margin="100" />
+        <Border CornerRadius="5" Background="#222222" Margin="20" Width="600" HorizontalAlignment="Center" VerticalAlignment="Center">
+            <ScrollViewer Padding="10">
+                <StackPanel Name="StackPanel" Spacing="10" VerticalAlignment="Center" />
+            </ScrollViewer>
+        </Border>
+    </Panel>
+</UserControl>
