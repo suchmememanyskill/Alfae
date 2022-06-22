@@ -88,6 +88,9 @@ public partial class GameViewSmall : UserControlExt<GameViewSmall>
     private void OnProgressUpdateWrapper() => Dispatcher.UIThread.Post(OnProgressUpdate);
     private void OnProgressUpdate()
     {
+        if (Game.ProgressStatus == null)
+            return;
+        
         ProgressBar.Value = Game.ProgressStatus.Percentage;
         TopLabel1.IsVisible = !string.IsNullOrWhiteSpace(Game.ProgressStatus.Line1);
         if (TopLabel1.IsVisible)

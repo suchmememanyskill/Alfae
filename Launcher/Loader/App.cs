@@ -137,24 +137,28 @@ public class App : IApp
         MainView.NotInstalledLabel.IsVisible = anyNotInstalledGames;
         MainView.NotInstalledListBox.IsVisible = anyNotInstalledGames;
 
+        Games = Games.OrderBy(x => x.Name).ToList();
+
         if (anyInstalledGames)
         {
-            List<GameViewSmall> views = InstalledGames.Select(x => new GameViewSmall(x)).ToList();
-            MainView.InstalledListBox.Items = views;
-            GameViews.AddRange(views);
+            _installedGameViews = InstalledGames.Select(x => new GameViewSmall(x)).ToList();
+            MainView.InstalledListBox.Items = _installedGameViews;
+            GameViews.AddRange(_installedGameViews);
         }
 
         if (anyNotInstalledGames)
         {
-            List<GameViewSmall> views = NotInstalledGames.Select(x => new GameViewSmall(x)).ToList();
-            MainView.NotInstalledListBox.Items = views;
-            GameViews.AddRange(views);
+            _notInstalledGameViews = NotInstalledGames.Select(x => new GameViewSmall(x)).ToList();
+            MainView.NotInstalledListBox.Items = _notInstalledGameViews;
+            GameViews.AddRange(_notInstalledGameViews);
         }
 
         ReloadGlobalCommands();
     }
 
     public List<GameViewSmall> GameViews { get; private set; } = new();
+    private List<GameViewSmall> _installedGameViews = new();
+    private List<GameViewSmall> _notInstalledGameViews = new();
 
     public async void ReloadGames2() => await ReloadGames2Task();
 
