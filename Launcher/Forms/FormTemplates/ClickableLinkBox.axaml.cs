@@ -1,6 +1,7 @@
 ﻿using Avalonia;
 using Avalonia.Controls;
 using Avalonia.Markup.Xaml;
+using Launcher.Extensions;
 using Launcher.Utils;
 using LauncherGamePlugin.Forms;
 
@@ -20,5 +21,6 @@ public partial class ClickableLinkBox : UserControl
         _formEntry = formEntry;
         Button.Content = formEntry.Name;
         Button.Command = new LambdaCommand(x => formEntry.LinkClick(formEntry));
+        Button.HorizontalAlignment = formEntry.Alignment.ToAvaloniaAlignment();
     }
 }

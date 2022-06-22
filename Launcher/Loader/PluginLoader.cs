@@ -17,6 +17,7 @@ public static class PluginLoader
         
         #if DEBUG
             items.Add(Path.GetFullPath(Path.Join(path, "..", "..", "..", "..", "..", "LocalGames", "bin", "Debug", "net6.0", "LocalGames.dll")));
+            items.Add(Path.GetFullPath(Path.Join(path, "..", "..", "..", "..", "..", "LegendaryIntegration", "bin", "Debug", "net6.0", "LegendaryIntegration.dll")));
         #endif
         
         if (!Directory.Exists(path))

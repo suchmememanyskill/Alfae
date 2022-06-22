@@ -1,6 +1,7 @@
 ﻿using Avalonia;
 using Avalonia.Controls;
 using Avalonia.Markup.Xaml;
+using Launcher.Extensions;
 using Launcher.Utils;
 using LauncherGamePlugin.Forms;
 
@@ -26,5 +27,7 @@ public partial class ButtonList : UserControl
             b.Command = new LambdaCommand(x => value.Invoke(_formEntry));
             StackPanel.Children.Add(b);
         }
+
+        StackPanel.HorizontalAlignment = formEntry.Alignment.ToAvaloniaAlignment();
     }
 }

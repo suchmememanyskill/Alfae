@@ -29,7 +29,7 @@ public partial class GameViewSmall : UserControlExt<GameViewSmall>
     public string GameName => _game.Name;
 
     [Binding(nameof(SizeLabel), "Content")]
-    public string GameSize => _game.ReadableSize();
+    public string GameSize => $"{_game.ReadableSize()} | {_game.Source.ShortServiceName}";
 
     [Binding(nameof(ButtonPanel), "IsVisible")]
     public bool IsSelected => _isSelected;
@@ -73,7 +73,7 @@ public partial class GameViewSmall : UserControlExt<GameViewSmall>
             SetMenu();
         
         UpdateView();
-        Dispatcher.UIThread.Post(GetCoverImage);
+        Dispatcher.UIThread.Post(GetCoverImage, DispatcherPriority.Background);
 
         if (HasProgress)
         {

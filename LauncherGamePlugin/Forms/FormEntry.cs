@@ -12,6 +12,14 @@ public enum FormEntryType
     ButtonList,
 }
 
+public enum FormAlignment
+{
+    Center,
+    Left,
+    Right,
+    Default,
+}
+
 public class FormEntry
 {
     public string Name { get; set; }
@@ -21,9 +29,10 @@ public class FormEntry
     public List<string> DropdownOptions { get; set; }
     public Dictionary<string, Action<FormEntry>> ButtonList { get; set; }
     public Form ContainingForm { get; set; }
+    public FormAlignment Alignment;
 
-    public FormEntry(FormEntryType type, string name, string value = "", List<string> dropdownOptions = null,
-        Dictionary<string, Action<FormEntry>> buttonList = null, Action<FormEntry> linkClick = null)
+    public FormEntry(FormEntryType type, string name = "", string value = "", List<string> dropdownOptions = null,
+        Dictionary<string, Action<FormEntry>> buttonList = null, Action<FormEntry> linkClick = null, FormAlignment alignment = FormAlignment.Default)
     {
         Type = type;
         Name = name;
@@ -31,5 +40,9 @@ public class FormEntry
         DropdownOptions = dropdownOptions;
         ButtonList = buttonList;
         LinkClick = linkClick;
+        Alignment = alignment;
+
+        if (Type == FormEntryType.ButtonList && Alignment == FormAlignment.Default)
+            Alignment = FormAlignment.Center;
     }
 }

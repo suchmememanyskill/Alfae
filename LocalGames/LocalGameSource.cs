@@ -1,5 +1,4 @@
-﻿using System.Text.Json.Serialization;
-using LauncherGamePlugin;
+﻿using LauncherGamePlugin;
 using LauncherGamePlugin.Commands;
 using LauncherGamePlugin.Extensions;
 using LauncherGamePlugin.Forms;
@@ -12,6 +11,7 @@ namespace LocalGames;
 public class LocalGameSource : IGameSource
 {
     public string ServiceName => "Local Games Integration";
+    public string ShortServiceName => "Local";
     public string Description => "Games added manually will be shown using this plugin";
     public string Version => "v0.1";
     public string SlugServiceName => "local-games";
@@ -181,7 +181,7 @@ public class LocalGameSource : IGameSource
             {
                 _app.ShowForm(new(new()
                 {
-                    new(FormEntryType.TextBox, $"Are you sure you want to remove '{localGame.Name}' from the launcher?"),
+                    new(FormEntryType.TextBox, $"Are you sure you want to remove '{localGame.Name}' from the launcher?", alignment: FormAlignment.Center),
                     new(FormEntryType.ButtonList, "", buttonList: new()
                     {
                         {"Remove", x =>

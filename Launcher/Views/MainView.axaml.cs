@@ -24,23 +24,26 @@ public partial class MainView : UserControlExt<MainView>
         InitializeComponent();
         SetControls();
         UpdateView();
-        InstalledListBox.SelectionChanged += (_, _) =>
-        {
-            GameViewSmall? gameViewSmall = InstalledListBox.SelectedItem as GameViewSmall;
-            if (gameViewSmall == null)
-                return;
-            
-            if (_currentSelection != null)
-            {
-                if (Equals(_currentSelection, gameViewSmall))
-                    return;
-                
-                _currentSelection.Deselected();
-            }
+        InstalledListBox.SelectionChanged += (_, _) => MonitorListBox(InstalledListBox);
+        NotInstalledListBox.SelectionChanged += (_, _) => MonitorListBox(NotInstalledListBox);
+    }
 
-            _currentSelection = gameViewSmall;
-            _currentSelection.Selected();
-        };
+    private void MonitorListBox(ListBox box)
+    {
+        GameViewSmall? gameViewSmall = box.SelectedItem as GameViewSmall;
+        if (gameViewSmall == null)
+            return;
+            
+        if (_currentSelection != null)
+        {
+            if (Equals(_currentSelection, gameViewSmall))
+                return;
+                
+            _currentSelection.Deselected();
+        }
+
+        _currentSelection = gameViewSmall;
+        _currentSelection.Selected();
     }
 
     private List<TemplatedControl> GenerateMenuItems()

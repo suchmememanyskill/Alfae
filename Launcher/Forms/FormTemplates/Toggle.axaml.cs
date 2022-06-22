@@ -2,6 +2,7 @@
 using Avalonia;
 using Avalonia.Controls;
 using Avalonia.Markup.Xaml;
+using Launcher.Extensions;
 using LauncherGamePlugin.Forms;
 
 namespace Launcher.Forms.FormTemplates;
@@ -20,5 +21,6 @@ public partial class Toggle : UserControl
         ToggleSwitch.IsChecked = int.Parse(entry.Value) != 0;
         ToggleSwitch.Checked += (_, _) => entry.Value = "1";
         ToggleSwitch.Unchecked += (_, _) => entry.Value = "0";
+        ToggleSwitch.HorizontalAlignment = entry.Alignment.ToAvaloniaAlignment();
     }
 }

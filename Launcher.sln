@@ -9,6 +9,8 @@ Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "LauncherGamePlugin", "Launc
 EndProject
 Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "LocalGames", "LocalGames\LocalGames.csproj", "{D3C76C6E-221E-4FE6-B240-6564080A4F26}"
 EndProject
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "LegendaryIntegration", "LegendaryIntegration\LegendaryIntegration.csproj", "{DF8D21FB-B41A-48FA-A1F9-33043F4A5A22}"
+EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution
 		Debug|Any CPU = Debug|Any CPU
@@ -27,6 +29,10 @@ Global
 		{D3C76C6E-221E-4FE6-B240-6564080A4F26}.Debug|Any CPU.Build.0 = Debug|Any CPU
 		{D3C76C6E-221E-4FE6-B240-6564080A4F26}.Release|Any CPU.ActiveCfg = Release|Any CPU
 		{D3C76C6E-221E-4FE6-B240-6564080A4F26}.Release|Any CPU.Build.0 = Release|Any CPU
+		{DF8D21FB-B41A-48FA-A1F9-33043F4A5A22}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{DF8D21FB-B41A-48FA-A1F9-33043F4A5A22}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{DF8D21FB-B41A-48FA-A1F9-33043F4A5A22}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{DF8D21FB-B41A-48FA-A1F9-33043F4A5A22}.Release|Any CPU.Build.0 = Release|Any CPU
 	EndGlobalSection
 	GlobalSection(SolutionProperties) = preSolution
 		HideSolutionNode = FALSE

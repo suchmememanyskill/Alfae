@@ -8,6 +8,7 @@ public interface IGameSource
     string Description { get; }
     string Version { get; }
     string SlugServiceName { get; }
+    string ShortServiceName { get; }
 
     public Task Initialize(IApp app);
     public Task<List<IGame>> GetGames();

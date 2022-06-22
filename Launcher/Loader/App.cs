@@ -62,6 +62,7 @@ public class App : IApp
 
     private void ShowForm2(Form form)
     {
+        MainView.Overlay.Children.Clear();
         MainView.Overlay.Children.Add(new FormOverlay(form));
         MainView.Overlay.IsVisible = true;
     }
