@@ -51,7 +51,7 @@ public partial class GameViewSmall : UserControlExt<GameViewSmall>
         Game = game;
         SetControls();
         OnUpdate();
-        game.OnUpdate += OnUpdate;
+        game.OnUpdate += OnUpdateWrapper;
     }
 
     public void Selected()
@@ -67,6 +67,7 @@ public partial class GameViewSmall : UserControlExt<GameViewSmall>
         UpdateView();
     }
 
+    private void OnUpdateWrapper() => Dispatcher.UIThread.Post(OnUpdate);
     private void OnUpdate()
     {
         if (_isSelected)
@@ -77,13 +78,14 @@ public partial class GameViewSmall : UserControlExt<GameViewSmall>
 
         if (HasProgress)
         {
-            Game.ProgressStatus.OnUpdate -= OnProgressUpdate;
-            Game.ProgressStatus.OnUpdate += OnProgressUpdate;
+            Game.ProgressStatus.OnUpdate -= OnProgressUpdateWrapper;
+            Game.ProgressStatus.OnUpdate += OnProgressUpdateWrapper;
             
             OnProgressUpdate();
         }
     }
 
+    private void OnProgressUpdateWrapper() => Dispatcher.UIThread.Post(OnProgressUpdate);
     private void OnProgressUpdate()
     {
         ProgressBar.Value = Game.ProgressStatus.Percentage;
@@ -118,6 +120,7 @@ public partial class GameViewSmall : UserControlExt<GameViewSmall>
     
     private void SetMenu()
     {
+        // TODO: don't make a more button when there's only 2 elements
         List<Command> commands = Game.GetCommands();
 
         if (commands[0].Type != CommandType.Function)

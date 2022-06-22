@@ -16,11 +16,11 @@ public class LegendaryGameSource : IGameSource
     public LegendaryAuth? auth;
     public LegendaryGameManager? manager;
     public static LegendaryGameSource Source { get; private set; }
-    private IApp _app;
+    public IApp App { get; private set; }
     
     public async Task Initialize(IApp app)
     {
-        _app = app;
+        App = app;
         Source = this;
 
         auth = new();
@@ -60,6 +60,22 @@ public class LegendaryGameSource : IGameSource
             commands.Add(new("Get game install size", () => GetOfflineGameSize(legendaryGame)));
         }
 
+        if (!legendaryGame.IsInstalled)
+        {
+            commands.Add(new("Install", () => legendaryGame.StartDownload()));
+        }
+
+        if (legendaryGame.Download != null)
+        {
+            commands = new();
+            if (legendaryGame.Download.Active)
+                commands.Add(new("Pause", legendaryGame.Download.Pause));
+            else
+                commands.Add(new ("Continue", legendaryGame.Download.Start));
+            
+            commands.Add(new("Stop", legendaryGame.Download.Stop));
+        }
+        
         return commands;
     }
 
@@ -95,7 +111,7 @@ public class LegendaryGameSource : IGameSource
     public async Task Login(Form form)
     {
         string? SID = form.GetValue("SID:");
-        _app.ShowForm(new(new()
+        App.ShowForm(new(new()
         {
             new FormEntry(FormEntryType.TextBox, "Logging in...", alignment: FormAlignment.Center)
         }));
@@ -121,8 +137,8 @@ public class LegendaryGameSource : IGameSource
             return;
         }
         
-        _app.ReloadGames();
-        _app.HideOverlay();
+        App.ReloadGames();
+        App.HideOverlay();
     }
 
     private void LoginForm(string warningMessage = "")
@@ -136,10 +152,10 @@ public class LegendaryGameSource : IGameSource
             new FormEntry(FormEntryType.TextInput, "SID:"),
             new FormEntry(FormEntryType.ButtonList, "", buttonList: new()
             {
-                {"Back", entry => _app.HideOverlay() },
+                {"Back", entry => App.HideOverlay() },
                 {"Login", entry =>
                 {
-                    _app.HideOverlay();
+                    App.HideOverlay();
                     Login(entry.ContainingForm);
                 }}
             })
@@ -148,7 +164,7 @@ public class LegendaryGameSource : IGameSource
         if (warningMessage != "")
             entries.Add(new FormEntry(FormEntryType.TextBox, warningMessage, "Bold"));
         
-        _app.ShowForm(new(entries));
+        App.ShowForm(new(entries));
     }
 
     public async Task Logout()
@@ -156,17 +172,22 @@ public class LegendaryGameSource : IGameSource
         if (auth == null)
             return;
         
-        _app.ShowForm(new(new()
+        App.ShowForm(new(new()
         {
             new FormEntry(FormEntryType.TextBox, "Logging out...", alignment: FormAlignment.Center)
         }));
+
+        if (manager != null)
+        {
+            manager.StopAllDownloads();
+        }
         
         await auth.Logout();
         auth = null;
         manager = null;
-        _app.ReloadGames();
-        _app.HideOverlay();
+        App.ReloadGames();
+        App.HideOverlay();
     }
     
-    public void Log(string message, LogType type = LogType.Info) => _app.Logger.Log(message, type, "EpicGames");
+    public void Log(string message, LogType type = LogType.Info) => App.Logger.Log(message, type, "EpicGames");
 }

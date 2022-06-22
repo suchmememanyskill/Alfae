@@ -70,4 +70,27 @@ public class LegendaryGameManager
             games = games.OrderBy(x => x.Name).ToList();
             return games;
         }
+
+    private List<LegendaryDownload> _downloads = new();
+
+    public void AddDownload(LegendaryDownload download)
+    {
+        _downloads.ForEach(x => x.Pause());
+        _downloads.Add(download);
+        download.Start();
+        download.OnCompletionOrCancel += RemoveDownload;
+    }
+
+    public void RemoveDownload(LegendaryDownload download)
+    {
+        _downloads.Remove(download);
+        if (!_downloads.Any(x => x.Active) && _downloads.Count > 0)
+            _downloads.First().Start();
+    }
+
+    public void StopAllDownloads()
+    {
+        _downloads.ForEach(x => x.Stop());
+        _downloads = new();
+    }
 }

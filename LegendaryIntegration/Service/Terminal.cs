@@ -18,6 +18,7 @@ public class Terminal
     public async Task<bool> Exec(string fileName, string args)
     {
         IsActive = true;
+        Killed = false;
         StdOut = new();
         StdErr = new();
         bool result = true;
@@ -64,6 +65,7 @@ public class Terminal
 
         ExitCode = proc.ExitCode;
         IsActive = false;
+        LegendaryGameSource.Source.Log($"Terminal exited with code {ExitCode}");
         proc.Close();
         return result;
     }

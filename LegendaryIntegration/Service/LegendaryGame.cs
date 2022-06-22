@@ -34,7 +34,8 @@ public class LegendaryGame : IGame
     public bool HasCloudSave { get { if (Metadata != null && Metadata.Metadata != null && Metadata.Metadata.CustomAttributes != null) return Metadata.Metadata.CustomAttributes.ContainsKey("CloudSaveFolder"); return false; } }
     
     public InstalledStatus InstalledStatus => IsInstalled ? InstalledStatus.Installed : InstalledStatus.NotInstalled;
-    public ProgressStatus? ProgressStatus { get; }
+    public ProgressStatus? ProgressStatus => Download;
+    public LegendaryDownload? Download { get; set; }
     public event Action? OnUpdate;
     public void InvokeOnUpdate() => OnUpdate?.Invoke();
     
@@ -169,6 +170,27 @@ public class LegendaryGame : IGame
         }
 
         return localInfo;
+    }
+
+    public async void StartDownload()
+    {
+        await GetInfo();
+        
+        try
+        {
+            Download = new(this);
+            Download.OnCompletionOrCancel += _ =>
+            {
+                Download = null;
+                InvokeOnUpdate();
+            };
+            Download.OnPauseOrContinue += _ => InvokeOnUpdate();
+
+            Parser.AddDownload(Download);
+        }
+        catch
+        {
+        }
     }
     
     private MetaImage? GetGameImage(string type)

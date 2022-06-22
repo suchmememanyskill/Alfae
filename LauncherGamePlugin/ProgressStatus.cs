@@ -2,9 +2,9 @@
 
 public class ProgressStatus
 {
-    public string Line1 { get; set; }
-    public string Line2 { get; set; }
-    public double Percentage { get; set; }
+    public virtual string Line1 { get; set; }
+    public virtual string Line2 { get; set; }
+    public virtual double Percentage { get; set; }
 
     public event Action OnUpdate;
     public void InvokeOnUpdate() => OnUpdate?.Invoke();
