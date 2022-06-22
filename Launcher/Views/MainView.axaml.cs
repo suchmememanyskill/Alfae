@@ -15,7 +15,9 @@ namespace Launcher.Views;
 public partial class MainView : UserControlExt<MainView>
 {
     [Binding(nameof(PluginMenu), "Items")] public List<TemplatedControl> MenuItems => GenerateMenuItems();
-    
+
+    [Binding(nameof(DownloadLocationButton), "Content")]
+    public string DlText => $"Current download location: {_app.GameDir}";
     
     private GameViewSmall _currentSelection;
     private Loader.App _app = Loader.App.GetInstance();
@@ -88,5 +90,17 @@ public partial class MainView : UserControlExt<MainView>
         });
 
         return items;
+    }
+
+    [Command(nameof(DownloadLocationButton))]
+    public async void OnDownloadLocationButton()
+    {
+        OpenFolderDialog dialog = new();
+        string? result = await dialog.ShowAsync(Loader.App.GetInstance().MainWindow);
+        if (!string.IsNullOrWhiteSpace(result))
+        {
+            _app.GameDir = result;
+            UpdateView();
+        }
     }
 }

@@ -32,6 +32,27 @@ public class App : IApp
         }
     }
 
+    public string GameDir
+    {
+        get
+        {
+            if (!Directory.Exists(_gameDir))
+                Directory.CreateDirectory(_gameDir);
+
+            return _gameDir;
+        }
+        set
+        {
+            if (!Directory.Exists(value))
+                throw new Exception("Not a valid directory");
+            
+            _gameDir = value;
+            File.WriteAllText(Path.Join(ConfigDir, "dlloc.txt"), _gameDir);
+        }
+    }
+
+    private string _gameDir;
+
     public Logger Logger { get; } = new();
 
     public List<IGameSource> GameSources { get; private set; } = new();
@@ -138,7 +159,12 @@ public class App : IApp
     public async void ReloadGames2() => await ReloadGames2Task();
 
     private App()
-    { }
+    {
+        _gameDir = Path.Join(Environment.GetFolderPath(Environment.SpecialFolder.UserProfile), "Games");
+
+        if (File.Exists(Path.Join(ConfigDir, "dlloc.txt")))
+            _gameDir = File.ReadAllText(Path.Join(ConfigDir, "dlloc.txt"));
+    }
 
     private static App? _instance;
     public static App GetInstance()
