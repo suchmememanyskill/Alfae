@@ -22,6 +22,9 @@
                 <Button FontSize="20" Width="150" Name="PrimaryButton" Classes="darker">
                     <Label HorizontalAlignment="Center" Name="PrimaryButtonLabel">Play</Label>
                 </Button>
+                <Button FontSize="20" Width="150" Name="SecondaryButton" Classes="darker">
+                    <Label HorizontalAlignment="Center" Name="SecondaryButtonLabel">Play</Label>
+                </Button>
                 <Menu Height="45" Name="Menu" Classes="darker ButtonLike" Padding="0">
                     <MenuItem Header="More" Classes="CenterAccessText" Background="Transparent" FontSize="20" Width="150" Name="MoreMenu"></MenuItem>
                 </Menu>

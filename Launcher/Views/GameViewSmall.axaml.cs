@@ -120,16 +120,30 @@ public partial class GameViewSmall : UserControlExt<GameViewSmall>
     
     private void SetMenu()
     {
-        // TODO: don't make a more button when there's only 2 elements
         List<Command> commands = Game.GetCommands();
+        List<Command> functions = commands.Where(x => x.Type == CommandType.Function).ToList();
 
-        if (commands[0].Type != CommandType.Function)
-            throw new InvalidDataException();
+        PrimaryButton.IsVisible = false;
+        SecondaryButton.IsVisible = false;
 
-        Action actionOne = commands[0].Action;
-        PrimaryButton.Command = new LambdaCommand(x => actionOne());
-        PrimaryButtonLabel.Content = commands[0].Text;
+        if (functions.Count >= 1)
+        {
+            PrimaryButton.IsVisible = true;
+            Action actionOne = functions[0].Action;
+            PrimaryButton.Command = new LambdaCommand(x => actionOne());
+            PrimaryButtonLabel.Content = functions[0].Text;
+        }
+        
+        Menu.IsVisible = !(commands.Count == functions.Count && commands.Count <= 2);
 
+        if (functions.Count >= 2 && !Menu.IsVisible)
+        {
+            SecondaryButton.IsVisible = true;
+            Action actionTwo = functions[1].Action;
+            SecondaryButton.Command = new LambdaCommand(x => actionTwo());
+            SecondaryButtonLabel.Content = functions[1].Text;
+        }
+        
         // I love hacky fixes for shit that doesn't work in avalonia
         commands.ForEach(x =>
         {
