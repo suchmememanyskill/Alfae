@@ -100,14 +100,14 @@ public class App : IApp
 
     public async Task ReloadGames2Task()
     {
+        GameViews.ForEach(x => x.Destroy());
         Games = new();
+        GameViews.Clear();
         List<Task<List<IGame>>> tasks = new();
         GameSources.ForEach(x => tasks.Add(x.GetGames()));
         await Task.WhenAll(tasks);
         tasks.ForEach(x => Games.AddRange(x.Result));
         
-        GameViews.ForEach(x => x.Destroy());
-
         bool anyInstalledGames = InstalledGames.Count != 0;
         bool anyNotInstalledGames = NotInstalledGames.Count != 0;
 
@@ -115,13 +115,21 @@ public class App : IApp
         MainView.InstalledListBox.IsVisible = anyInstalledGames;
         MainView.NotInstalledLabel.IsVisible = anyNotInstalledGames;
         MainView.NotInstalledListBox.IsVisible = anyNotInstalledGames;
-        
+
         if (anyInstalledGames)
-            MainView.InstalledListBox.Items = InstalledGames.Select(x => new GameViewSmall(x)).ToList();
-        
+        {
+            List<GameViewSmall> views = InstalledGames.Select(x => new GameViewSmall(x)).ToList();
+            MainView.InstalledListBox.Items = views;
+            GameViews.AddRange(views);
+        }
+
         if (anyNotInstalledGames)
-            MainView.NotInstalledListBox.Items = NotInstalledGames.Select(x => new GameViewSmall(x)).ToList();
-        
+        {
+            List<GameViewSmall> views = NotInstalledGames.Select(x => new GameViewSmall(x)).ToList();
+            MainView.NotInstalledListBox.Items = views;
+            GameViews.AddRange(views);
+        }
+
         ReloadGlobalCommands();
     }
 

@@ -19,23 +19,23 @@ namespace Launcher.Views;
 
 public partial class GameViewSmall : UserControlExt<GameViewSmall>
 {
-    private IGame _game;
+    public IGame Game { get; private set; }
 
     [Binding(nameof(BottomPanel), "Background")]
     [Binding(nameof(TopPanel), "Background")]
     public IBrush HalfTransparency => new SolidColorBrush(new Color(128, 0, 0, 0));
 
     [Binding(nameof(GameLabel), "Content")]
-    public string GameName => _game.Name;
+    public string GameName => Game.Name;
 
     [Binding(nameof(SizeLabel), "Content")]
-    public string GameSize => $"{_game.ReadableSize()} | {_game.Source.ShortServiceName}";
+    public string GameSize => $"{Game.ReadableSize()} | {Game.Source.ShortServiceName}";
 
     [Binding(nameof(ButtonPanel), "IsVisible")]
     public bool IsSelected => _isSelected;
 
     [Binding(nameof(TopPanel), "IsVisible")]
-    public bool HasProgress => _game.ProgressStatus != null;
+    public bool HasProgress => Game.ProgressStatus != null;
     
     private bool _menuSet = false;
     private bool _isSelected = false;
@@ -48,7 +48,7 @@ public partial class GameViewSmall : UserControlExt<GameViewSmall>
 
     public GameViewSmall(IGame game) : this()
     {
-        _game = game;
+        Game = game;
         SetControls();
         OnUpdate();
         game.OnUpdate += OnUpdate;
@@ -77,8 +77,8 @@ public partial class GameViewSmall : UserControlExt<GameViewSmall>
 
         if (HasProgress)
         {
-            _game.ProgressStatus.OnUpdate -= OnProgressUpdate;
-            _game.ProgressStatus.OnUpdate += OnProgressUpdate;
+            Game.ProgressStatus.OnUpdate -= OnProgressUpdate;
+            Game.ProgressStatus.OnUpdate += OnProgressUpdate;
             
             OnProgressUpdate();
         }
@@ -86,14 +86,14 @@ public partial class GameViewSmall : UserControlExt<GameViewSmall>
 
     private void OnProgressUpdate()
     {
-        ProgressBar.Value = _game.ProgressStatus.Percentage;
-        TopLabel1.IsVisible = !string.IsNullOrWhiteSpace(_game.ProgressStatus.Line1);
+        ProgressBar.Value = Game.ProgressStatus.Percentage;
+        TopLabel1.IsVisible = !string.IsNullOrWhiteSpace(Game.ProgressStatus.Line1);
         if (TopLabel1.IsVisible)
-            TopLabel1.Content = _game.ProgressStatus.Line1;
+            TopLabel1.Content = Game.ProgressStatus.Line1;
         
-        TopLabel2.IsVisible = !string.IsNullOrWhiteSpace(_game.ProgressStatus.Line2);
+        TopLabel2.IsVisible = !string.IsNullOrWhiteSpace(Game.ProgressStatus.Line2);
         if (TopLabel2.IsVisible)
-            TopLabel2.Content = _game.ProgressStatus.Line2;
+            TopLabel2.Content = Game.ProgressStatus.Line2;
         
         SetMenu();
     }
@@ -102,7 +102,7 @@ public partial class GameViewSmall : UserControlExt<GameViewSmall>
     {
         try
         {
-            byte[]? img = await _game.CoverImage();
+            byte[]? img = await Game.CoverImage();
 
             if (img == null)
                 throw new InvalidDataException();
@@ -112,13 +112,13 @@ public partial class GameViewSmall : UserControlExt<GameViewSmall>
         }
         catch
         {
-            Loader.App.GetInstance().Logger.Log($"Failed to get cover of {_game.Name}");
+            Loader.App.GetInstance().Logger.Log($"Failed to get cover of {Game.Name}");
         }
     }
     
     private void SetMenu()
     {
-        List<Command> commands = _game.GetCommands();
+        List<Command> commands = Game.GetCommands();
 
         if (commands[0].Type != CommandType.Function)
             throw new InvalidDataException();
@@ -149,8 +149,8 @@ public partial class GameViewSmall : UserControlExt<GameViewSmall>
 
     public void Destroy()
     {
-        _game.OnUpdate -= OnUpdate;
-        if (_game.ProgressStatus != null)
-            _game.ProgressStatus.OnUpdate -= OnProgressUpdate;
+        Game.OnUpdate -= OnUpdate;
+        if (Game.ProgressStatus != null)
+            Game.ProgressStatus.OnUpdate -= OnProgressUpdate;
     }
 }

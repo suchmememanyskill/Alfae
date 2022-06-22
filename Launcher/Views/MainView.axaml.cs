@@ -1,4 +1,5 @@
-﻿using System.Collections.Generic;
+﻿using System;
+using System.Collections.Generic;
 using System.Linq;
 using Avalonia;
 using Avalonia.Controls;
@@ -26,6 +27,15 @@ public partial class MainView : UserControlExt<MainView>
         UpdateView();
         InstalledListBox.SelectionChanged += (_, _) => MonitorListBox(InstalledListBox);
         NotInstalledListBox.SelectionChanged += (_, _) => MonitorListBox(NotInstalledListBox);
+        SearchBox.KeyUp += (_, _) =>
+        {
+            if (string.IsNullOrWhiteSpace(SearchBox.Text))
+                _app.GameViews.ForEach(x => x.IsVisible = true);
+            else
+                _app.GameViews.ForEach(x =>
+                    x.IsVisible = x.GameName.Contains(SearchBox.Text, StringComparison.OrdinalIgnoreCase) || 
+                                  x.Game.Source.ShortServiceName.Contains(SearchBox.Text, StringComparison.OrdinalIgnoreCase));
+        };
     }
 
     private void MonitorListBox(ListBox box)
