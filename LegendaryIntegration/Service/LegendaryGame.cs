@@ -3,6 +3,10 @@ using LauncherGamePlugin.Interfaces;
 using LegendaryIntegration.Extensions;
 using LegendaryIntegration.Model;
 using Newtonsoft.Json;
+using SixLabors.ImageSharp;
+using SixLabors.ImageSharp.Formats.Jpeg;
+using SixLabors.ImageSharp.PixelFormats;
+using SixLabors.ImageSharp.Processing;
 
 namespace LegendaryIntegration.Service;
 
@@ -92,14 +96,59 @@ public class LegendaryGame : IGame
             return bytes;
         }
 
-        return null;
-        throw new NotImplementedException();
+        byte[]? rawBanner = await banner.GetImageAsync();
+
+        if (rawBanner == null)
+            return null;
+            
+        Image<Rgba32> bannerImg = Image.Load<Rgba32>(rawBanner);
+
+        byte[]? rawLogo = await logo.GetImageAsync();
+
+        if (rawLogo == null)
+            return null;
+
+        Image<Rgba32> logoImg = Image.Load<Rgba32>(rawLogo);
+        Image<Rgba32> output = new Image<Rgba32>(bannerImg.Width, bannerImg.Height);
+
+        // Steam's horizontal height is about 1.5x the vertical height
+        float newWidth = bannerImg.Height / 1.5f;
+        float newHeight = (newWidth / logoImg.Width) * logoImg.Height;
+        await Task.Run(() => logoImg.Mutate(x => x.Resize(new Size((int) newWidth, (int) newHeight))));
+
+        float centerX = bannerImg.Width / 2;
+        float centerY = bannerImg.Height / 2;
+        float logoPosX = centerX - logoImg.Width / 2;
+        float logoPosY = centerY - logoImg.Height / 2;
+        await Task.Run(() => output.Mutate(x => x
+            .DrawImage(bannerImg, new Point(0, 0), 1f)
+            .DrawImage(logoImg, new Point((int) logoPosX, (int) logoPosY), 1f)
+        ));
+
+        bannerImg.Dispose();
+        logoImg.Dispose();
+        await output.SaveAsync(cachePath, new JpegEncoder());
+        return await File.ReadAllBytesAsync(cachePath);
     }
 
     public async Task<byte[]?> BackgroundImage()
     {
-        return null;
-        throw new NotImplementedException();
+        MetaImage? background = GetGameImage("DieselGameBox");
+
+        if (background == null)
+            return null;
+        
+        string cachePath = Path.Join(IMAGECACHEDIR, background.FileName);
+        
+        if (File.Exists(cachePath))
+            return await File.ReadAllBytesAsync(cachePath);
+
+        byte[]? bytes = await background.GetImageAsync();
+        if (bytes == null)
+            return null;
+
+        await File.WriteAllBytesAsync(cachePath, bytes);
+        return bytes;
     }
 
     public async Task<LegendaryInfoResponse?> GetInfo()
