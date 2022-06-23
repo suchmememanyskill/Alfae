@@ -51,6 +51,8 @@ public class App : IApp
         }
     }
 
+    public bool HeadlessMode { get; set; } = false;
+    
     private string _gameDir;
 
     public Logger Logger { get; } = new();
@@ -65,8 +67,13 @@ public class App : IApp
 
     public List<IGame> NotInstalledGames => Games.Where(x => x.InstalledStatus == InstalledStatus.NotInstalled).ToList();
 
+    private bool _initialised = false;
+
     public async Task InitializeGameSources()
     {
+        if (_initialised)
+            return;
+        
         List<IGameSource> sources = PluginLoader.GetGameSources(this);
         List<Task> tasks = new();
         sources.ForEach(x =>
@@ -77,9 +84,22 @@ public class App : IApp
 
         await Task.WhenAll(tasks);
         GameSources = sources;
+        _initialised = true;
     }
 
-    public void ShowForm(Form form) => Dispatcher.UIThread.Post(() => ShowForm2(form));
+    public void ShowForm(Form form)
+    {
+        if (HeadlessMode)
+        {
+            _startForm = form;
+            
+            Program.BuildAvaloniaApp()
+                .StartWithClassicDesktopLifetime(Array.Empty<string>());
+            
+            return;
+        }
+        Dispatcher.UIThread.Post(() => ShowForm2(form));
+    }
 
     private void ShowForm2(Form form)
     {
@@ -88,7 +108,21 @@ public class App : IApp
         MainView.Overlay.IsVisible = true;
     }
 
-    public void HideOverlay() => Dispatcher.UIThread.Post(HideOverlay2);
+    private Form? _startForm = null;
+
+    public void ShowPossibleStartForm()
+    {
+        if (_startForm != null)
+            ShowForm(_startForm);
+    }
+
+    public void HideOverlay()
+    {
+        if (HeadlessMode)
+            return;
+        
+        Dispatcher.UIThread.Post(HideOverlay2);
+    }
 
     private void HideOverlay2()
     {
@@ -96,7 +130,13 @@ public class App : IApp
         MainView.Overlay.Children.Clear();
     }
 
-    public void ReloadGames() => Dispatcher.UIThread.Post(ReloadGames2);
+    public void ReloadGames()
+    {
+        if (HeadlessMode)
+            return;
+        
+        Dispatcher.UIThread.Post(ReloadGames2);
+    }
     public void ReloadGlobalCommands() => Dispatcher.UIThread.Post(() => MainView.UpdateView());
 
     public void Launch(ExecLaunch launch)
@@ -119,15 +159,21 @@ public class App : IApp
         }
     }
 
-    public async Task ReloadGames2Task()
+    public async Task<List<IGame>> GetGames()
     {
-        GameViews.ForEach(x => x.Destroy());
-        Games = new();
+        List<IGame> games = new();
         GameViews.Clear();
         List<Task<List<IGame>>> tasks = new();
         GameSources.ForEach(x => tasks.Add(x.GetGames()));
         await Task.WhenAll(tasks);
-        tasks.ForEach(x => Games.AddRange(x.Result));
+        tasks.ForEach(x => games.AddRange(x.Result));
+        return games;
+    }
+    
+    public async Task ReloadGames2Task()
+    {
+        GameViews.ForEach(x => x.Destroy());
+        Games = await GetGames();
         
         bool anyInstalledGames = InstalledGames.Count != 0;
         bool anyNotInstalledGames = NotInstalledGames.Count != 0;

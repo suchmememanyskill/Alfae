@@ -23,10 +23,12 @@ namespace Launcher
         private async void Initialize()
         {
             Loader.App app = Loader.App.GetInstance();
+            app.HeadlessMode = false;
             await app.InitializeGameSources();
             app.MainView = new MainView();
             Content = app.MainView;
             await app.ReloadGames2Task();
+            app.ShowPossibleStartForm();
         }
     }
 }
