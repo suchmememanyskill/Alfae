@@ -55,7 +55,7 @@ public class LegendaryGameSource : IGameSource
 
         if (!legendaryGame.IsInstalled)
         {
-            commands.Add(new("Install", () => legendaryGame.StartDownload()));
+            commands.Add(new("Install", () => Download(legendaryGame)));
             commands.Add(new("Show in browser", legendaryGame.ShowInBrowser));
             
             if (legendaryGame.Size == 0)
@@ -66,13 +66,31 @@ public class LegendaryGameSource : IGameSource
             if (legendaryGame.UpdateAvailable)
             {
                 // TODO: implement
-                commands.Add(new("Update", () => { }));
+                commands.Add(new("Update", () => Download(legendaryGame)));
             }
             
-            commands.Add(new("Launch", () => Launch(legendaryGame)));
+            commands.Add(new("Launch", () => Launch(legendaryGame, true)));
             commands.Add(new("Config/Info", () => App.ShowForm(legendaryGame.ToForm()!)));
             commands.Add(new("Show in browser", legendaryGame.ShowInBrowser));
-            commands.Add(new("Uninstall", () => Uninstall(legendaryGame)));
+            commands.Add(new("Uninstall", () =>
+            {
+                App.ShowForm(new(new()
+                {
+                    new FormEntry(FormEntryType.TextBox, $"Are you sure you want to uninstall {legendaryGame.Name}?", alignment: FormAlignment.Center),
+                    new FormEntry(FormEntryType.ButtonList, buttonList: new()
+                    {
+                        {"Uninstall", x =>
+                        {
+                            LegendaryGame xGame = x.ContainingForm.Game as LegendaryGame;
+                            Uninstall(xGame);
+                        }}, 
+                        {"Back", x => App.HideOverlay()}
+                    })
+                })
+                {
+                    Game = game
+                });
+            }));
         }
 
         if (legendaryGame.Download != null)
@@ -89,7 +107,7 @@ public class LegendaryGameSource : IGameSource
         return commands;
     }
 
-    private async Task GetOfflineGameSize(LegendaryGame game)
+    private async void GetOfflineGameSize(LegendaryGame game)
     {
         await game.GetInfo();
         game.InvokeOnUpdate();
@@ -118,11 +136,11 @@ public class LegendaryGameSource : IGameSource
         return commands;
     }
 
-    public async void Launch(LegendaryGame game)
+    public async void Launch(LegendaryGame game, bool ignoreUpdate = false)
     {
         try
         {
-            ExecLaunch launch = await game.Launch();
+            ExecLaunch launch = await game.Launch(ignoreUpdate);
             App.Launch(launch);
         }
         catch (Exception e)
@@ -141,6 +159,12 @@ public class LegendaryGameSource : IGameSource
         await game.Uninstall();
         App.ReloadGames();
         App.HideOverlay();
+    }
+
+    public async void Download(LegendaryGame game)
+    {
+        await game.StartDownload();
+        game.Download!.OnCompletionOrCancel += _ => App.ReloadGames();
     }
 
     public async Task Login(Form form)

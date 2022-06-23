@@ -178,7 +178,7 @@ public class LegendaryGame : IGame
         return localInfo;
     }
 
-    public async void StartDownload()
+    public async Task StartDownload()
     {
         await GetInfo();
         
@@ -199,7 +199,7 @@ public class LegendaryGame : IGame
         }
     }
 
-    public async Task<ExecLaunch?> Launch()
+    public async Task<ExecLaunch?> Launch(bool ignoreUpdate = false)
     {
         Terminal t = new();
 
@@ -216,7 +216,7 @@ public class LegendaryGame : IGame
             args.Add("--offline");
         }
 
-        if (!offline && ConfigAlwaysSkipUpdateCheck)
+        if (!offline && (ConfigAlwaysSkipUpdateCheck || ignoreUpdate))
         {
             skipUpdateCheck = true;
             args.Add("--skip-version-check");
