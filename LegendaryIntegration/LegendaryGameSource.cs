@@ -18,7 +18,7 @@ public class LegendaryGameSource : IGameSource
     public LegendaryGameManager? manager;
     public static LegendaryGameSource Source { get; private set; }
     public IApp App { get; private set; }
-    
+
     public async Task Initialize(IApp app)
     {
         App = app;
@@ -69,7 +69,7 @@ public class LegendaryGameSource : IGameSource
                 commands.Add(new("Update", () => Download(legendaryGame)));
             }
             
-            commands.Add(new("Launch", () => Launch(legendaryGame, true)));
+            commands.Add(new("Launch", () => Launch(legendaryGame, false)));
             commands.Add(new("Config/Info", () => App.ShowForm(legendaryGame.ToForm()!)));
             commands.Add(new("Show in browser", legendaryGame.ShowInBrowser));
             commands.Add(new("Uninstall", () =>
@@ -140,12 +140,33 @@ public class LegendaryGameSource : IGameSource
     {
         try
         {
-            ExecLaunch launch = await game.Launch(ignoreUpdate);
+            ExecLaunch? launch = await game.Launch(ignoreUpdate);
+
+            if (launch == null)
+                throw new Exception("Legendary exited unexpectedly");
+            
             App.Launch(launch);
         }
         catch (Exception e)
         {
-            // TODO: Hook into GUI
+            Dictionary<string, Action<FormEntry>> buttons = new()
+            {
+                {"Back", x => App.HideOverlay() }
+            };
+            
+            if (e.Message == "Game has an update available")
+                buttons.Add("Launch anyway", x =>
+                {
+                    Launch(game, true);
+                    App.HideOverlay();
+                });
+            
+            App.ShowForm(new(new()
+            {
+                new(FormEntryType.TextBox, $"Game failed to launch: {e.Message}", alignment: FormAlignment.Center),
+                new (FormEntryType.ButtonList, buttonList: buttons)
+            }));
+            
             Log($"Something went wrong while launching {game.Name}: {e.Message}");
         }
     }

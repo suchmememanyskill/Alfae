@@ -7,7 +7,7 @@ public class LegendaryDownload : ProgressStatus
 {
     public event Action<LegendaryDownload> OnCompletionOrCancel;
     public event Action<LegendaryDownload> OnPauseOrContinue;
-    public LegendaryGame Game { get; private set; }
+    public LegendaryGame Game { get; set; }
     public bool Active => _terminal.IsActive;
     private Terminal _terminal = new();
     private string _path;
@@ -55,6 +55,7 @@ public class LegendaryDownload : ProgressStatus
     
     public async void Start()
     {
+        Game.Parser.PauseAllDownloads();
         OnPauseOrContinue?.Invoke(this);
         await _terminal.ExecLegendary($"-y install {Game.InternalName} --game-folder \"{_path}\"");
         if (!_terminal.Killed)

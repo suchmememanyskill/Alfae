@@ -75,6 +75,7 @@ public class LegendaryGameManager
                 games.RemoveAll(x => !x.IsInstalled);
             
             games = games.OrderBy(x => x.Name).ToList();
+            _downloads.ForEach(x => games.Find(y => y.InternalName == x.Game.InternalName)?.ReattachDownload(x));
             return games;
         }
 
@@ -95,6 +96,8 @@ public class LegendaryGameManager
             _downloads.First().Start();
     }
 
+    public void PauseAllDownloads() => _downloads.ForEach(x => x.Pause());
+    
     public void StopAllDownloads()
     {
         _downloads.ForEach(x => x.Stop());

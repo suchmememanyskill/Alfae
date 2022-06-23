@@ -184,19 +184,24 @@ public class LegendaryGame : IGame
         
         try
         {
-            Download = new(this);
-            Download.OnCompletionOrCancel += _ =>
-            {
-                Download = null;
-                InvokeOnUpdate();
-            };
-            Download.OnPauseOrContinue += _ => InvokeOnUpdate();
-
+            ReattachDownload(new(this));
             Parser.AddDownload(Download);
         }
         catch
         {
         }
+    }
+
+    public void ReattachDownload(LegendaryDownload download)
+    {
+        download.Game = this;
+        Download = download;
+        Download.OnCompletionOrCancel += _ =>
+        {
+            Download = null;
+            InvokeOnUpdate();
+        };
+        Download.OnPauseOrContinue += _ => InvokeOnUpdate();
     }
 
     public async Task<ExecLaunch?> Launch(bool ignoreUpdate = false)
