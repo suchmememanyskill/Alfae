@@ -2,6 +2,7 @@
 using LauncherGamePlugin.Commands;
 using LauncherGamePlugin.Forms;
 using LauncherGamePlugin.Interfaces;
+using LegendaryIntegration.Extensions;
 using LegendaryIntegration.Service;
 
 namespace LegendaryIntegration;
@@ -49,20 +50,23 @@ public class LegendaryGameSource : IGameSource
         LegendaryGame legendaryGame = game as LegendaryGame;
         if (legendaryGame == null)
             throw new InvalidDataException();
-        
-        List<Command> commands = new()
-        {
-            new Command("NotImplemented", () => { }),
-        };
 
-        if (!legendaryGame.IsInstalled && legendaryGame.Size == 0)
-        {
-            commands.Add(new("Get game install size", () => GetOfflineGameSize(legendaryGame)));
-        }
+        List<Command> commands = new();
 
         if (!legendaryGame.IsInstalled)
         {
             commands.Add(new("Install", () => legendaryGame.StartDownload()));
+            commands.Add(new("Show in browser", legendaryGame.ShowInBrowser));
+            
+            if (legendaryGame.Size == 0)
+                commands.Add(new("Get game install size", () => GetOfflineGameSize(legendaryGame)));
+        }
+        else
+        {
+            commands.Add(new("Launch", () => { }));
+            commands.Add(new("Config/Info", () => App.ShowForm(legendaryGame.ToForm()!)));
+            commands.Add(new("Show in browser", legendaryGame.ShowInBrowser));
+            commands.Add(new("Uninstall", () => { }));
         }
 
         if (legendaryGame.Download != null)

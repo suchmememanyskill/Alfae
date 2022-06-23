@@ -1,4 +1,5 @@
 ﻿using LegendaryIntegration.Model;
+using LegendaryMapperV2.Model;
 using Newtonsoft.Json;
 
 namespace LegendaryIntegration.Service;
@@ -6,10 +7,16 @@ namespace LegendaryIntegration.Service;
 public class LegendaryGameManager
 {
     public LegendaryAuth Auth { get; private set; }
+    public Config Config { get; private set; } = new();
+    private string _configPath;
 
     public LegendaryGameManager(LegendaryAuth auth)
     {
         Auth = auth;
+
+        _configPath = Path.Join(LegendaryGameSource.Source.App.ConfigDir, "legendary.json");
+        if (File.Exists(_configPath))
+            Config = JsonConvert.DeserializeObject<Config>(File.ReadAllText(_configPath));
     }
     
     public async Task<List<LegendaryGame>> GetGames()
@@ -93,4 +100,6 @@ public class LegendaryGameManager
         _downloads.ForEach(x => x.Stop());
         _downloads = new();
     }
+
+    public void SaveConfig() => File.WriteAllText(_configPath, JsonConvert.SerializeObject(Config));
 }

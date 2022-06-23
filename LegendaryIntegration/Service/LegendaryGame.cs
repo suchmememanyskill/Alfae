@@ -1,7 +1,10 @@
-﻿using LauncherGamePlugin;
+﻿using System.Text;
+using LauncherGamePlugin;
+using LauncherGamePlugin.Forms;
 using LauncherGamePlugin.Interfaces;
 using LegendaryIntegration.Extensions;
 using LegendaryIntegration.Model;
+using LegendaryMapperV2.Model;
 using Newtonsoft.Json;
 using SixLabors.ImageSharp;
 using SixLabors.ImageSharp.Formats.Jpeg;
@@ -74,6 +77,7 @@ public class LegendaryGame : IGame
         }
     }
 
+    public bool HasCoverImage => GetGameImage("DieselGameBoxTall") != null;
     public async Task<byte[]?> CoverImage()
     {
         MetaImage? banner = GetGameImage("DieselGameBoxTall");
@@ -101,15 +105,15 @@ public class LegendaryGame : IGame
 
         if (rawBanner == null)
             return null;
-            
-        Image<Rgba32> bannerImg = Image.Load<Rgba32>(rawBanner);
+        
+        Image<Rgba32> bannerImg = await Task.Run(() => Image.Load<Rgba32>(rawBanner));
 
         byte[]? rawLogo = await logo.GetImageAsync();
 
         if (rawLogo == null)
             return null;
 
-        Image<Rgba32> logoImg = Image.Load<Rgba32>(rawLogo);
+        Image<Rgba32> logoImg = await Task.Run(() => Image.Load<Rgba32>(rawLogo));
         Image<Rgba32> output = new Image<Rgba32>(bannerImg.Width, bannerImg.Height);
 
         // Steam's horizontal height is about 1.5x the vertical height
@@ -117,10 +121,10 @@ public class LegendaryGame : IGame
         float newHeight = (newWidth / logoImg.Width) * logoImg.Height;
         await Task.Run(() => logoImg.Mutate(x => x.Resize(new Size((int) newWidth, (int) newHeight))));
 
-        float centerX = bannerImg.Width / 2;
-        float centerY = bannerImg.Height / 2;
-        float logoPosX = centerX - logoImg.Width / 2;
-        float logoPosY = centerY - logoImg.Height / 2;
+        float centerX = bannerImg.Width / 2f;
+        float centerY = bannerImg.Height / 2f;
+        float logoPosX = centerX - logoImg.Width / 2f;
+        float logoPosY = centerY - logoImg.Height / 2f;
         await Task.Run(() => output.Mutate(x => x
             .DrawImage(bannerImg, new Point(0, 0), 1f)
             .DrawImage(logoImg, new Point((int) logoPosX, (int) logoPosY), 1f)
@@ -132,6 +136,7 @@ public class LegendaryGame : IGame
         return await File.ReadAllBytesAsync(cachePath);
     }
 
+    public bool HasBackgroundImage => GetGameImage("DieselGameBox") != null;
     public async Task<byte[]?> BackgroundImage()
     {
         MetaImage? background = GetGameImage("DieselGameBox");
@@ -192,7 +197,36 @@ public class LegendaryGame : IGame
         {
         }
     }
-    
+
+    public async void ShowInBrowser()
+    {
+        if (Metadata == null || Metadata.Metadata == null || Metadata.Metadata.Namespace == null)
+            return;
+
+        try
+        {
+            using (HttpClient client = new HttpClient())
+            {
+                HttpContent content = new StringContent("{\"query\":\"{Catalog{catalogOffers( namespace:\\\"" +
+                                                        Metadata.Metadata.Namespace +
+                                                        "\\\"){elements {productSlug}}}}\"}", Encoding.Default, "application/json");
+                HttpResponseMessage response = await client.PostAsync(new Uri("https://www.epicgames.com/graphql"), content);
+                response.EnsureSuccessStatusCode();
+                string textResponse = await response.Content.ReadAsStringAsync();
+                    
+                EpicProductSlugResponse parsedResponse = JsonConvert.DeserializeObject<EpicProductSlugResponse>(textResponse);
+                Element slug = parsedResponse?.Data?.Catalog?.CatalogOffers?.Elements?.FirstOrDefault(x => x?.ProductSlug != null);
+                if (slug == null)
+                    return;
+                
+                Utils.OpenUrl($"https://store.epicgames.com/en-US/p/{slug.ProductSlug.Split("/").First()}");
+            }
+        }
+        catch
+        {
+        }
+    }
+
     private MetaImage? GetGameImage(string type)
     {
         if (Metadata == null || Metadata.Metadata == null || Metadata.Metadata.KeyImages == null)
@@ -202,5 +236,25 @@ public class LegendaryGame : IGame
             return null;
         else
             return Metadata.Metadata.KeyImages.Find(x => x.Type == type);
+    }
+    
+    public bool ConfigAlwaysOffline { get => GetConfigItem().AlwaysOffline; set { ConfigItem item = GetConfigItem(); item.AlwaysOffline = value; SetConfigItem(item); } }
+    public bool ConfigAlwaysSkipUpdateCheck { get => GetConfigItem().AlwaysSkipUpdate; set { ConfigItem item = GetConfigItem(); item.AlwaysSkipUpdate = value; SetConfigItem(item); } }
+    public string ConfigAdditionalGameArgs { get => GetConfigItem().AdditionalArgs; set { ConfigItem item = GetConfigItem(); item.AdditionalArgs = value; SetConfigItem(item); } }
+    
+    private ConfigItem GetConfigItem()
+    {
+        if (Parser.Config.GameConfigs.TryGetValue(InternalName, out ConfigItem? item))
+            return item;
+
+        return new();
+    }
+
+    private void SetConfigItem(ConfigItem item)
+    {
+        if (Parser.Config.GameConfigs.ContainsKey(InternalName))
+            Parser.Config.GameConfigs[InternalName] = item;
+        else
+            Parser.Config.GameConfigs.Add(InternalName, item);
     }
 }
