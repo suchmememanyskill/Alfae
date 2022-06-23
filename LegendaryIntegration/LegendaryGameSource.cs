@@ -63,10 +63,16 @@ public class LegendaryGameSource : IGameSource
         }
         else
         {
-            commands.Add(new("Launch", () => { }));
+            if (legendaryGame.UpdateAvailable)
+            {
+                // TODO: implement
+                commands.Add(new("Update", () => { }));
+            }
+            
+            commands.Add(new("Launch", () => Launch(legendaryGame)));
             commands.Add(new("Config/Info", () => App.ShowForm(legendaryGame.ToForm()!)));
             commands.Add(new("Show in browser", legendaryGame.ShowInBrowser));
-            commands.Add(new("Uninstall", () => { }));
+            commands.Add(new("Uninstall", () => Uninstall(legendaryGame)));
         }
 
         if (legendaryGame.Download != null)
@@ -110,6 +116,31 @@ public class LegendaryGameSource : IGameSource
             commands.Add(new("Logout", () => Logout()));
 
         return commands;
+    }
+
+    public async void Launch(LegendaryGame game)
+    {
+        try
+        {
+            ExecLaunch launch = await game.Launch();
+            App.Launch(launch);
+        }
+        catch (Exception e)
+        {
+            // TODO: Hook into GUI
+            Log($"Something went wrong while launching {game.Name}: {e.Message}");
+        }
+    }
+
+    public async void Uninstall(LegendaryGame game)
+    {
+        App.ShowForm(new(new()
+        {
+            new FormEntry(FormEntryType.TextBox, $"Uninstalling {game.Name}...")
+        }));
+        await game.Uninstall();
+        App.ReloadGames();
+        App.HideOverlay();
     }
 
     public async Task Login(Form form)

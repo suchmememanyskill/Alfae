@@ -1,4 +1,5 @@
-﻿using System.Text;
+﻿using System.Diagnostics;
+using System.Text;
 using LauncherGamePlugin;
 using LauncherGamePlugin.Forms;
 using LauncherGamePlugin.Interfaces;
@@ -196,6 +197,54 @@ public class LegendaryGame : IGame
         catch
         {
         }
+    }
+
+    public async Task<ExecLaunch?> Launch()
+    {
+        Terminal t = new();
+
+        if (!IsInstalled)
+            throw new Exception("Game is not installed");
+
+        List<string> args = new() {"--dry-run", "--json"};
+        bool offline = false;
+        bool skipUpdateCheck = false;
+
+        if (Parser.Auth.OfflineLogin || ConfigAlwaysOffline)
+        {
+            offline = true;
+            args.Add("--offline");
+        }
+
+        if (!offline && ConfigAlwaysSkipUpdateCheck)
+        {
+            skipUpdateCheck = true;
+            args.Add("--skip-version-check");
+        }
+
+        if (UpdateAvailable && !(skipUpdateCheck || offline))
+            throw new Exception("Game has an update available");
+
+        await t.ExecLegendary($"launch {InternalName} {string.Join(" ", args)} {ConfigAdditionalGameArgs}");
+        
+        if (t.ExitCode == 0)
+        {
+            LegendaryGameSource.Source.Log($"Launch returned {t.StdOut.First()}");
+            LaunchDryRun data = JsonConvert.DeserializeObject<LaunchDryRun>(t.StdOut.First())!;
+            ExecLaunch launch = data.toLaunch();
+            return launch;
+        }
+        
+        return null;
+    }
+
+    public async Task Uninstall()
+    {
+        if (!IsInstalled)
+            throw new Exception("Game is not installed");
+        
+        Terminal t = new();
+        await t.ExecLegendary($"uninstall {InternalName} -y");
     }
 
     public async void ShowInBrowser()
