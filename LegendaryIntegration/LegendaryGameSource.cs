@@ -74,22 +74,12 @@ public class LegendaryGameSource : IGameSource
             commands.Add(new("Show in browser", legendaryGame.ShowInBrowser));
             commands.Add(new("Uninstall", () =>
             {
-                App.ShowForm(new(new()
-                {
-                    new FormEntry(FormEntryType.TextBox, $"Are you sure you want to uninstall {legendaryGame.Name}?", alignment: FormAlignment.Center),
-                    new FormEntry(FormEntryType.ButtonList, buttonList: new()
+                App.Show2ButtonTextPrompt($"Are you sure you want to uninstall {legendaryGame.Name}?", "Uninstall", "Back",
+                    x =>
                     {
-                        {"Uninstall", x =>
-                        {
-                            LegendaryGame xGame = x.ContainingForm.Game as LegendaryGame;
-                            Uninstall(xGame);
-                        }}, 
-                        {"Back", x => App.HideOverlay()}
-                    })
-                })
-                {
-                    Game = game
-                });
+                        LegendaryGame xGame = x.ContainingForm.Game as LegendaryGame;
+                        Uninstall(xGame);
+                    }, x => App.HideOverlay(), legendaryGame);
             }));
         }
 
@@ -173,10 +163,7 @@ public class LegendaryGameSource : IGameSource
 
     public async void Uninstall(LegendaryGame game)
     {
-        App.ShowForm(new(new()
-        {
-            new FormEntry(FormEntryType.TextBox, $"Uninstalling {game.Name}...")
-        }));
+        App.ShowTextPrompt($"Uninstalling {game.Name}...");
         await game.Uninstall();
         App.ReloadGames();
         App.HideOverlay();
@@ -191,10 +178,7 @@ public class LegendaryGameSource : IGameSource
     public async Task Login(Form form)
     {
         string? SID = form.GetValue("SID:");
-        App.ShowForm(new(new()
-        {
-            new FormEntry(FormEntryType.TextBox, "Logging in...", alignment: FormAlignment.Center)
-        }));
+        App.ShowTextPrompt("Logging in...");
 
         if (string.IsNullOrWhiteSpace(SID))
         {
@@ -252,10 +236,7 @@ public class LegendaryGameSource : IGameSource
         if (auth == null)
             return;
         
-        App.ShowForm(new(new()
-        {
-            new FormEntry(FormEntryType.TextBox, "Logging out...", alignment: FormAlignment.Center)
-        }));
+        App.ShowTextPrompt("Logging out...");
 
         if (manager != null)
         {
