@@ -12,4 +12,6 @@ public interface IApp
     void ReloadGames();
     void ReloadGlobalCommands();
     void Launch(ExecLaunch launch);
+    List<IGame> GetAllGames();
+    List<IGameSource> GetAllSources();
 }

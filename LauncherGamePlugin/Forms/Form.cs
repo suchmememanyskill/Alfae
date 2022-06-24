@@ -36,7 +36,19 @@ public class Form
     {
         return new(new()
         {
-            new(FormEntryType.TextBox, text)
+            new(FormEntryType.TextBox, text, alignment: FormAlignment.Center)
+        });
+    }
+
+    public static Form CreateDismissibleTextPrompt(string text, IApp app)
+    {
+        return new(new()
+        {
+            new(FormEntryType.TextBox, text, alignment: FormAlignment.Center),
+            new (FormEntryType.ButtonList, buttonList: new()
+            {
+                {"Back", x => app.HideOverlay()}
+            })
         });
     }
 }
@@ -52,6 +64,8 @@ public static class FormExtensions
 
         app.ShowForm(f);
     }
+    
+    public static void ShowDismissibleTextPrompt(this IApp app, string text) => app.ShowForm(Form.CreateDismissibleTextPrompt(text, app));
 
     public static void ShowTextPrompt(this IApp app, string text) => app.ShowForm(Form.CreateTextPrompt(text));
 }

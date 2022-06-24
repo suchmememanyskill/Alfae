@@ -159,6 +159,9 @@ public class App : IApp
         }
     }
 
+    public List<IGame> GetAllGames() => Games;
+    public List<IGameSource> GetAllSources() => GameSources;
+
     public async Task<List<IGame>> GetGames()
     {
         List<IGame> games = new();

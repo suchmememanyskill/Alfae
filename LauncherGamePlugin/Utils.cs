@@ -58,4 +58,12 @@ public static class Utils
         }
         return size;  
     }
+    
+    public static string GetExecutablePath()
+    {
+        if (Environment.OSVersion.Platform == PlatformID.Win32NT)
+            return Path.Join(AppContext.BaseDirectory, $"{AppDomain.CurrentDomain.FriendlyName}.exe");
+        else
+            return Path.Join(AppContext.BaseDirectory, AppDomain.CurrentDomain.FriendlyName);
+    }
 }

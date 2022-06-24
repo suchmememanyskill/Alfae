@@ -11,6 +11,10 @@ Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "LocalGames", "LocalGames\Lo
 EndProject
 Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "LegendaryIntegration", "LegendaryIntegration\LegendaryIntegration.csproj", "{DF8D21FB-B41A-48FA-A1F9-33043F4A5A22}"
 EndProject
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "VDFMapper", "VDFMapper\VDFMapper.csproj", "{D6E5200F-68A3-4383-87AA-AE750330D96D}"
+EndProject
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "SteamExporterPlugin", "SteamExporterPlugin\SteamExporterPlugin.csproj", "{ECEFC743-223D-4560-AC12-87F6B7B20C82}"
+EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution
 		Debug|Any CPU = Debug|Any CPU
@@ -33,6 +37,14 @@ Global
 		{DF8D21FB-B41A-48FA-A1F9-33043F4A5A22}.Debug|Any CPU.Build.0 = Debug|Any CPU
 		{DF8D21FB-B41A-48FA-A1F9-33043F4A5A22}.Release|Any CPU.ActiveCfg = Release|Any CPU
 		{DF8D21FB-B41A-48FA-A1F9-33043F4A5A22}.Release|Any CPU.Build.0 = Release|Any CPU
+		{D6E5200F-68A3-4383-87AA-AE750330D96D}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{D6E5200F-68A3-4383-87AA-AE750330D96D}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{D6E5200F-68A3-4383-87AA-AE750330D96D}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{D6E5200F-68A3-4383-87AA-AE750330D96D}.Release|Any CPU.Build.0 = Release|Any CPU
+		{ECEFC743-223D-4560-AC12-87F6B7B20C82}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{ECEFC743-223D-4560-AC12-87F6B7B20C82}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{ECEFC743-223D-4560-AC12-87F6B7B20C82}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{ECEFC743-223D-4560-AC12-87F6B7B20C82}.Release|Any CPU.Build.0 = Release|Any CPU
 	EndGlobalSection
 	GlobalSection(SolutionProperties) = preSolution
 		HideSolutionNode = FALSE
