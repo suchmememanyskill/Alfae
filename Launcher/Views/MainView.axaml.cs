@@ -16,6 +16,10 @@ public partial class MainView : UserControlExt<MainView>
 {
     [Binding(nameof(PluginMenu), "Items")] public List<TemplatedControl> MenuItems => GenerateMenuItems();
 
+    [Binding(nameof(ProfileMenu), "Items")]
+    public List<TemplatedControl> BootProfileItems =>
+        _app.Launcher.BuildCommands().Select(x => x.ToTemplatedControl()).ToList();
+
     [Binding(nameof(DownloadLocationButton), "Content")]
     public string DlText => $"Current download location: {_app.GameDir}";
     

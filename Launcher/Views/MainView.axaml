@@ -11,10 +11,12 @@
                 
                 </StackPanel>
                 <StackPanel DockPanel.Dock="Right" Orientation="Horizontal" HorizontalAlignment="Right" Spacing="10" Name="TopBarRightSide" Margin="0,0,10,0">
+                    <TextBox Width="300" Watermark="Search..." Name="SearchBox" VerticalAlignment="Center" />
                     <Menu VerticalAlignment="Center">
-                        <TextBox Width="300" Watermark="Search..." Name="SearchBox" />
+                        <MenuItem Header="Boot Profiles" Classes="ButtonLike" Name="ProfileMenu" FontSize="16"  />
+                    </Menu>
+                    <Menu VerticalAlignment="Center">
                         <MenuItem Header="Plugins" Classes="ButtonLike" Name="PluginMenu" FontSize="16"  />
-                        
                     </Menu>
                 </StackPanel>
             </DockPanel>

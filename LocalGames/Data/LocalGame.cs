@@ -39,7 +39,7 @@ public class LocalGame : IGame
 
     public ExecLaunch ToExecLaunch()
     {
-        ExecLaunch launch = new ExecLaunch(ExecPath, LaunchArgs, InstalledPath);
+        ExecLaunch launch = new ExecLaunch(ExecPath, LaunchArgs, InstalledPath, this);
         return launch;
     }
 }

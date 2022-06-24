@@ -10,6 +10,7 @@ using Avalonia.Media;
 using Avalonia.Threading;
 using Launcher.Extensions;
 using Launcher.Forms;
+using Launcher.Launcher;
 using Launcher.Utils;
 using Launcher.Views;
 using LauncherGamePlugin.Interfaces;
@@ -61,6 +62,7 @@ public class App : IApp
     public MainWindow MainWindow { get; set; }
     public MainView MainView { get; set; }
     public List<IGame> Games { get; set; }
+    public LauncherConfiguration Launcher { get; private set; }
 
     public List<IGame> InstalledGames =>
         Games.Where(x => x.InstalledStatus == InstalledStatus.Installed).ToList();
@@ -84,6 +86,9 @@ public class App : IApp
 
         await Task.WhenAll(tasks);
         GameSources = sources;
+        
+        Launcher.Load();
+        Launcher.GetProfiles();
         _initialised = true;
     }
 
@@ -138,19 +143,19 @@ public class App : IApp
         Dispatcher.UIThread.Post(ReloadGames2);
     }
     public void ReloadGlobalCommands() => Dispatcher.UIThread.Post(() => MainView.UpdateView());
+    public void ReloadBootProfiles() => ReloadGlobalCommands();
 
     public void Launch(ExecLaunch launch)
     {
-        Launcher.Launcher l = new();
         try
         {
-            l.Launch(launch);
+            Launcher.Launch(launch);
         }
         catch (Exception e)
         {
             ShowForm(new Form(new()
             {
-                new FormEntry(FormEntryType.TextBox, $"Failed to launch game\n{e.Message}"),
+                new FormEntry(FormEntryType.TextBox, $"Failed to launch game\n{e.Message}", alignment: FormAlignment.Center),
                 new FormEntry(FormEntryType.ButtonList, "", buttonList: new()
                 {
                     {"Back", x => HideOverlay()}
@@ -217,6 +222,8 @@ public class App : IApp
 
         if (File.Exists(Path.Join(ConfigDir, "dlloc.txt")))
             _gameDir = File.ReadAllText(Path.Join(ConfigDir, "dlloc.txt"));
+
+        Launcher = new(this);
     }
 
     private static App? _instance;

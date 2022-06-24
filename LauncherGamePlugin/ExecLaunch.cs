@@ -1,4 +1,6 @@
-﻿namespace LauncherGamePlugin;
+﻿using LauncherGamePlugin.Interfaces;
+
+namespace LauncherGamePlugin;
 
 public class ExecLaunch
 {
@@ -11,17 +13,19 @@ public class ExecLaunch
     public Dictionary<string, string> EnvironmentOverrides { get; } = new();
     public string WorkingDirectory { get; }
     public Platform Platform { get; }
+    public IGame Game { get; }
 
-    public ExecLaunch(string executable, string arguments, string workingDirectory, Platform platform)
+    public ExecLaunch(string executable, string arguments, string workingDirectory, IGame game, Platform platform)
     {
         Executable = executable;
         Arguments = arguments;
         WorkingDirectory = workingDirectory;
         Platform = platform;
+        Game = game;
     }
 
-    public ExecLaunch(string executable, string arguments, string workingDirectory)
-        : this(executable, arguments, workingDirectory, GetExecTypeFromFileName(executable))
+    public ExecLaunch(string executable, string arguments, string workingDirectory, IGame game)
+        : this(executable, arguments, workingDirectory, game, GetExecTypeFromFileName(executable))
     { }
 
     public static Platform GetExecTypeFromFileName(string filename) =>

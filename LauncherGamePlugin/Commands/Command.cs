@@ -5,6 +5,7 @@ public enum CommandType
     Separator,
     Text,
     Function,
+    SubMenu,
 }
 
 public class Command
@@ -12,6 +13,7 @@ public class Command
     public string? Text { get; set; }
     public Action? Action { get; set; }
     public CommandType Type { get; set; }
+    public List<Command> SubCommands { get; set; } = new();
 
     public Command()
     {
@@ -29,5 +31,12 @@ public class Command
         Type = CommandType.Function;
         Text = text;
         Action = action;
+    }
+
+    public Command(string text, List<Command> subCommands)
+    {
+        Type = CommandType.SubMenu;
+        Text = text;
+        SubCommands = subCommands;
     }
 }

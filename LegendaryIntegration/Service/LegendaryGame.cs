@@ -236,7 +236,7 @@ public class LegendaryGame : IGame
         {
             LegendaryGameSource.Source.Log($"Launch returned {t.StdOut.First()}");
             LaunchDryRun data = JsonConvert.DeserializeObject<LaunchDryRun>(t.StdOut.First())!;
-            ExecLaunch launch = data.toLaunch();
+            ExecLaunch launch = data.toLaunch(this);
             return launch;
         }
         

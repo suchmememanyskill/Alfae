@@ -1,4 +1,5 @@
 ﻿using LauncherGamePlugin;
+using LegendaryIntegration.Service;
 using Newtonsoft.Json;
 
 namespace LegendaryIntegration.Model;
@@ -38,9 +39,9 @@ public class LaunchDryRun
     public IEnumerable<string> AllParameters => GameParameters.Concat(UserParameters).Concat(EglParameters);
 
     // https://github.com/derrod/legendary/blob/master/legendary/cli.py#L641
-    public ExecLaunch toLaunch()
+    public ExecLaunch toLaunch(LegendaryGame game)
     {
-        ExecLaunch launch = new(Path.Join(WorkingDirectory, GameExecutable), String.Join(" ", AllParameters), WorkingDirectory, Platform.Windows);
+        ExecLaunch launch = new(Path.Join(WorkingDirectory, GameExecutable), String.Join(" ", AllParameters), WorkingDirectory, game, Platform.Windows);
         
         foreach (var (key, value) in Environment)
             launch.EnvironmentOverrides[key] = value;
