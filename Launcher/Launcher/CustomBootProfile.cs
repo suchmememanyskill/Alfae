@@ -30,7 +30,7 @@ public class CustomBootProfile : IBootProfile
 
         string[] split = filledString.Split(" ", 2);
 
-        ExecLaunch convertedLaunch = new(split[0], split[1], Directory.GetCurrentDirectory(),
+        ExecLaunch convertedLaunch = new(split[0], split.Length > 1 ? split[1] : "", Directory.GetCurrentDirectory(),
             launch.Game, CompatibleExecutable);
 
         foreach (var x in EnviromentVariables.Split(" ", StringSplitOptions.RemoveEmptyEntries | StringSplitOptions.TrimEntries))

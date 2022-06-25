@@ -96,7 +96,7 @@ public class LauncherConfiguration
 
     public void SetNewDefault(IBootProfile profile)
     {
-        if (profile.CompatiblePlatform == Platform.Windows)
+        if (profile.CompatibleExecutable == Platform.Windows)
         {
             WindowsDefaultProfile = profile;
             UserDefault[0] = profile.Name;
