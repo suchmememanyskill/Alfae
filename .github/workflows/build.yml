@@ -100,7 +100,7 @@ jobs:
           dotnet publish -o ../Release -r win-x64 --self-contained -p:PublishSingleFile=true
 
       - name: Zip Windows Build
-        runs: |
+        run: |
           Compress-Archive ./Release Windows.zip
 
       - name: Upload artifacts
