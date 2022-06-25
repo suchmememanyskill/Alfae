@@ -211,7 +211,11 @@ public class LegendaryGame : IGame
         if (!IsInstalled)
             throw new Exception("Game is not installed");
 
-        List<string> args = new() {"--dry-run", "--json"};
+        List<string> args = new() {"--json"};
+        
+        if (PlatformExtensions.CurrentPlatform == Platform.Linux)
+            args.Add("--no-wine");
+        
         bool offline = false;
         bool skipUpdateCheck = false;
 

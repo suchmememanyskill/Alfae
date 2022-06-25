@@ -63,7 +63,8 @@ public class Terminal
             result = false;
         }
 
-        ExitCode = proc.ExitCode;
+        if (result)
+            ExitCode = proc.ExitCode;
         IsActive = false;
         LegendaryGameSource.Source.Log($"Terminal exited with code {ExitCode}");
         proc.Close();

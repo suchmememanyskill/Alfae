@@ -2,6 +2,7 @@
 using System.Collections.Generic;
 using System.IO;
 using System.Text.Json.Serialization;
+using Launcher.Extensions;
 using LauncherGamePlugin;
 using LauncherGamePlugin.Commands;
 
@@ -24,9 +25,9 @@ public class CustomBootProfile : IBootProfile
         if (launch.Platform != CompatibleExecutable)
             throw new Exception("Incompatible profile");
         
-        string filledString = TemplateString.Replace("{EXEC}", launch.Executable)
-            .Replace("{ARGS}", launch.Arguments)
-            .Replace("{WORKDIR}", launch.WorkingDirectory);
+        string filledString = TemplateString.Replace("{EXEC}", launch.Executable.Curse())
+            .Replace("{ARGS}", launch.Arguments.Curse())
+            .Replace("{WORKDIR}", launch.WorkingDirectory.Curse());
 
         string[] split = filledString.Split(" ", 2);
 
@@ -49,7 +50,7 @@ public class CustomBootProfile : IBootProfile
     {
         return new()
         {
-            new("Edit", () => Loader.App.GetInstance().Launcher.CreateProfileForm(this, "", true)),
+            new("Edit", () => new CustomBootProfileGUI(Loader.App.GetInstance(), this).CreateProfileForm()),
             new ("Delete")
         };
     }

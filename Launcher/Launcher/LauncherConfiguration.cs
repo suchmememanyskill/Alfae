@@ -80,7 +80,7 @@ public class LauncherConfiguration
         });
         
         commands.Add(new());
-        commands.Add(new("New Profile", () => CreateProfileForm(new())));
+        commands.Add(new("New Profile", () => new CustomBootProfileGUI(_app).CreateProfileForm()));
         return commands;
     }
 
@@ -111,75 +111,10 @@ public class LauncherConfiguration
         _app.ReloadBootProfiles();
     }
 
-    private CustomBootProfile temp;
-    private bool edit = false;
-    
-    public void CreateProfileForm(CustomBootProfile data, string warnMessage = "", bool edit = false)
+    public void AddCustomProfile(CustomBootProfile profile)
     {
-        temp = data;
-        this.edit = edit;
-        string createOrEdit = edit ? "Edit" : "Create";
-        
-        List<FormEntry> entries = new()
-        {
-            new(FormEntryType.TextBox, $"{createOrEdit} a custom app wrapper", "Bold", alignment: FormAlignment.Center),
-            new(FormEntryType.TextInput, "Name:", data.Name),
-            new(FormEntryType.TextInput, "Template:", data.TemplateString),
-            new (FormEntryType.TextBox, "Template replaces:\n- {EXEC}: Gets replaced with the executable\n- {ARGS}: Gets replaced with the arguments passed to the executable\n- {WORKDIR}: Gets replaced with the working directory of the executable"),
-            new(FormEntryType.TextInput, "Enviroment:", data.EnviromentVariables),
-            new(FormEntryType.Dropdown, "Target Executable:",
-                data.CompatibleExecutable == Platform.Windows ? "Windows" : "Linux",
-                dropdownOptions: new() {"Windows", "Linux"}),
-            new(FormEntryType.ButtonList, buttonList: new()
-            {
-                {"Back", x => _app.HideOverlay()},
-                {"Save", x =>
-                {
-                    _app.HideOverlay();
-                    CreateProfile(x.ContainingForm);
-                }}
-            })
-        };
-        
-        if (warnMessage != "")
-            entries.Add(new(FormEntryType.TextBox, warnMessage, "Bold", alignment: FormAlignment.Center));
-        
-        _app.ShowForm(new(entries));
-    }
-
-    public void CreateProfile(Form form)
-    {
-        temp.Name = form.GetValue("Name:")!;
-        temp.TemplateString = form.GetValue("Template:")!;
-        temp.EnviromentVariables = form.GetValue("Enviroment:")!;
-        temp.CompatibleExecutable =
-            form.GetValue("Target Executable:") == "Windows" ? Platform.Windows : Platform.Linux;
-
-        string warn = "";
-
-        if (string.IsNullOrWhiteSpace(temp.Name))
-            warn = "Please enter a name";
-
-        if (!edit && CustomProfiles.Any(x => x.Name == temp.Name))
-            warn = "You already have a profile with this name";
-
-        if (warn == "" && string.IsNullOrWhiteSpace(temp.TemplateString))
-            warn = "Please enter a template";
-
-        if (warn != "")
-        {
-            CreateProfileForm(temp, warn, edit);
-            return;
-        }
-
-        if (!edit)
-        {
-            CustomProfiles.Add(temp);
-            Profiles.Add(temp);
-        }
-
-        Save();
-        _app.ReloadBootProfiles();
+        CustomProfiles.Add(profile);
+        Profiles.Add(profile);
     }
 
     public void Launch(ExecLaunch launch)
@@ -199,10 +134,13 @@ public class LauncherConfiguration
         if (profile == null)
         {
             if (launch.Platform == Platform.Windows)
-                profile = WindowsDefaultProfile ?? throw new Exception("Found no profile to launch given executable");
+                profile = WindowsDefaultProfile;
             else
-                profile = LinuxDefaultProfile ?? throw new Exception("Found no profile to launch given executable");
+                profile = LinuxDefaultProfile;
         }
+        
+        if (profile == null)
+            throw new Exception("Found no profile to launch given executable");
 
         _app.Logger.Log($"Launching {launch.Executable} using {profile.Name}");
         profile.Launch(launch);
