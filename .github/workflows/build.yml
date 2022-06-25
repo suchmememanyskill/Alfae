@@ -1,0 +1,112 @@
+name: .NET Linux
+
+on:
+  push:
+    branches: [ main ]
+  pull_request:
+    branches: [ main ]
+
+jobs:
+  build-linux:
+    runs-on: ubuntu-latest
+    steps:
+    - name: clone repo
+      uses: actions/checkout@v2
+        
+    - name: Setup .NET
+      uses: actions/setup-dotnet@v1
+      with:
+        dotnet-version: 6.0.x
+
+    - name: Restore dependencies
+      run: dotnet restore
+
+    - name: Setup dirs
+      run: |
+        mkdir -p Release/plugins
+
+    - name: Build LocalGames plugin
+      run: |
+        cd LocalGames
+        dotnet publish -o ../Release/plugins/LocalGames
+
+    - name: Build SteamExporterPlugin plugin
+      run: |
+        cd SteamExporterPlugin
+        dotnet publish -o ../Release/plugins/SteamExporterPlugin
+    
+    - name: Build LegendaryIntegration plugin
+      run: |
+        cd LegendaryIntegration
+        dotnet publish -o ../Release/plugins/LegendaryIntegration
+        wget -O ../Release/legendary https://github.com/derrod/legendary/releases/latest/download/legendary
+        chmod a+x ../Release/legendary
+    
+    - name: Build app
+      run: |
+        cd Launcher
+        dotnet publish -o ../Release -r linux-x64 --self-contained -p:PublishSingleFile=true
+        chmod a+x ../Release/Launcher
+
+    - name: Zip Linux Build
+      uses: edgarrc/action-7z@v1
+      with:
+        args: 7z a Linux.7z ./Release
+
+    - name: Upload artifacts
+      uses: actions/upload-artifact@v2
+      with:
+        name: Duplicate
+        path: |
+          Linux.7z
+
+  build-windows:
+    runs-on: windows-latest
+    steps: 
+      - name: clone repo
+        uses: actions/checkout@v2
+
+      - name: Setup .NET
+        uses: actions/setup-dotnet@v1
+        with:
+          dotnet-version: 6.0.x
+
+      - name: Restore dependencies
+        run: dotnet restore
+
+      - name: Setup dirs
+        run: |
+          mkdir Release Release\plugins
+
+      - name: Build LocalGames plugin
+        run: |
+          cd LocalGames
+          dotnet publish -o ../Release/plugins/LocalGames
+
+      - name: Build SteamExporterPlugin plugin
+        run: |
+          cd SteamExporterPlugin
+          dotnet publish -o ../Release/plugins/SteamExporterPlugin
+
+      - name: Build LegendaryIntegration plugin
+        run: |
+          cd LegendaryIntegration
+          dotnet publish -o ../Release/plugins/LegendaryIntegration
+          curl -L -o ../Release/legendary.exe https://github.com/derrod/legendary/releases/latest/download/legendary.exe
+
+      - name: Build app
+        run: |
+          cd Launcher
+          dotnet publish -o ../Release -r win-x64 --self-contained -p:PublishSingleFile=true
+
+      - name: Zip Linux Build
+        uses: edgarrc/action-7z@v1
+        with:
+          args: 7z a Windows.7z ./Release
+
+      - name: Upload artifacts
+        uses: actions/upload-artifact@v2
+        with:
+          name: Duplicate
+          path: |
+            Windows.7z
