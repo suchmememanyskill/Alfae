@@ -99,14 +99,13 @@ jobs:
           cd Launcher
           dotnet publish -o ../Release -r win-x64 --self-contained -p:PublishSingleFile=true
 
-      - name: Zip Linux Build
-        uses: edgarrc/action-7z@v1
-        with:
-          args: 7z a Windows.7z ./Release
+      - name: Zip Windows Build
+        runs: |
+          Compress-Archive ./Release Windows.zip
 
       - name: Upload artifacts
         uses: actions/upload-artifact@v2
         with:
           name: Launcher Windows
           path: |
-            Windows.7z
+            Windows.zip
