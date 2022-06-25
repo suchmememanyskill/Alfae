@@ -37,6 +37,7 @@ public class CustomBootProfileGUI
             new(FormEntryType.Dropdown, "Target Executable:",
                 _profile.CompatibleExecutable == Platform.Windows ? "Windows" : "Linux",
                 dropdownOptions: new() {"Windows", "Linux"}),
+            new (FormEntryType.Toggle, "Escape special characters (Linux only)", _profile.EscapeReplaceables ? "1" : "0"),
             new(FormEntryType.ButtonList, buttonList: new()
             {
                 {"Back", x => _app.HideOverlay()},
@@ -61,6 +62,7 @@ public class CustomBootProfileGUI
         _profile.EnviromentVariables = form.GetValue("Enviroment:")!;
         _profile.CompatibleExecutable =
             form.GetValue("Target Executable:") == "Windows" ? Platform.Windows : Platform.Linux;
+        _profile.EscapeReplaceables = form.GetValue("Escape special characters (Linux only)") == "1";
 
         string warn = "";
 

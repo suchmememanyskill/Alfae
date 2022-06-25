@@ -19,19 +19,31 @@ public class CustomBootProfile : IBootProfile
     [JsonIgnore]
     public Platform CompatibleExecutable { get => (Platform)CompatibleExecutableInt; set => CompatibleExecutableInt = (int)value; }
     public int CompatibleExecutableInt { get; set; } = 0;
+    public bool EscapeReplaceables { get; set; } = false;
 
     public void Launch(ExecLaunch launch)
     {
         if (launch.Platform != CompatibleExecutable)
             throw new Exception("Incompatible profile");
+
+        string filledString;
         
-        string filledString = TemplateString.Replace("{EXEC}", launch.Executable.Curse())
-            .Replace("{ARGS}", launch.Arguments.Curse())
-            .Replace("{WORKDIR}", launch.WorkingDirectory.Curse());
+        if (EscapeReplaceables)
+        {
+            filledString = TemplateString.Replace("{EXEC}", launch.Executable.Curse())
+                .Replace("{ARGS}", launch.Arguments.Curse())
+                .Replace("{WORKDIR}", launch.WorkingDirectory.Curse());
+        }
+        else
+        {
+            filledString = TemplateString.Replace("{EXEC}", launch.Executable)
+                .Replace("{ARGS}", launch.Arguments)
+                .Replace("{WORKDIR}", launch.WorkingDirectory);
+        }
 
         string[] split = filledString.Split(" ", 2);
 
-        ExecLaunch convertedLaunch = new(split[0], split.Length > 1 ? split[1] : "", Directory.GetCurrentDirectory(),
+        ExecLaunch convertedLaunch = new(split[0], split.Length > 1 ? split[1] : "", launch.WorkingDirectory,
             launch.Game, CompatibleExecutable);
 
         foreach (var x in EnviromentVariables.Split(" ", StringSplitOptions.RemoveEmptyEntries | StringSplitOptions.TrimEntries))

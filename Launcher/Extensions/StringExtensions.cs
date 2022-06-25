@@ -9,6 +9,7 @@ public static class StringExtensions
         if (PlatformExtensions.CurrentPlatform == Platform.Windows)
             return s;
         
+        // TODO: Turn to char array and modify that instead
         string copy = new(s);
         string illegals = "&|>\"- ";
         for (int i = 0; i < illegals.Length; i++)
