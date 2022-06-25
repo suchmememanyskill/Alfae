@@ -20,7 +20,15 @@ public class Exporter : IGameSource
     public async Task Initialize(IApp app)
     {
         _app = app;
-        _initialised = InitialisePaths();
+        try
+        {
+            _initialised = InitialisePaths();
+        }
+        catch
+        {
+            _initialised = false;
+        }
+        
     }
 
     public async Task<List<IGame>> GetGames() => new();
@@ -58,7 +66,14 @@ public class Exporter : IGameSource
 
     public void ReInitialize()
     {
-        _initialised = InitialisePaths();
+        try
+        {
+            _initialised = InitialisePaths();
+        }
+        catch
+        {
+            _initialised = false;
+        }
         _app.ReloadGlobalCommands();
     }
 

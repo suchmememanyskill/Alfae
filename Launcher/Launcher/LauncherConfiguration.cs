@@ -125,6 +125,7 @@ public class LauncherConfiguration
             new(FormEntryType.TextBox, $"{createOrEdit} a custom app wrapper", "Bold", alignment: FormAlignment.Center),
             new(FormEntryType.TextInput, "Name:", data.Name),
             new(FormEntryType.TextInput, "Template:", data.TemplateString),
+            new (FormEntryType.TextBox, "Template replaces:\n- {EXEC}: Gets replaced with the executable\n- {ARGS}: Gets replaced with the arguments passed to the executable\n- {WORKDIR}: Gets replaced with the working directory of the executable"),
             new(FormEntryType.TextInput, "Enviroment:", data.EnviromentVariables),
             new(FormEntryType.Dropdown, "Target Executable:",
                 data.CompatibleExecutable == Platform.Windows ? "Windows" : "Linux",
