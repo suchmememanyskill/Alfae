@@ -89,7 +89,7 @@ public class App : IApp
         GameSources = sources;
         
         Launcher.Load();
-        Launcher.GetProfiles();
+        await Launcher.GetProfiles();
         _initialised = true;
     }
 

@@ -2,6 +2,7 @@
 using System.Collections.Generic;
 using System.Linq;
 using System.Text.Json.Serialization;
+using System.Threading.Tasks;
 using LauncherGamePlugin;
 using LauncherGamePlugin.Commands;
 using LauncherGamePlugin.Forms;
@@ -26,7 +27,7 @@ public class LauncherConfiguration
         _app = app;
     }
 
-    public void GetProfiles()
+    public async Task GetProfiles()
     {
         Profiles = new()
         {
@@ -34,7 +35,10 @@ public class LauncherConfiguration
             new NativeLinuxProfile()
         };
         
-        // TODO: Add proton profiles here
+        foreach (var appGameSource in _app.GameSources)
+        {
+            Profiles.AddRange(await appGameSource.GetBootProfiles());
+        }
         
         Profiles.AddRange(CustomProfiles);
 
