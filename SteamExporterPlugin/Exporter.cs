@@ -39,7 +39,7 @@ public class Exporter : IGameSource
         if (_protonManager == null)
             return new();
 
-        if (_protonManager.CanUseProton)
+        if (!_protonManager.CanUseProton)
             return new();
         
         string homeFolder = Environment.GetFolderPath(Environment.SpecialFolder.UserProfile);
