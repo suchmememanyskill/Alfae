@@ -32,7 +32,8 @@ public class CustomBootProfileGUI
         {
             new(FormEntryType.TextBox, $"{createOrEdit} a custom app wrapper", "Bold", alignment: FormAlignment.Center),
             new(FormEntryType.TextInput, "Name:", _profile.Name),
-            new(FormEntryType.TextInput, "Template:", _profile.TemplateString),
+            new(FormEntryType.TextInput, "Executable:", _profile.Executable),
+            new(FormEntryType.TextInput, "Args:", _profile.Args),
             new (FormEntryType.TextBox, "Template replaces:\n- {EXEC}: Gets replaced with the executable\n- {ARGS}: Gets replaced with the arguments passed to the executable\n- {WORKDIR}: Gets replaced with the working directory of the executable"),
             new(FormEntryType.TextInput, "Enviroment:", _profile.EnviromentVariables),
             new(FormEntryType.Dropdown, "Target Executable:",
@@ -59,7 +60,8 @@ public class CustomBootProfileGUI
     public void CreateProfile(Form form)
     {
         _profile.Name = form.GetValue("Name:")!;
-        _profile.TemplateString = form.GetValue("Template:")!;
+        _profile.Executable = form.GetValue("Executable:")!;
+        _profile.Args = form.GetValue("Args:")!;
         _profile.EnviromentVariables = form.GetValue("Enviroment:")!;
         _profile.CompatibleExecutable =
             form.GetValue("Target Executable:") == "Windows" ? Platform.Windows : Platform.Linux;
@@ -73,8 +75,8 @@ public class CustomBootProfileGUI
         if (!edit && _app.Launcher.CustomProfiles.Any(x => x.Name == _profile.Name))
             warn = "You already have a profile with this name";
 
-        if (warn == "" && string.IsNullOrWhiteSpace(_profile.TemplateString))
-            warn = "Please enter a template";
+        if (warn == "" && string.IsNullOrWhiteSpace(_profile.Executable))
+            warn = "Please enter an executable";
 
         if (warn != "")
         {

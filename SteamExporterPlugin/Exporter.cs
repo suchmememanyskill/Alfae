@@ -29,7 +29,6 @@ public class Exporter : IGameSource
         {
             _initialised = false;
         }
-        
     }
 
     public async Task<List<IBootProfile>> GetBootProfiles() => new();

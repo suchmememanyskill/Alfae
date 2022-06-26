@@ -10,7 +10,8 @@ namespace LauncherGamePlugin.Launcher;
 
 public class CustomBootProfile : IBootProfile
 {
-    public string TemplateString { get; set; } = "";
+    public string Executable { get; set; } = "";
+    public string Args { get; set; } = "";
     public string EnviromentVariables { get; set; } = "";
 
     public string Name { get; set; } = "";
@@ -26,29 +27,15 @@ public class CustomBootProfile : IBootProfile
         if (launchParams.Platform != CompatibleExecutable)
             throw new Exception("Incompatible profile");
 
-        string filledString;
-        
-        if (EscapeReplaceables)
-        {
-            filledString = TemplateString.Replace("{EXEC}", launchParams.Executable.Curse())
-                .Replace("{ARGS}", launchParams.Arguments.Curse())
-                .Replace("{WORKDIR}", launchParams.WorkingDirectory.Curse());
-        }
-        else
-        {
-            filledString = TemplateString.Replace("{EXEC}", launchParams.Executable)
-                .Replace("{ARGS}", launchParams.Arguments)
-                .Replace("{WORKDIR}", launchParams.WorkingDirectory);
-        }
+        string exec = Replace(Executable, launchParams);
+        string args = Replace(Args, launchParams);
 
-        string[] split = filledString.Split(" ", 2);
-
-        LaunchParams convertedLaunchParams = new(split[0], split.Length > 1 ? split[1] : "", launchParams.WorkingDirectory,
+        LaunchParams convertedLaunchParams = new(exec, args, launchParams.WorkingDirectory,
             launchParams.Game, CompatibleExecutable);
 
         foreach (var x in EnviromentVariables.Split(" ", StringSplitOptions.RemoveEmptyEntries | StringSplitOptions.TrimEntries))
         {
-            split = x.Split("=");
+            string[] split = x.Split("=");
             convertedLaunchParams.EnvironmentOverrides[split[0]] = split[1];
         }
         
@@ -59,4 +46,20 @@ public class CustomBootProfile : IBootProfile
     }
 
     public virtual List<Command> CustomCommands() => new();
+
+    private string Replace(string s, LaunchParams launchParams)
+    {
+        if (EscapeReplaceables)
+        {
+            return s.Replace("{EXEC}", launchParams.Executable.Curse())
+                .Replace("{ARGS}", launchParams.Arguments.Curse())
+                .Replace("{WORKDIR}", launchParams.WorkingDirectory.Curse());
+        }
+        else
+        {
+            return s.Replace("{EXEC}", launchParams.Executable)
+                .Replace("{ARGS}", launchParams.Arguments)
+                .Replace("{WORKDIR}", launchParams.WorkingDirectory);
+        }
+    }
 }
