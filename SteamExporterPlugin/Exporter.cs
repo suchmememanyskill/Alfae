@@ -49,7 +49,7 @@ public class Exporter : IGameSource
             Directory.CreateDirectory(prefixFolder);
         
         var protons = _protonManager.GetProtonPaths();
-        return protons.Select(x => (IBootProfile) new ProtonWrapper(x.Key, x.Value, prefixFolder)).ToList();
+        return protons.Select(x => (IBootProfile) new ProtonWrapper($"Proton {x.Key}", x.Value, prefixFolder)).ToList();
     }
     public async Task<List<IGame>> GetGames() => new();
 
