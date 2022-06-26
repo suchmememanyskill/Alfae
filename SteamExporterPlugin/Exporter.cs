@@ -18,12 +18,14 @@ public class Exporter : IGameSource
     public string ShortServiceName => "Steam";
     private IApp _app;
     private bool _initialised = false;
+    private ProtonManager? _protonManager;
     public async Task Initialize(IApp app)
     {
         _app = app;
         try
         {
             _initialised = InitialisePaths();
+            _protonManager = new();
         }
         catch
         {
@@ -31,7 +33,28 @@ public class Exporter : IGameSource
         }
     }
 
-    public async Task<List<IBootProfile>> GetBootProfiles() => new();
+    public async Task<List<IBootProfile>> GetBootProfiles()
+    {
+        if (_protonManager == null)
+            return new();
+
+        if (_protonManager.CanUseProton)
+            return new();
+
+        string homeFolder = Environment.GetFolderPath(Environment.SpecialFolder.UserProfile);
+        string prefixFolder = Path.Join(homeFolder, ".proton_launcher");
+
+        if (!Directory.Exists(prefixFolder))
+            Directory.CreateDirectory(prefixFolder);
+        
+        var protons = _protonManager.GetProtonPaths();
+        return protons.Select(x => (IBootProfile)new CustomBootProfile()
+        {
+            Executable = $"{x.Value}/proton",
+            Args = "run \"{EXEC}\" {ARGS}",
+            EnviromentVariables = $"STEAM_COMPAT_DATA_PATH={prefixFolder} STEAM_COMPAT_CLIENT_INSTALL_PATH={Path.Join(homeFolder, ".steam", "steam")}"
+        }).ToList();
+    }
     public async Task<List<IGame>> GetGames() => new();
 
     public Task CustomCommand(string command, IGame? game)
