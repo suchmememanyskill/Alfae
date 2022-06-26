@@ -22,6 +22,7 @@ public class CustomBootProfile : IBootProfile
     public int CompatibleExecutableInt { get; set; } = 0;
     public bool EscapeReplaceables { get; set; } = false;
 
+    // TODO: use listargs instead of args
     public void Launch(LaunchParams launchParams)
     {
         if (launchParams.Platform != CompatibleExecutable)

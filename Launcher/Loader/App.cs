@@ -179,7 +179,7 @@ public class App : IApp
         return games;
     }
     
-    public async Task ReloadGames2Task()
+    public async Task ReloadGames2Task() // TODO: when there's no games show a help message
     {
         GameViews.ForEach(x => x.Destroy());
         Games = await GetGames();

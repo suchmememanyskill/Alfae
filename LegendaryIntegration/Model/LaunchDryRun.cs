@@ -42,7 +42,7 @@ public class LaunchDryRun
     // https://github.com/derrod/legendary/blob/master/legendary/cli.py#L641
     public LaunchParams toLaunch(LegendaryGame game)
     {
-        LaunchParams launchParams = new(Path.Join(WorkingDirectory, GameExecutable), String.Join(" ", AllParameters), WorkingDirectory, game, Platform.Windows);
+        LaunchParams launchParams = new(Path.Join(WorkingDirectory, GameExecutable), AllParameters.ToList(), WorkingDirectory, game, Platform.Windows);
         
         foreach (var (key, value) in Environment)
             launchParams.EnvironmentOverrides[key] = value;

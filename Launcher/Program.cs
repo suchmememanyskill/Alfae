@@ -37,6 +37,7 @@ namespace Launcher
             {
                 app.Logger.Log("Could not determine game given by commandline", LogType.Info, "Headless");
                 BuildAvaloniaApp().StartWithClassicDesktopLifetime(args); // Give up and boot the GUI
+                // TODO: Display a message when booting the GUI like this
                 return;
             }
 
@@ -47,6 +48,7 @@ namespace Launcher
             {
                 app.Logger.Log("Could not determine command given for game by commmandline", LogType.Info, "Headless");
                 BuildAvaloniaApp().StartWithClassicDesktopLifetime(args); // Give up and boot the GUI
+                // TODO: Display a message when booting the GUI like this
                 return;
             }
             

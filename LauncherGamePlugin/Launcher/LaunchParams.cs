@@ -9,22 +9,43 @@ public class LaunchParams
     public event Action<ExecLaunch>? OnGameExit;
     */
     public string Executable { get; }
-    public string Arguments { get; }
     public Dictionary<string, string> EnvironmentOverrides { get; } = new();
     public string WorkingDirectory { get; }
     public Platform Platform { get; }
     public IGame Game { get; }
+    public bool UsingListArgs { get; } = false;
+
+    private string _args = "";
+    private List<string> _listArgs = new();
+
+    public string Arguments => (UsingListArgs) ? String.Join(" ", _listArgs) : _args;
+    public List<string> ListArguments => (UsingListArgs) ? _listArgs : _args.Split(" ").ToList();
 
     public LaunchParams(string executable, string arguments, string workingDirectory, IGame game, Platform platform)
     {
         Executable = executable;
-        Arguments = arguments;
+        _args = arguments;
         WorkingDirectory = workingDirectory;
         Platform = platform;
         Game = game;
     }
 
+    public LaunchParams(string executable, List<string> listArguments, string workingDirectory, IGame game,
+        Platform platform)
+    {
+        Executable = executable;
+        _listArgs = listArguments;
+        WorkingDirectory = workingDirectory;
+        Platform = platform;
+        Game = game;
+        UsingListArgs = true;
+    }
+
     public LaunchParams(string executable, string arguments, string workingDirectory, IGame game)
+        : this(executable, arguments, workingDirectory, game, GetExecTypeFromFileName(executable))
+    { }
+    
+    public LaunchParams(string executable, List<string> arguments, string workingDirectory, IGame game)
         : this(executable, arguments, workingDirectory, game, GetExecTypeFromFileName(executable))
     { }
 

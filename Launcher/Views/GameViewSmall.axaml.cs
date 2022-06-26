@@ -121,6 +121,7 @@ public partial class GameViewSmall : UserControlExt<GameViewSmall>
         }
     }
     
+    // TODO: integrate boot profile switching in this menu
     private void SetMenu()
     {
         List<Command> commands = Game.GetCommands();

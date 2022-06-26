@@ -1,4 +1,5 @@
-﻿using LauncherGamePlugin;
+﻿using System.Diagnostics;
+using LauncherGamePlugin;
 using LauncherGamePlugin.Commands;
 using LauncherGamePlugin.Forms;
 using LauncherGamePlugin.Interfaces;
@@ -32,7 +33,7 @@ public class Exporter : IGameSource
             _initialised = false;
         }
     }
-
+    
     public async Task<List<IBootProfile>> GetBootProfiles()
     {
         if (_protonManager == null)
@@ -40,7 +41,7 @@ public class Exporter : IGameSource
 
         if (_protonManager.CanUseProton)
             return new();
-
+        
         string homeFolder = Environment.GetFolderPath(Environment.SpecialFolder.UserProfile);
         string prefixFolder = Path.Join(homeFolder, ".proton_launcher");
 
@@ -48,12 +49,7 @@ public class Exporter : IGameSource
             Directory.CreateDirectory(prefixFolder);
         
         var protons = _protonManager.GetProtonPaths();
-        return protons.Select(x => (IBootProfile)new CustomBootProfile()
-        {
-            Executable = $"{x.Value}/proton",
-            Args = "run \"{EXEC}\" {ARGS}",
-            EnviromentVariables = $"STEAM_COMPAT_DATA_PATH={prefixFolder} STEAM_COMPAT_CLIENT_INSTALL_PATH={Path.Join(homeFolder, ".steam", "steam")}"
-        }).ToList();
+        return protons.Select(x => (IBootProfile) new ProtonWrapper(x.Key, x.Value, prefixFolder)).ToList();
     }
     public async Task<List<IGame>> GetGames() => new();
 

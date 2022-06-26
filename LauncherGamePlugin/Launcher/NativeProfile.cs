@@ -12,13 +12,18 @@ public abstract class NativeProfile : IBootProfile
     public void Launch(LaunchParams args)
     {
         Process p = new Process();
-            
+
         foreach (var (key, value) in args.EnvironmentOverrides)
             p.StartInfo.Environment[key] = value;
 
         p.StartInfo.FileName = args.Executable;
         p.StartInfo.WorkingDirectory = args.WorkingDirectory;
-        p.StartInfo.Arguments = args.Arguments;
+
+        if (args.UsingListArgs)
+            args.ListArguments.ForEach(x => p.StartInfo.ArgumentList.Add(x));
+        else
+            p.StartInfo.Arguments = args.Arguments;
+
         p.Start();
     }
 }

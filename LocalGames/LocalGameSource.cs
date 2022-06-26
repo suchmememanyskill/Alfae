@@ -199,7 +199,7 @@ public class LocalGameSource : IGameSource
                 }));
             }),
             new Command("Delete on disk", () =>
-            {
+            { // TODO: implement
             }),
         };
     }
