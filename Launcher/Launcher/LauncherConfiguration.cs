@@ -7,6 +7,7 @@ using Avalonia.Controls;
 using LauncherGamePlugin;
 using LauncherGamePlugin.Commands;
 using LauncherGamePlugin.Forms;
+using LauncherGamePlugin.Interfaces;
 using LauncherGamePlugin.Launcher;
 using Newtonsoft.Json;
 
@@ -151,11 +152,32 @@ public class LauncherConfiguration
         Profiles.Add(profile);
     }
 
+    public string? GetGameConfiguration(IGame game)
+    {
+        if (GameConfiguration.TryGetValue(game.Source.ShortServiceName, out Dictionary<string, string> value))
+        {
+            if (value.ContainsKey(game.InternalName))
+                return value[game.InternalName];
+        }
+
+        return null;
+    }
+
+    public void SetGameConfiguration(IGame game, string value)
+    {
+        if (!GameConfiguration.ContainsKey(game.Source.ShortServiceName))
+            GameConfiguration.Add(game.Source.ShortServiceName, new());
+        
+        GameConfiguration[game.Source.ShortServiceName][game.InternalName] = value;
+        Save();
+    }
+
     public void Launch(LaunchParams launchParams)
     {
         _app.Logger.Log($"Got request to launch {launchParams.Executable}");
 
-        string preferredProfile = "";
+        string? preferredProfile = GetGameConfiguration(launchParams.Game);
+        preferredProfile ??= "";
 
         if (GameConfiguration.TryGetValue(launchParams.Game.Source.ShortServiceName, out Dictionary<string, string> value))
         {

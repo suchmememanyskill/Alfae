@@ -9,7 +9,9 @@ using Avalonia.Media;
 using Avalonia.Media.Imaging;
 using Avalonia.Threading;
 using Launcher.Extensions;
+using Launcher.Launcher;
 using Launcher.Utils;
+using LauncherGamePlugin;
 using LauncherGamePlugin.Commands;
 using LauncherGamePlugin.Extensions;
 using LauncherGamePlugin.Forms;
@@ -121,7 +123,6 @@ public partial class GameViewSmall : UserControlExt<GameViewSmall>
         }
     }
     
-    // TODO: integrate boot profile switching in this menu
     private void SetMenu()
     {
         List<Command> commands = Game.GetCommands();
@@ -146,6 +147,11 @@ public partial class GameViewSmall : UserControlExt<GameViewSmall>
             Action actionTwo = functions[1].Action;
             SecondaryButton.Command = new LambdaCommand(x => actionTwo());
             SecondaryButtonLabel.Content = functions[1].Text;
+        }
+
+        if (Menu.IsVisible && Game.InstalledStatus == InstalledStatus.Installed)
+        {
+            commands.Add(new("Set Boot Configuration", () => new BootProfileSelectGUI(Loader.App.GetInstance(), Game).ShwoGUI()));
         }
         
         // I love hacky fixes for shit that doesn't work in avalonia
