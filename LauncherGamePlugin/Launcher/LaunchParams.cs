@@ -18,6 +18,7 @@ public class LaunchParams
     private string _args = "";
     private List<string> _listArgs = new();
 
+    [Obsolete("Please use ListArguments instead")]
     public string Arguments => (UsingListArgs) ? String.Join(" ", _listArgs) : _args;
     public List<string> ListArguments => (UsingListArgs) ? _listArgs : _args.Split(" ").ToList();
 

@@ -1,19 +1,21 @@
 ﻿using System;
 using System.Collections.Generic;
+using System.IO;
 using System.Linq;
-using System.Text.Json.Serialization;
 using System.Threading.Tasks;
+using Avalonia.Controls;
 using LauncherGamePlugin;
 using LauncherGamePlugin.Commands;
 using LauncherGamePlugin.Forms;
 using LauncherGamePlugin.Launcher;
+using Newtonsoft.Json;
 
 namespace Launcher.Launcher;
 
 public class LauncherConfiguration
 {
     public Dictionary<string, Dictionary<string, string>> GameConfiguration { get; set; } = new();
-    public List<CustomBootProfile> CustomProfiles { get; set; } = new();
+    public List<LocalBootProfile> CustomProfiles { get; set; } = new();
     public List<string> UserDefault { get; set; } = new() {"", ""};
 
     [JsonIgnore] public List<IBootProfile> Profiles { get; private set; } = new();
@@ -21,6 +23,10 @@ public class LauncherConfiguration
     [JsonIgnore] public IBootProfile? LinuxDefaultProfile { get; private set; }
 
     [JsonIgnore] private Loader.App _app;
+
+    public LauncherConfiguration()
+    {
+    }
 
     public LauncherConfiguration(Loader.App app)
     {
@@ -91,12 +97,35 @@ public class LauncherConfiguration
 
     public void Save()
     {
-        // TODO: Save    
+        string path = Path.Join(_app.ConfigDir, "custom_boot_profiles.json");
+        File.WriteAllText(path, JsonConvert.SerializeObject(this));
     }
 
     public void Load()
     {
-        // TODO: Load
+        string path = Path.Join(_app.ConfigDir, "custom_boot_profiles.json");
+        if (File.Exists(path))
+        {
+            LauncherConfiguration config = JsonConvert.DeserializeObject<LauncherConfiguration>(File.ReadAllText(path));
+            GameConfiguration = config!.GameConfiguration;
+            CustomProfiles = config.CustomProfiles;
+            UserDefault = config.UserDefault;
+        }
+    }
+
+    public void Delete(LocalBootProfile profile)
+    {
+        CustomProfiles.Remove(profile);
+        Profiles.Remove(profile);
+
+        if (profile == LinuxDefaultProfile)
+            LinuxDefaultProfile = new NativeLinuxProfile();
+
+        if (profile == WindowsDefaultProfile)
+            WindowsDefaultProfile = new NativeWindowsProfile();
+        
+        Save();
+        _app.ReloadBootProfiles();
     }
 
     public void SetNewDefault(IBootProfile profile)
@@ -116,7 +145,7 @@ public class LauncherConfiguration
         _app.ReloadBootProfiles();
     }
 
-    public void AddCustomProfile(CustomBootProfile profile)
+    public void AddCustomProfile(LocalBootProfile profile)
     {
         CustomProfiles.Add(profile);
         Profiles.Add(profile);

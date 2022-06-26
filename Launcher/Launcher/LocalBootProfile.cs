@@ -11,7 +11,7 @@ public class LocalBootProfile : CustomBootProfile
         return new()
         {
             new("Edit", () => new CustomBootProfileGUI(Loader.App.GetInstance(), this).CreateProfileForm()),
-            new ("Delete") // TODO: implement
+            new ("Delete", () => Loader.App.GetInstance().Launcher.Delete(this))
         };
     }
 }

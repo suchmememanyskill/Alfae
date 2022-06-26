@@ -35,8 +35,6 @@ public class LocalGameSource : IGameSource
         Log("Hello World!");
     }
 
-    public async Task<List<IBootProfile>> GetBootProfiles() => new();
-
     public async Task Save()
     {
         string json = JsonConvert.SerializeObject(_games);
@@ -130,6 +128,7 @@ public class LocalGameSource : IGameSource
         }
         
         Log($"Calculating game {gameName} size at path {execPath}");
+        _app.ShowTextPrompt($"Processing {gameName}...");
         LocalGame localGame;
         
         if (form.Game == null)
@@ -153,6 +152,7 @@ public class LocalGameSource : IGameSource
 
         _app.ReloadGames();
         Save();
+        _app.HideOverlay();
     }
 
     public void Log(string message, LogType type = LogType.Info) => _app.Logger.Log(message, type, "LocalGames");
@@ -163,11 +163,6 @@ public class LocalGameSource : IGameSource
         return _games.Select(x => (IGame)x).ToList();
     }
 
-    public Task CustomCommand(string command, IGame? game)
-    {
-        throw new NotImplementedException();
-    }
-    
     public List<Command> GetGameCommands(IGame game)
     {
         LocalGame localGame = game as LocalGame;
@@ -182,24 +177,7 @@ public class LocalGameSource : IGameSource
             new Command("Edit", () => AddGameForm(game: localGame)),
             new Command("Remove From Launcher", () =>
             {
-                _app.ShowForm(new(new()
-                {
-                    new(FormEntryType.TextBox, $"Are you sure you want to remove '{localGame.Name}' from the launcher?", alignment: FormAlignment.Center),
-                    new(FormEntryType.ButtonList, "", buttonList: new()
-                    {
-                        {"Remove", x =>
-                        {
-                            _games.Remove(localGame);
-                            _app.ReloadGames();
-                            _app.HideOverlay();
-                            Save();
-                        }},
-                        {"Back", x => _app.HideOverlay()}
-                    })
-                }));
-            }),
-            new Command("Delete on disk", () =>
-            { // TODO: implement
+                _app.Show2ButtonTextPrompt($"Are you sure you want to remove '{localGame.Name}' from the launcher?", "Remove", "Back", x => Remove(localGame), x => _app.HideOverlay());
             }),
         };
     }
@@ -210,4 +188,15 @@ public class LocalGameSource : IGameSource
         new Command(),
         new Command("Add a game", () => AddGameForm())
     };
+
+    public async void Remove(LocalGame localGame)
+    {
+        _app.ShowTextPrompt($"Removing {localGame.Name}...");
+        _games.Remove(localGame);
+        _app.ReloadGames();
+        _app.HideOverlay();
+        await Save();
+        _app.HideOverlay();
+    }
+    
 }

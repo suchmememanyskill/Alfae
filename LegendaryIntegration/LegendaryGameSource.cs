@@ -43,11 +43,6 @@ public class LegendaryGameSource : IGameSource
         return (await manager.GetGames()).Select(x => (IGame) x).ToList();
     }
 
-    public Task CustomCommand(string command, IGame? game)
-    {
-        throw new NotImplementedException();
-    }
-
     public List<Command> GetGameCommands(IGame game)
     {
         LegendaryGame legendaryGame = game as LegendaryGame;
@@ -68,7 +63,6 @@ public class LegendaryGameSource : IGameSource
         {
             if (legendaryGame.UpdateAvailable)
             {
-                // TODO: implement
                 commands.Add(new("Update", () => Download(legendaryGame)));
             }
             

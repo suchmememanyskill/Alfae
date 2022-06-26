@@ -8,6 +8,7 @@ using System.Threading.Tasks;
 using LauncherGamePlugin;
 using LauncherGamePlugin.Commands;
 using LauncherGamePlugin.Extensions;
+using LauncherGamePlugin.Forms;
 using LauncherGamePlugin.Interfaces;
 
 namespace Launcher
@@ -36,8 +37,7 @@ namespace Launcher
             if (target == null)
             {
                 app.Logger.Log("Could not determine game given by commandline", LogType.Info, "Headless");
-                BuildAvaloniaApp().StartWithClassicDesktopLifetime(args); // Give up and boot the GUI
-                // TODO: Display a message when booting the GUI like this
+                app.ShowDismissibleTextPrompt($"Could not find game {args[1]} from service {args[0]}");
                 return;
             }
 
@@ -47,8 +47,7 @@ namespace Launcher
             if (command == null)
             {
                 app.Logger.Log("Could not determine command given for game by commmandline", LogType.Info, "Headless");
-                BuildAvaloniaApp().StartWithClassicDesktopLifetime(args); // Give up and boot the GUI
-                // TODO: Display a message when booting the GUI like this
+                app.ShowDismissibleTextPrompt($"Game {target.Name} does not have the command {args[2]} available");
                 return;
             }
             

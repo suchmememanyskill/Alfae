@@ -9,7 +9,7 @@ namespace Launcher.Launcher;
 public class CustomBootProfileGUI
 {
     private Loader.App _app;
-    private CustomBootProfile _profile;
+    private LocalBootProfile _profile;
     private bool edit = false;
 
     public CustomBootProfileGUI(Loader.App app)
@@ -18,7 +18,7 @@ public class CustomBootProfileGUI
         _profile = new LocalBootProfile();
     }
 
-    public CustomBootProfileGUI(Loader.App app, CustomBootProfile profile) : this(app)
+    public CustomBootProfileGUI(Loader.App app, LocalBootProfile profile) : this(app)
     {
         edit = true;
         _profile = profile;

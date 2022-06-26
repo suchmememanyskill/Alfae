@@ -51,17 +51,6 @@ public class Exporter : IGameSource
         var protons = _protonManager.GetProtonPaths();
         return protons.Select(x => (IBootProfile) new ProtonWrapper($"Proton {x.Key}", x.Value, prefixFolder)).ToList();
     }
-    public async Task<List<IGame>> GetGames() => new();
-
-    public Task CustomCommand(string command, IGame? game)
-    {
-        throw new NotImplementedException();
-    }
-
-    public List<Command> GetGameCommands(IGame game)
-    {
-        throw new NotImplementedException();
-    }
 
     public List<Command> GetGlobalCommands()
     {

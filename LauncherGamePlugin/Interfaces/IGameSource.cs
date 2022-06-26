@@ -12,9 +12,10 @@ public interface IGameSource
     string ShortServiceName { get; }
 
     public Task Initialize(IApp app);
-    public Task<List<IBootProfile>> GetBootProfiles();
-    public Task<List<IGame>> GetGames();
-    public Task CustomCommand(string command, IGame? game);
-    public List<Command> GetGameCommands(IGame game);
-    public List<Command> GetGlobalCommands();
+    public async Task<List<IBootProfile>> GetBootProfiles() => new();
+    public async Task<List<IGame>> GetGames() => new();
+
+    public async Task CustomCommand(string command, IGame? game) { }
+    public List<Command> GetGameCommands(IGame game) => new();
+    public List<Command> GetGlobalCommands() => new();
 }
