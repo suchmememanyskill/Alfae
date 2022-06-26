@@ -2,11 +2,11 @@
 using System.Collections.Generic;
 using System.IO;
 using System.Text.Json.Serialization;
-using Launcher.Extensions;
 using LauncherGamePlugin;
 using LauncherGamePlugin.Commands;
+using LauncherGamePlugin.Extensions;
 
-namespace Launcher.Launcher;
+namespace LauncherGamePlugin.Launcher;
 
 public class CustomBootProfile : IBootProfile
 {
@@ -21,49 +21,42 @@ public class CustomBootProfile : IBootProfile
     public int CompatibleExecutableInt { get; set; } = 0;
     public bool EscapeReplaceables { get; set; } = false;
 
-    public void Launch(ExecLaunch launch)
+    public void Launch(LaunchParams launchParams)
     {
-        if (launch.Platform != CompatibleExecutable)
+        if (launchParams.Platform != CompatibleExecutable)
             throw new Exception("Incompatible profile");
 
         string filledString;
         
         if (EscapeReplaceables)
         {
-            filledString = TemplateString.Replace("{EXEC}", launch.Executable.Curse())
-                .Replace("{ARGS}", launch.Arguments.Curse())
-                .Replace("{WORKDIR}", launch.WorkingDirectory.Curse());
+            filledString = TemplateString.Replace("{EXEC}", launchParams.Executable.Curse())
+                .Replace("{ARGS}", launchParams.Arguments.Curse())
+                .Replace("{WORKDIR}", launchParams.WorkingDirectory.Curse());
         }
         else
         {
-            filledString = TemplateString.Replace("{EXEC}", launch.Executable)
-                .Replace("{ARGS}", launch.Arguments)
-                .Replace("{WORKDIR}", launch.WorkingDirectory);
+            filledString = TemplateString.Replace("{EXEC}", launchParams.Executable)
+                .Replace("{ARGS}", launchParams.Arguments)
+                .Replace("{WORKDIR}", launchParams.WorkingDirectory);
         }
 
         string[] split = filledString.Split(" ", 2);
 
-        ExecLaunch convertedLaunch = new(split[0], split.Length > 1 ? split[1] : "", launch.WorkingDirectory,
-            launch.Game, CompatibleExecutable);
+        LaunchParams convertedLaunchParams = new(split[0], split.Length > 1 ? split[1] : "", launchParams.WorkingDirectory,
+            launchParams.Game, CompatibleExecutable);
 
         foreach (var x in EnviromentVariables.Split(" ", StringSplitOptions.RemoveEmptyEntries | StringSplitOptions.TrimEntries))
         {
             split = x.Split("=");
-            convertedLaunch.EnvironmentOverrides[split[0]] = split[1];
+            convertedLaunchParams.EnvironmentOverrides[split[0]] = split[1];
         }
         
         if (PlatformExtensions.CurrentPlatform == Platform.Windows)
-            new NativeWindowsProfile().Launch(convertedLaunch);
+            new NativeWindowsProfile().Launch(convertedLaunchParams);
         else
-            new NativeLinuxProfile().Launch(convertedLaunch);
+            new NativeLinuxProfile().Launch(convertedLaunchParams);
     }
 
-    public List<Command> CustomCommands()
-    {
-        return new()
-        {
-            new("Edit", () => new CustomBootProfileGUI(Loader.App.GetInstance(), this).CreateProfileForm()),
-            new ("Delete")
-        };
-    }
+    public virtual List<Command> CustomCommands() => new();
 }

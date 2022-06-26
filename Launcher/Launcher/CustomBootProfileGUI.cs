@@ -2,6 +2,7 @@
 using System.Linq;
 using LauncherGamePlugin;
 using LauncherGamePlugin.Forms;
+using LauncherGamePlugin.Launcher;
 
 namespace Launcher.Launcher;
 
@@ -14,7 +15,7 @@ public class CustomBootProfileGUI
     public CustomBootProfileGUI(Loader.App app)
     {
         _app = app;
-        _profile = new();
+        _profile = new LocalBootProfile();
     }
 
     public CustomBootProfileGUI(Loader.App app, CustomBootProfile profile) : this(app)

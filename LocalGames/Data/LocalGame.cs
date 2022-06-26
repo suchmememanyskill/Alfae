@@ -1,5 +1,6 @@
 ﻿using LauncherGamePlugin;
 using LauncherGamePlugin.Interfaces;
+using LauncherGamePlugin.Launcher;
 using Newtonsoft.Json;
 
 namespace LocalGames.Data;
@@ -37,9 +38,9 @@ public class LocalGame : IGame
     public event Action? OnUpdate;
     public void InvokeOnUpdate() => OnUpdate?.Invoke();
 
-    public ExecLaunch ToExecLaunch()
+    public LaunchParams ToExecLaunch()
     {
-        ExecLaunch launch = new ExecLaunch(ExecPath, LaunchArgs, InstalledPath, this);
-        return launch;
+        LaunchParams launchParams = new LaunchParams(ExecPath, LaunchArgs, InstalledPath, this);
+        return launchParams;
     }
 }

@@ -2,6 +2,7 @@
 using LauncherGamePlugin.Commands;
 using LauncherGamePlugin.Forms;
 using LauncherGamePlugin.Interfaces;
+using LauncherGamePlugin.Launcher;
 using VDFMapper;
 using VDFMapper.ShortcutMap;
 using VDFMapper.VDF;
@@ -31,6 +32,7 @@ public class Exporter : IGameSource
         
     }
 
+    public async Task<List<IBootProfile>> GetBootProfiles() => new();
     public async Task<List<IGame>> GetGames() => new();
 
     public Task CustomCommand(string command, IGame? game)

@@ -1,8 +1,8 @@
 ﻿using LauncherGamePlugin.Interfaces;
 
-namespace LauncherGamePlugin;
+namespace LauncherGamePlugin.Launcher;
 
-public class ExecLaunch
+public class LaunchParams
 {
     /* TODO: Implement
     public event Action<ExecLaunch>? OnGameLaunch;
@@ -15,7 +15,7 @@ public class ExecLaunch
     public Platform Platform { get; }
     public IGame Game { get; }
 
-    public ExecLaunch(string executable, string arguments, string workingDirectory, IGame game, Platform platform)
+    public LaunchParams(string executable, string arguments, string workingDirectory, IGame game, Platform platform)
     {
         Executable = executable;
         Arguments = arguments;
@@ -24,7 +24,7 @@ public class ExecLaunch
         Game = game;
     }
 
-    public ExecLaunch(string executable, string arguments, string workingDirectory, IGame game)
+    public LaunchParams(string executable, string arguments, string workingDirectory, IGame game)
         : this(executable, arguments, workingDirectory, game, GetExecTypeFromFileName(executable))
     { }
 

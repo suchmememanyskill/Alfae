@@ -16,6 +16,7 @@ using Launcher.Views;
 using LauncherGamePlugin.Interfaces;
 using LauncherGamePlugin;
 using LauncherGamePlugin.Forms;
+using LauncherGamePlugin.Launcher;
 
 namespace Launcher.Loader;
 
@@ -145,11 +146,11 @@ public class App : IApp
     public void ReloadGlobalCommands() => Dispatcher.UIThread.Post(() => MainView.UpdateView());
     public void ReloadBootProfiles() => ReloadGlobalCommands();
 
-    public void Launch(ExecLaunch launch)
+    public void Launch(LaunchParams launchParams)
     {
         try
         {
-            Launcher.Launch(launch);
+            Launcher.Launch(launchParams);
         }
         catch (Exception e)
         {

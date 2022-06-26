@@ -1,7 +1,7 @@
 ﻿using System.Diagnostics;
 using LauncherGamePlugin;
 
-namespace Launcher.Launcher;
+namespace LauncherGamePlugin.Launcher;
 
 public abstract class NativeProfile : IBootProfile
 {
@@ -9,7 +9,7 @@ public abstract class NativeProfile : IBootProfile
     public Platform CompatiblePlatform { get; protected set; }
     public Platform CompatibleExecutable { get; protected set; }
 
-    public void Launch(ExecLaunch args)
+    public void Launch(LaunchParams args)
     {
         Process p = new Process();
             

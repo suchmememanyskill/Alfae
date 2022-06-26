@@ -2,6 +2,7 @@
 using LauncherGamePlugin.Commands;
 using LauncherGamePlugin.Forms;
 using LauncherGamePlugin.Interfaces;
+using LauncherGamePlugin.Launcher;
 using LegendaryIntegration.Extensions;
 using LegendaryIntegration.Service;
 
@@ -29,6 +30,8 @@ public class LegendaryGameSource : IGameSource
         if (!await auth.AttemptLogin())
             auth = null;
     }
+
+    public async Task<List<IBootProfile>> GetBootProfiles() => new();
 
     public async Task<List<IGame>> GetGames()
     {
@@ -130,7 +133,7 @@ public class LegendaryGameSource : IGameSource
     {
         try
         {
-            ExecLaunch? launch = await game.Launch(ignoreUpdate);
+            LaunchParams? launch = await game.Launch(ignoreUpdate);
 
             if (launch == null)
                 throw new Exception("Legendary exited unexpectedly");

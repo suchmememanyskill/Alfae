@@ -1,6 +1,4 @@
-﻿using LauncherGamePlugin;
-
-namespace Launcher.Extensions;
+﻿namespace LauncherGamePlugin.Extensions;
 
 public static class StringExtensions
 {

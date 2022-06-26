@@ -1,4 +1,5 @@
 ﻿using LauncherGamePlugin.Forms;
+using LauncherGamePlugin.Launcher;
 
 namespace LauncherGamePlugin.Interfaces;
 
@@ -11,7 +12,7 @@ public interface IApp
     void HideOverlay();
     void ReloadGames();
     void ReloadGlobalCommands();
-    void Launch(ExecLaunch launch);
+    void Launch(LaunchParams launchParams);
     List<IGame> GetAllGames();
     List<IGameSource> GetAllSources();
 }

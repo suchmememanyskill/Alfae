@@ -3,6 +3,7 @@ using System.Text;
 using LauncherGamePlugin;
 using LauncherGamePlugin.Forms;
 using LauncherGamePlugin.Interfaces;
+using LauncherGamePlugin.Launcher;
 using LegendaryIntegration.Extensions;
 using LegendaryIntegration.Model;
 using LegendaryMapperV2.Model;
@@ -204,7 +205,7 @@ public class LegendaryGame : IGame
         Download.OnPauseOrContinue += _ => InvokeOnUpdate();
     }
 
-    public async Task<ExecLaunch?> Launch(bool ignoreUpdate = false)
+    public async Task<LaunchParams?> Launch(bool ignoreUpdate = false)
     {
         Terminal t = new();
 
@@ -240,8 +241,8 @@ public class LegendaryGame : IGame
         {
             LegendaryGameSource.Source.Log($"Launch returned {t.StdOut.First()}");
             LaunchDryRun data = JsonConvert.DeserializeObject<LaunchDryRun>(t.StdOut.First())!;
-            ExecLaunch launch = data.toLaunch(this);
-            return launch;
+            LaunchParams launchParams = data.toLaunch(this);
+            return launchParams;
         }
         
         return null;

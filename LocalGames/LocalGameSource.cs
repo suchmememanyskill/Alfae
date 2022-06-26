@@ -3,6 +3,7 @@ using LauncherGamePlugin.Commands;
 using LauncherGamePlugin.Extensions;
 using LauncherGamePlugin.Forms;
 using LauncherGamePlugin.Interfaces;
+using LauncherGamePlugin.Launcher;
 using LocalGames.Data;
 using Newtonsoft.Json;
 
@@ -33,6 +34,8 @@ public class LocalGameSource : IGameSource
         
         Log("Hello World!");
     }
+
+    public async Task<List<IBootProfile>> GetBootProfiles() => new();
 
     public async Task Save()
     {

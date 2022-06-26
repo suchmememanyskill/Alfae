@@ -2,7 +2,7 @@
 using LauncherGamePlugin;
 using LauncherGamePlugin.Commands;
 
-namespace Launcher.Launcher;
+namespace LauncherGamePlugin.Launcher;
 
 public interface IBootProfile
 {
@@ -10,5 +10,5 @@ public interface IBootProfile
     public Platform CompatiblePlatform { get; }
     public Platform CompatibleExecutable { get; }
     public List<Command> CustomCommands() => new();
-    public void Launch(ExecLaunch launch);
+    public void Launch(LaunchParams launchParams);
 }

@@ -5,6 +5,7 @@ using System.Text.Json.Serialization;
 using LauncherGamePlugin;
 using LauncherGamePlugin.Commands;
 using LauncherGamePlugin.Forms;
+using LauncherGamePlugin.Launcher;
 
 namespace Launcher.Launcher;
 
@@ -117,23 +118,23 @@ public class LauncherConfiguration
         Profiles.Add(profile);
     }
 
-    public void Launch(ExecLaunch launch)
+    public void Launch(LaunchParams launchParams)
     {
-        _app.Logger.Log($"Got request to launch {launch.Executable}");
+        _app.Logger.Log($"Got request to launch {launchParams.Executable}");
 
         string preferredProfile = "";
 
-        if (GameConfiguration.TryGetValue(launch.Game.Source.ShortServiceName, out Dictionary<string, string> value))
+        if (GameConfiguration.TryGetValue(launchParams.Game.Source.ShortServiceName, out Dictionary<string, string> value))
         {
-            if (value.ContainsKey(launch.Game.InternalName))
-                preferredProfile = value[launch.Game.InternalName];
+            if (value.ContainsKey(launchParams.Game.InternalName))
+                preferredProfile = value[launchParams.Game.InternalName];
         }
 
         IBootProfile? profile = Profiles.Find(x => x.Name == preferredProfile);
 
         if (profile == null)
         {
-            if (launch.Platform == Platform.Windows)
+            if (launchParams.Platform == Platform.Windows)
                 profile = WindowsDefaultProfile;
             else
                 profile = LinuxDefaultProfile;
@@ -142,7 +143,7 @@ public class LauncherConfiguration
         if (profile == null)
             throw new Exception("Found no profile to launch given executable");
 
-        _app.Logger.Log($"Launching {launch.Executable} using {profile.Name}");
-        profile.Launch(launch);
+        _app.Logger.Log($"Launching {launchParams.Executable} using {profile.Name}");
+        profile.Launch(launchParams);
     }
 }
