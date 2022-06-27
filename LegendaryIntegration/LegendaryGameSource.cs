@@ -8,6 +8,9 @@ using LegendaryIntegration.Service;
 
 namespace LegendaryIntegration;
 
+// TODO: Add menu items of Duplicate
+// TODO: Add save sync
+// TODO: Add importing games
 public class LegendaryGameSource : IGameSource
 {
     public string ServiceName => "Epic Games Integration";
@@ -119,8 +122,35 @@ public class LegendaryGameSource : IGameSource
             commands.Add(new("Login", () => LoginForm()));
         else
             commands.Add(new("Logout", () => Logout()));
+        
+        commands.Add(new());
+        
+        commands.Add(new("Open free games page", () => Utils.OpenUrl("https://www.epicgames.com/store/en-US/free-games")));
+        commands.Add(new("Reload games", ReloadGames));
+        
+        commands.Add(new());
+        
+        commands.Add(new("Open legendary config dir", () => Utils.OpenFolder(Path.Join(Environment.GetFolderPath(Environment.SpecialFolder.UserProfile), ".config", "legendary"))));
+        if (File.Exists(Path.Join(App.ConfigDir, "legendary.json")))
+            commands.Add(new("Open legendary integration config", () => Utils.OpenFolder(Path.Join(App.ConfigDir, "legendary.json"))));
+        commands.Add(new("Open legendary config", () => Utils.OpenFolder(Path.Join(Environment.GetFolderPath(Environment.SpecialFolder.UserProfile), ".config", "legendary", "config.ini"))));
+
+        if (auth != null)
+        {
+            commands.Add(new());
+            commands.Add(new("EOS Overlay")); // TODO: Implement
+        }
 
         return commands;
+    }
+
+    public async void ReloadGames()
+    {
+        App.ShowTextPrompt("Reloading epic games...");
+        Terminal t = new();
+        await t.ExecLegendary("list-games");
+        App.ReloadGames();
+        App.HideOverlay();
     }
 
     public async void Launch(LegendaryGame game, bool ignoreUpdate = false)

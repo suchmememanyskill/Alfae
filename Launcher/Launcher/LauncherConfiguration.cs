@@ -13,6 +13,7 @@ using Newtonsoft.Json;
 
 namespace Launcher.Launcher;
 
+// TODO: Add time played
 public class LauncherConfiguration
 {
     public Dictionary<string, Dictionary<string, string>> GameConfiguration { get; set; } = new();
