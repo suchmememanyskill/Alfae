@@ -138,7 +138,7 @@ public class LegendaryGameSource : IGameSource
         if (auth != null)
         {
             commands.Add(new());
-            commands.Add(new("EOS Overlay")); // TODO: Implement
+            commands.Add(new("EOS Overlay", () => new LegendaryEOSOverlay(App).OpenGUI()));
         }
 
         return commands;
