@@ -22,6 +22,9 @@ public partial class MainView : UserControlExt<MainView>
 
     [Binding(nameof(DownloadLocationButton), "Content")]
     public string DlText => $"Current download location: {_app.GameDir}";
+
+    [Binding(nameof(GameCountLabel), "Content")]
+    public string GameCountText => (_app.Games != null) ? $"Found {_app.Games.Count} games, {_app.InstalledGames.Count} installed" : "";
     
     private GameViewSmall _currentSelection;
     private Loader.App _app = Loader.App.GetInstance();

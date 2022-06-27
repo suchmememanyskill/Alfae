@@ -8,7 +8,6 @@ using LegendaryIntegration.Service;
 
 namespace LegendaryIntegration;
 
-// TODO: Add menu items of Duplicate
 // TODO: Add save sync
 // TODO: Add importing games
 public class LegendaryGameSource : IGameSource

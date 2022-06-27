@@ -179,7 +179,7 @@ public class App : IApp
         return games;
     }
     
-    public async Task ReloadGames2Task() // TODO: when there's no games show a help message
+    public async Task ReloadGames2Task()
     {
         GameViews.ForEach(x => x.Destroy());
         Games = await GetGames();
@@ -209,6 +209,9 @@ public class App : IApp
         }
 
         ReloadGlobalCommands();
+        
+        if (Games.Count <= 0)
+            this.ShowDismissibleTextPrompt("Welcome to Launcher!\nTo get started, add some plugins and configure them in the top right under the 'plugins' tab");
     }
 
     public List<GameViewSmall> GameViews { get; private set; } = new();
