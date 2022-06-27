@@ -35,12 +35,17 @@ jobs:
         cd SteamExporterPlugin
         dotnet publish -o ../Release/plugins/SteamExporterPlugin
     
-    - name: Build LegendaryIntegration plugin
+    - name: Build BottlesPlugin plugin
       run: |
-        cd LegendaryIntegration
-        dotnet publish -o ../Release/plugins/LegendaryIntegration
-        wget -O ../Release/legendary https://github.com/derrod/legendary/releases/latest/download/legendary
-        chmod a+x ../Release/legendary
+        cd BottlesPlugin
+        dotnet publish -o ../Release/plugins/BottlesPlugin
+
+    - name: Build 
+    run: |
+      cd LegendaryIntegration
+      dotnet publish -o ../Release/plugins/LegendaryIntegration
+      wget -O ../Release/legendary https://github.com/derrod/legendary/releases/latest/download/legendary
+      chmod a+x ../Release/legendary
     
     - name: Build app
       run: |

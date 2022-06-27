@@ -18,6 +18,7 @@ public class LaunchParams
 
     private string _args = "";
     private List<string> _listArgs = new();
+    public IBootProfile? ForceBootProfile { get; set; } = null;
 
     [Obsolete("Please use ListArguments instead")]
     public string Arguments => (UsingListArgs) ? String.Join(" ", _listArgs) : _args;

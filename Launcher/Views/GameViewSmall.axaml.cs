@@ -27,7 +27,7 @@ public partial class GameViewSmall : UserControlExt<GameViewSmall>
     public string GameName => Game.Name;
 
     [Binding(nameof(SizeLabel), "Content")]
-    public string GameSize => $"{Game.ReadableSize()} | {Game.Source.ShortServiceName}";
+    public string GameSize => (Game.Size == 0) ? Game.Source.ShortServiceName : $"{Game.ReadableSize()} | {Game.Source.ShortServiceName}";
 
     [Binding(nameof(ButtonPanel), "IsVisible")]
     public bool IsSelected => _isSelected;

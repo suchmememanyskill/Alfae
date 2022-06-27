@@ -174,7 +174,7 @@ public class LauncherConfiguration
     public void Launch(LaunchParams launchParams)
     {
         _app.Logger.Log($"Got request to launch {launchParams.Executable}");
-
+        
         string? preferredProfile = GetGameConfiguration(launchParams.Game);
         preferredProfile ??= "";
 
@@ -185,6 +185,9 @@ public class LauncherConfiguration
         }
 
         IBootProfile? profile = Profiles.Find(x => x.Name == preferredProfile);
+
+        if (launchParams.ForceBootProfile != null)
+            profile = launchParams.ForceBootProfile;
 
         if (profile == null)
         {
