@@ -41,11 +41,11 @@ jobs:
         dotnet publish -o ../Release/plugins/BottlesPlugin
 
     - name: Build 
-    run: |
-      cd LegendaryIntegration
-      dotnet publish -o ../Release/plugins/LegendaryIntegration
-      wget -O ../Release/legendary https://github.com/derrod/legendary/releases/latest/download/legendary
-      chmod a+x ../Release/legendary
+      run: |
+        cd LegendaryIntegration
+        dotnet publish -o ../Release/plugins/LegendaryIntegration
+        wget -O ../Release/legendary https://github.com/derrod/legendary/releases/latest/download/legendary
+        chmod a+x ../Release/legendary
     
     - name: Build app
       run: |
