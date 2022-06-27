@@ -6,6 +6,6 @@
              x:Class="Launcher.Forms.FormTemplates.TextInput">
     <DockPanel Height="40">
         <Label Margin="0,0,10,0" VerticalAlignment="Center" DockPanel.Dock="Left" Name="Label">Label:</Label>
-        <TextBox VerticalAlignment="Center" Watermark="Enter text here" Name="TextBox"></TextBox>
+        <TextBox VerticalAlignment="Center" Watermark="Enter text here" Name="TextBox" />
     </DockPanel>
 </UserControl>

@@ -1,6 +1,5 @@
-﻿using System.Collections.Generic;
-using LauncherGamePlugin;
-using LauncherGamePlugin.Commands;
+﻿using LauncherGamePlugin.Commands;
+using LauncherGamePlugin.Enums;
 
 namespace LauncherGamePlugin.Launcher;
 

@@ -1,4 +1,5 @@
-﻿using LauncherGamePlugin;
+﻿using System.Globalization;
+using LauncherGamePlugin;
 using LegendaryIntegration.Extensions;
 
 namespace LegendaryIntegration.Service;
@@ -9,7 +10,7 @@ public class LegendaryDownload : ProgressStatus
     public event Action<LegendaryDownload> OnPauseOrContinue;
     public LegendaryGame Game { get; set; }
     public bool Active => _terminal.IsActive;
-    private Terminal _terminal = new();
+    private Terminal _terminal = new(LegendaryGameSource.Source.App);
     private string _path;
     private string _downloadSize = "";
     private string _remainingTime = "";
@@ -43,7 +44,7 @@ public class LegendaryDownload : ProgressStatus
             last = last.Substring(30);
             string[] temp = last.Split('%');
             double a = 0;
-            double.TryParse(temp[0].Replace(",", "."), System.Globalization.NumberStyles.Any, System.Globalization.CultureInfo.InvariantCulture, out a);
+            double.TryParse(temp[0].Replace(",", "."), NumberStyles.Any, CultureInfo.InvariantCulture, out a);
             Percentage = a;
             temp = last.Split(',');
             _remainingTime = temp[2].Substring(6);

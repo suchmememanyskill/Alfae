@@ -1,4 +1,5 @@
 ﻿using LauncherGamePlugin;
+using LauncherGamePlugin.Enums;
 using LauncherGamePlugin.Interfaces;
 using LauncherGamePlugin.Launcher;
 using Newtonsoft.Json;

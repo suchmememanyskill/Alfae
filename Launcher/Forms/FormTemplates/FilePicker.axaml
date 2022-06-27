@@ -7,6 +7,6 @@
     <DockPanel Height="40">
         <Button DockPanel.Dock="Right" Margin="10,0,0,0" VerticalAlignment="Center" Name="Button" Background="OrangeRed">Browse</Button>
         <Label VerticalAlignment="Center" Margin="0,0,10,0" DockPanel.Dock="Left" Name="Label">Label</Label>
-        <TextBox VerticalAlignment="Center" Watermark="Enter path here" Name="TextBox"></TextBox>
+        <TextBox VerticalAlignment="Center" Watermark="Enter path here" Name="TextBox" />
     </DockPanel>
 </UserControl>

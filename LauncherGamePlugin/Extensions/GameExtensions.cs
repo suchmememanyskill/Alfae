@@ -6,6 +6,7 @@ namespace LauncherGamePlugin.Extensions;
 public static class GameExtensions
 {
     private static readonly string[] gameSizes = { "B", "KB", "MB", "GB" };
+
     public static string ReadableSize(this IGame game)
     {
         int type = 0;

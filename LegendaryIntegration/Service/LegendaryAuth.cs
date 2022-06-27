@@ -1,4 +1,5 @@
-﻿using LegendaryIntegration.Extensions;
+﻿using LauncherGamePlugin;
+using LegendaryIntegration.Extensions;
 using LegendaryIntegration.Model;
 using Newtonsoft.Json;
 
@@ -31,7 +32,7 @@ public class LegendaryAuth
 
     public async Task<bool> AttemptLogin()
     {
-        Terminal t = new Terminal();
+        Terminal t = new Terminal(LegendaryGameSource.Source.App);
         LegendaryInstalled = true;        
 
         if (HasNetwork())
@@ -72,7 +73,7 @@ public class LegendaryAuth
 
     public async Task<bool> Authenticate(string sid)
     {
-        Terminal t = new Terminal();
+        Terminal t = new Terminal(LegendaryGameSource.Source.App);
         LegendaryInstalled = true;
 
         if (!await t.ExecLegendary($"auth --sid {sid}"))
@@ -86,7 +87,7 @@ public class LegendaryAuth
 
     public async Task<bool> Logout()
     {
-        Terminal t = new Terminal();
+        Terminal t = new Terminal(LegendaryGameSource.Source.App);
         LegendaryInstalled = true;
 
         if (!await t.ExecLegendary($"auth --delete"))

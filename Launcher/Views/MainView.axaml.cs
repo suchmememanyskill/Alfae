@@ -1,14 +1,10 @@
 ﻿using System;
 using System.Collections.Generic;
 using System.Linq;
-using Avalonia;
 using Avalonia.Controls;
 using Avalonia.Controls.Primitives;
-using Avalonia.Markup.Xaml;
 using Launcher.Extensions;
-using Launcher.Utils;
 using LauncherGamePlugin.Commands;
-using LauncherGamePlugin.Extensions;
 
 namespace Launcher.Views;
 

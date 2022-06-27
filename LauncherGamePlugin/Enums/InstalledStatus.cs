@@ -1,4 +1,4 @@
-﻿namespace LauncherGamePlugin;
+﻿namespace LauncherGamePlugin.Enums;
 
 public enum InstalledStatus
 {

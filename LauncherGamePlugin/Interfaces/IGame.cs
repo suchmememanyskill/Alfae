@@ -1,4 +1,6 @@
-﻿namespace LauncherGamePlugin.Interfaces;
+﻿using LauncherGamePlugin.Enums;
+
+namespace LauncherGamePlugin.Interfaces;
 
 public interface IGame
 {

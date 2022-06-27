@@ -1,10 +1,9 @@
 ﻿using System;
 using System.Collections.Generic;
 using System.IO;
-using Avalonia.Controls;
-using System.Linq;
 using System.Reflection;
 using System.Runtime.CompilerServices;
+using Avalonia.Controls;
 using Avalonia.Threading;
 using Launcher.Utils;
 

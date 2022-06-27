@@ -1,14 +1,4 @@
-﻿using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Text;
-using System.Threading.Tasks;
-using System.Globalization;
-using Newtonsoft.Json;
-using Newtonsoft.Json.Converters;
-using System.Net;
-using System.IO;
-using System.Net.Http;
+﻿using Newtonsoft.Json;
 
 namespace LegendaryIntegration.Model
 {

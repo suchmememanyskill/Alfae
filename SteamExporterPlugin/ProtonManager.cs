@@ -1,4 +1,4 @@
-﻿using LauncherGamePlugin;
+﻿using LauncherGamePlugin.Enums;
 
 namespace SteamExporterPlugin;
 

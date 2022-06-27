@@ -1,12 +1,7 @@
-﻿namespace LegendaryMapperV2.Model
+﻿using Newtonsoft.Json;
+
+namespace LegendaryIntegration.Model
 {
-    using System;
-    using System.Collections.Generic;
-
-    using System.Globalization;
-    using Newtonsoft.Json;
-    using Newtonsoft.Json.Converters;
-
     public class EpicProductSlugResponse
     {
         [JsonProperty("data")]

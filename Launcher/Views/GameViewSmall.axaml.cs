@@ -2,19 +2,15 @@
 using System.Collections.Generic;
 using System.IO;
 using System.Linq;
-using Avalonia;
-using Avalonia.Controls;
-using Avalonia.Markup.Xaml;
 using Avalonia.Media;
 using Avalonia.Media.Imaging;
 using Avalonia.Threading;
 using Launcher.Extensions;
 using Launcher.Launcher;
 using Launcher.Utils;
-using LauncherGamePlugin;
 using LauncherGamePlugin.Commands;
+using LauncherGamePlugin.Enums;
 using LauncherGamePlugin.Extensions;
-using LauncherGamePlugin.Forms;
 using LauncherGamePlugin.Interfaces;
 
 namespace Launcher.Views;

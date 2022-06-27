@@ -1,13 +1,7 @@
-﻿using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Text;
-using System.Threading.Tasks;
+﻿using System.Runtime.InteropServices;
 using Microsoft.Win32;
-using System.IO;
-using System.Runtime.InteropServices;
 
-namespace VDFMapper
+namespace VDFMapper.ShortcutConfig
 {
     public static class GetSteamShortcutPath
     {

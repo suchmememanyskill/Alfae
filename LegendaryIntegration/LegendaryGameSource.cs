@@ -146,7 +146,7 @@ public class LegendaryGameSource : IGameSource
     public async void ReloadGames()
     {
         App.ShowTextPrompt("Reloading epic games...");
-        Terminal t = new();
+        Terminal t = new(App);
         await t.ExecLegendary("list-games");
         App.ReloadGames();
         App.HideOverlay();

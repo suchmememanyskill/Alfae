@@ -1,10 +1,10 @@
-﻿using System.Diagnostics;
-using LauncherGamePlugin;
+﻿using LauncherGamePlugin;
 using LauncherGamePlugin.Commands;
+using LauncherGamePlugin.Enums;
 using LauncherGamePlugin.Forms;
 using LauncherGamePlugin.Interfaces;
 using LauncherGamePlugin.Launcher;
-using VDFMapper;
+using VDFMapper.ShortcutConfig;
 using VDFMapper.ShortcutMap;
 using VDFMapper.VDF;
 

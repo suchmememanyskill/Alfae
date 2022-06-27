@@ -1,4 +1,5 @@
-﻿using LegendaryIntegration.Service;
+﻿using LauncherGamePlugin;
+using LegendaryIntegration.Service;
 
 namespace LegendaryIntegration.Extensions;
 

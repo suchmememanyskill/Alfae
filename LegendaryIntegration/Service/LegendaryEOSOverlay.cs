@@ -1,4 +1,5 @@
-﻿using LauncherGamePlugin.Forms;
+﻿using LauncherGamePlugin;
+using LauncherGamePlugin.Forms;
 using LauncherGamePlugin.Interfaces;
 using LegendaryIntegration.Extensions;
 
@@ -20,7 +21,7 @@ public class LegendaryEOSOverlay
         
         if (installed)
         {
-            Terminal t = new();
+            Terminal t = new(LegendaryGameSource.Source.App);
             await t.ExecLegendary("eos-overlay info");
 
             if (t.ExitCode == 0)
@@ -48,7 +49,7 @@ public class LegendaryEOSOverlay
     public async void Uninstall()
     {
         _app.ShowTextPrompt("Uninstalling...");
-        Terminal t = new();
+        Terminal t = new(LegendaryGameSource.Source.App);
         await t.ExecLegendary("eos-overlay remove -y");
         _app.HideOverlay();
     }
@@ -60,7 +61,7 @@ public class LegendaryEOSOverlay
         if (!Directory.Exists(path))
             Directory.CreateDirectory(path);
         
-        Terminal t = new();
+        Terminal t = new(LegendaryGameSource.Source.App);
         await t.ExecLegendary($"eos-overlay --path \"{path}\" install -y");
         _app.HideOverlay();
     }

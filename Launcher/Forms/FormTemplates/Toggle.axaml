@@ -4,5 +4,5 @@
              xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006"
              mc:Ignorable="d" d:DesignWidth="800" d:DesignHeight="40"
              x:Class="Launcher.Forms.FormTemplates.Toggle">
-    <ToggleSwitch Name="ToggleSwitch"></ToggleSwitch>
+    <ToggleSwitch Name="ToggleSwitch" />
 </UserControl>

@@ -1,8 +1,7 @@
 ﻿using System.Collections.Generic;
 using System.Linq;
-using LauncherGamePlugin;
+using LauncherGamePlugin.Enums;
 using LauncherGamePlugin.Forms;
-using LauncherGamePlugin.Launcher;
 
 namespace Launcher.Launcher;
 

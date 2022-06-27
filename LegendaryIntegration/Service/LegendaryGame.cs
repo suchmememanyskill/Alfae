@@ -1,12 +1,10 @@
-﻿using System.Diagnostics;
-using System.Text;
+﻿using System.Text;
 using LauncherGamePlugin;
-using LauncherGamePlugin.Forms;
+using LauncherGamePlugin.Enums;
 using LauncherGamePlugin.Interfaces;
 using LauncherGamePlugin.Launcher;
 using LegendaryIntegration.Extensions;
 using LegendaryIntegration.Model;
-using LegendaryMapperV2.Model;
 using Newtonsoft.Json;
 using SixLabors.ImageSharp;
 using SixLabors.ImageSharp.Formats.Jpeg;
@@ -167,7 +165,7 @@ public class LegendaryGame : IGame
         if (Parser.Auth.OfflineLogin)
             throw new Exception("Cannot get info while offline");
 
-        Terminal t = new();
+        Terminal t = new(LegendaryGameSource.Source.App);
         await t.ExecLegendary($"info {InternalName} --json");
 
         if (t.ExitCode == 0)
@@ -207,7 +205,7 @@ public class LegendaryGame : IGame
 
     public async Task<LaunchParams?> Launch(bool ignoreUpdate = false)
     {
-        Terminal t = new();
+        Terminal t = new(LegendaryGameSource.Source.App);
 
         if (!IsInstalled)
             throw new Exception("Game is not installed");
@@ -253,7 +251,7 @@ public class LegendaryGame : IGame
         if (!IsInstalled)
             throw new Exception("Game is not installed");
         
-        Terminal t = new();
+        Terminal t = new(LegendaryGameSource.Source.App);
         await t.ExecLegendary($"uninstall {InternalName} -y");
     }
 

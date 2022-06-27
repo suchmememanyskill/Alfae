@@ -1,6 +1,6 @@
 ﻿using System.Runtime.InteropServices;
 
-namespace LauncherGamePlugin;
+namespace LauncherGamePlugin.Enums;
 
 public enum Platform
 {

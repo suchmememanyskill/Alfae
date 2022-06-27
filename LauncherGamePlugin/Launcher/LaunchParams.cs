@@ -1,4 +1,5 @@
-﻿using LauncherGamePlugin.Interfaces;
+﻿using LauncherGamePlugin.Enums;
+using LauncherGamePlugin.Interfaces;
 
 namespace LauncherGamePlugin.Launcher;
 

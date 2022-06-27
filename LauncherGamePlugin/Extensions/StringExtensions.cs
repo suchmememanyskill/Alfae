@@ -1,4 +1,6 @@
-﻿namespace LauncherGamePlugin.Extensions;
+﻿using LauncherGamePlugin.Enums;
+
+namespace LauncherGamePlugin.Extensions;
 
 public static class StringExtensions
 {

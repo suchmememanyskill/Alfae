@@ -1,7 +1,4 @@
-﻿using System.Threading.Tasks;
-using Avalonia;
-using Avalonia.Controls;
-using Avalonia.Markup.Xaml;
+﻿using Avalonia.Controls;
 using Avalonia.Threading;
 using Launcher.Utils;
 using LauncherGamePlugin.Forms;

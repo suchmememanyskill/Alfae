@@ -1,9 +1,5 @@
-﻿using Force.Crc32;
-using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Text;
-using System.Threading.Tasks;
+﻿using System.Text;
+using Force.Crc32;
 using VDFMapper.VDF;
 
 namespace VDFMapper.ShortcutMap

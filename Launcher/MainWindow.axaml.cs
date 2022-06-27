@@ -1,11 +1,6 @@
-using System.Collections.Generic;
-using System.Diagnostics;
-using System.Threading.Tasks;
 using Avalonia.Controls;
 using Avalonia.Threading;
-using Launcher.Loader;
 using Launcher.Views;
-using LauncherGamePlugin.Interfaces;
 
 namespace Launcher
 {

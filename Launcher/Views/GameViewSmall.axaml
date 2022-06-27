@@ -26,7 +26,7 @@
                     <Label HorizontalAlignment="Center" Name="SecondaryButtonLabel">Play</Label>
                 </Button>
                 <Menu Height="45" Name="Menu" Classes="darker ButtonLike" Padding="0">
-                    <MenuItem Header="More" Classes="CenterAccessText" Background="Transparent" FontSize="20" Width="150" Name="MoreMenu"></MenuItem>
+                    <MenuItem Header="More" Classes="CenterAccessText" Background="Transparent" FontSize="20" Width="150" Name="MoreMenu" />
                 </Menu>
             </StackPanel>
         </DockPanel>

@@ -1,5 +1,5 @@
 ﻿using System.Diagnostics;
-using LauncherGamePlugin;
+using LauncherGamePlugin.Enums;
 
 namespace LauncherGamePlugin.Launcher;
 

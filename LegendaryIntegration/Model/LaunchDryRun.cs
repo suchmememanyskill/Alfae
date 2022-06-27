@@ -1,4 +1,4 @@
-﻿using LauncherGamePlugin;
+﻿using LauncherGamePlugin.Enums;
 using LauncherGamePlugin.Launcher;
 using LegendaryIntegration.Service;
 using Newtonsoft.Json;

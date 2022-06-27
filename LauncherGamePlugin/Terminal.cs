@@ -1,6 +1,7 @@
 ﻿using System.Diagnostics;
+using LauncherGamePlugin.Interfaces;
 
-namespace LegendaryIntegration.Service;
+namespace LauncherGamePlugin;
 
 public class Terminal
 {
@@ -14,6 +15,9 @@ public class Terminal
     public event Action<Terminal, string> OnNewErrLine;
 
     private Process proc;
+    private IApp _app;
+
+    public Terminal(IApp app) => _app = app;
 
     public async Task<bool> Exec(string fileName, string args)
     {
@@ -43,7 +47,7 @@ public class Terminal
             env.Add($"{x.Key} = {x.Value}");
         }
         
-        LegendaryGameSource.Source.Log($"Starting terminal with command: {fileName} {args}");
+        Log($"Starting terminal with command: {fileName} {args}");
 
         try
         {
@@ -59,14 +63,14 @@ public class Terminal
         }
         catch (Exception e)
         {
-            LegendaryGameSource.Source.Log($"Failed to start terminal: {e.Message}");
+            Log($"Failed to start terminal: {e.Message}", LogType.Warn);
             result = false;
         }
 
         if (result)
             ExitCode = proc.ExitCode;
         IsActive = false;
-        LegendaryGameSource.Source.Log($"Terminal exited with code {ExitCode}");
+        Log($"Terminal exited with code {ExitCode}");
         proc.Close();
         return result;
     }
@@ -109,4 +113,6 @@ public class Terminal
             proc.Kill(true);
         }
     }
+
+    private void Log(string message, LogType type = LogType.Info) => _app.Logger.Log(message, type, "Terminal");
 }

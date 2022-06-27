@@ -1,5 +1,4 @@
 ﻿using LegendaryIntegration.Model;
-using LegendaryMapperV2.Model;
 using Newtonsoft.Json;
 
 namespace LegendaryIntegration.Service;
