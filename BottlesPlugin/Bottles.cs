@@ -87,14 +87,15 @@ public class Bottles : IGameSource
     {
         _app.ShowTextPrompt("Reloading bottles...");
         await LoadBottles();
-        _app.HideOverlay();
         _app.ReloadGames();
+        _app.HideOverlay();
     }
 
     public void SetOrUnsetImportGames()
     {
         _config.ImportPrograms = !_config.ImportPrograms;
         SaveConfig();
+        Reload();
     }
 
     public async Task<List<IGame>> GetGames() => _games.Select(x => (IGame)x).ToList();
@@ -108,6 +109,7 @@ public class Bottles : IGameSource
         if (PlatformExtensions.CurrentPlatform != Platform.Windows)
         {
             commands.Add(new("Reload", Reload));
+            commands.Add(new(_config.ImportPrograms ? "Press to not import programs" : "Press to import programs", SetOrUnsetImportGames));
         }
 
         return commands;
