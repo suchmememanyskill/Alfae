@@ -27,19 +27,10 @@ public class ItchApiProfileOwnedKeys
             string text = await response.Content.ReadAsStringAsync();
             try
             {
-                var settings = new JsonSerializerSettings
-                {
-                    Error = (obj, args) =>
-                    {
-                        var contextErrors = args.ErrorContext;
-                        contextErrors.Handled = true;
-                    }
-                };
-                var p = JsonConvert.DeserializeObject<ItchApiProfileOwnedKeys>(text, settings);
+                var p = JsonConvert.DeserializeObject<ItchApiProfileOwnedKeys>(text);
                 if (p != null)
                 {
                     p.Profile = profile;
-                    p.OwnedKeys.ForEach(x => x.Owner = p);
                 }
 
                 return p;
@@ -74,11 +65,6 @@ public class ItchApiOwnedGameKey
 
     [JsonProperty("game")]
     public ItchApiGame Game { get; set; }
-
-    [JsonIgnore]
-    public ItchApiProfileOwnedKeys Owner { get; set; }
-
-    public Task<ItchApiGameUploads?> GetUploads() => ItchApiGameUploads.Get(Owner.Profile!, this);
 }
 
 public class ItchApiGame
@@ -107,9 +93,6 @@ public class ItchApiGame
     [JsonProperty("id")]
     public long Id { get; set; }
 
-    [JsonProperty("traits", Required = Required.AllowNull, NullValueHandling = NullValueHandling.Ignore)]
-    public List<string> Traits { get; set; }
-
     [JsonProperty("published_at")]
     public DateTimeOffset PublishedAt { get; set; }
 
@@ -131,15 +114,6 @@ public class ItchApiGame
             return CoverUrl;
 
         return null;
-    }
-
-    public string? GetCoverUrlFilename()
-    {
-        Uri? uri = GetCoverUrl();
-        if (uri == null)
-            return null;
-
-        return uri.AbsoluteUri.Split("/").Last();
     }
 }
 

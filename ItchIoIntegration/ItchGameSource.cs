@@ -4,6 +4,7 @@ using ItchIoIntegration.Requests;
 using ItchIoIntegration.Service;
 using LauncherGamePlugin;
 using LauncherGamePlugin.Commands;
+using LauncherGamePlugin.Enums;
 using LauncherGamePlugin.Forms;
 using LauncherGamePlugin.Interfaces;
 
@@ -19,14 +20,25 @@ public class ItchGameSource : IGameSource
     public string ShortServiceName => "Itch.io";
 
     private Config _config;
-    private IApp _app;
+    public IApp App { get; private set; }
 
-    private ItchApiProfile? _profile;
+    public ItchApiProfile? Profile { get; private set; }
     private List<ItchGame> _games = new();
+    
+    public static string IMAGECACHEDIR
+    {
+        get
+        {
+            string path = Path.Join(Path.GetTempPath(), "ItchIoPluginImageCache");
+            if (!Directory.Exists(path))
+                Directory.CreateDirectory(path);
+            return path;
+        }
+    }
     
     public async Task Initialize(IApp app)
     {
-        _app = app;
+        App = app;
         _config = Config.Load(app);
         await Load();
     }
@@ -34,15 +46,17 @@ public class ItchGameSource : IGameSource
     public async Task Load()
     {
         _games = new();
-        _profile = null;
+        _config.InstalledGames.ForEach(x => x.ItchSource = this);
+        _games.AddRange(_config.InstalledGames);
+        Profile = null;
         if (string.IsNullOrWhiteSpace(_config.ApiKey))
         {
             Log("Api key is empty!", LogType.Warn);
             return;
         }
         
-        _profile = await ItchApiProfile.Get(_config.ApiKey);
-        if (_profile == null)
+        Profile = await ItchApiProfile.Get(_config.ApiKey);
+        if (Profile == null)
         {
             Log("Api key is invalid!", LogType.Error);
         }
@@ -52,7 +66,7 @@ public class ItchGameSource : IGameSource
 
         while (lastKeyCount > 0)
         {
-            ItchApiProfileOwnedKeys? keys = await _profile.GetOwnedKeys(page);
+            ItchApiProfileOwnedKeys? keys = await Profile.GetOwnedKeys(page);
             if (keys == null)
             {
                 Log("Failed to get games!", LogType.Error);
@@ -61,22 +75,25 @@ public class ItchGameSource : IGameSource
 
             page++;
             lastKeyCount = keys.OwnedKeys.Count;
-            _games.AddRange(keys.OwnedKeys.Select(x => new ItchGame(x, this)).Where(x => x.IsGame));
+            _games.AddRange(keys.OwnedKeys.Where(x => x.Game.Classification == "game")
+                .Select(x => new ItchGame(x, this)));
         }
+
+        _games.RemoveAll(x => _config.InstalledGames.Any(y => x.Id == y.Id && x.InstalledStatus == InstalledStatus.NotInstalled));
     }
 
     public async void LoadWithGui()
     {
-        _app.ShowTextPrompt("Reloading Itch.io games...");
+        App.ShowTextPrompt("Reloading Itch.io games...");
         await Load();
-        _app.ReloadGames();
-        _app.HideOverlay();
+        App.ReloadGames();
+        App.HideOverlay();
     }
 
     public async void SetNewApiKey(string key)
     {
         _config.ApiKey = key;
-        _config.Save(_app);
+        _config.Save(App);
         LoadWithGui();
     }
 
@@ -84,24 +101,73 @@ public class ItchGameSource : IGameSource
 
     public List<Command> GetGlobalCommands()
     {
-        if (_profile == null)
+        if (Profile == null)
         {
             return new()
             {
                 new("Not logged in..."),
                 new(),
-                new("Log in", () => new LoginForm(this, _app).ShowForm())
+                new("Log in", () => new LoginForm(this, App).ShowForm())
             };
         }
 
         return new List<Command>()
         {
-            new($"Logged in as {_profile.User.Username}"),
+            new($"Logged in as {Profile.User.Username}"),
             new(),
             new("Reload games", LoadWithGui),
             new("Logout", () => SetNewApiKey(""))
         };
     }
 
-    public void Log(string message, LogType type = LogType.Info) => _app.Logger.Log(message, type, "ItchIo");
+    public void Log(string message, LogType type = LogType.Info) => App.Logger.Log(message, type, "ItchIo");
+
+    public List<Command> GetGameCommands(IGame game)
+    {
+        ItchGame? itchGame = game as ItchGame;
+        if (itchGame == null)
+            throw new InvalidDataException();
+
+        if (itchGame.InstalledStatus == InstalledStatus.Installed)
+        {
+            return new()
+            {
+                new("Uninstall", () => App.Show2ButtonTextPrompt($"Are you sure you want to uninstall {itchGame.Name}?", "Uninstall", "Back", x => Uninstall(itchGame), x => App.HideOverlay()))
+            };
+        }
+        else
+        {
+            if (itchGame.Download == null)
+            {
+                return new()
+                {
+                    new("Install", () => new DownloadSelectForm(itchGame, App, this).InitiateForm())
+                };
+            }
+            else
+            {
+                return new()
+                {
+                    new("Stop", () => itchGame.Download.Stop())
+                };
+            }
+        }
+    }
+
+    public void AddToInstalled(ItchGame game)
+    {
+        _config.InstalledGames.Add(game);
+        _config.Save(App);
+        App.ReloadGames();
+    }
+
+    public async void Uninstall(ItchGame game)
+    {
+        App.ShowTextPrompt($"Uninstalling {game.Name}...");
+        await game.UninstallGame();
+        _config.InstalledGames.Remove(game);
+        _config.Save(App);
+        App.ReloadGames();
+        App.HideOverlay();
+    }
 }

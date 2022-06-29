@@ -3,6 +3,7 @@ using System.Collections.Generic;
 using System.Diagnostics;
 using System.IO;
 using System.Linq;
+using Avalonia.Layout;
 using Avalonia.Media;
 using Avalonia.Media.Imaging;
 using Avalonia.Threading;
@@ -52,10 +53,7 @@ public partial class GameViewSmall : UserControlExt<GameViewSmall>
         SetControls();
         OnUpdate();
         game.OnUpdate += OnUpdateWrapper;
-        EffectiveViewportChanged += (_, _) =>
-        { 
-            UpdateCoverImage();
-        };
+        EffectiveViewportChanged += EffectiveViewportChangedReact;
         Dispatcher.UIThread.Post(UpdateCoverImage, DispatcherPriority.Background);
     }
 
@@ -193,6 +191,7 @@ public partial class GameViewSmall : UserControlExt<GameViewSmall>
     public void Destroy()
     {
         Game.OnUpdate -= OnUpdate;
+        EffectiveViewportChanged -= EffectiveViewportChangedReact;
         if (Game.ProgressStatus != null)
             Game.ProgressStatus.OnUpdate -= OnProgressUpdate;
     }
@@ -203,4 +202,6 @@ public partial class GameViewSmall : UserControlExt<GameViewSmall>
         if (visible)
             UpdateCoverImage();
     }
+    
+    private void EffectiveViewportChangedReact(object? obj, EffectiveViewportChangedEventArgs args) => UpdateCoverImage();
 }

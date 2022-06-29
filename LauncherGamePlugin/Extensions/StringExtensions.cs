@@ -22,4 +22,9 @@ public static class StringExtensions
 
         return new(newString.ToArray());
     }
+
+    public static string StripIllegalFsChars(this string s)
+    {
+        return string.Join("_", s.Split(Path.GetInvalidFileNameChars()));
+    }
 }

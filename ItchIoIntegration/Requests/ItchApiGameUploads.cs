@@ -1,4 +1,5 @@
-﻿using Newtonsoft.Json;
+﻿using ItchIoIntegration.Service;
+using Newtonsoft.Json;
 
 namespace ItchIoIntegration.Requests;
 
@@ -8,14 +9,13 @@ public class ItchApiGameUploads
     public List<ItchApiUpload> Uploads { get; set; }
 
     private ItchApiProfile? _profile;
-    private ItchApiOwnedGameKey? _game;
-    
-    public async static Task<ItchApiGameUploads?> Get(ItchApiProfile profile, ItchApiOwnedGameKey game)
+
+    public async static Task<ItchApiGameUploads?> Get(ItchApiProfile profile, ItchGame game)
     {
         using (HttpClient client = new())
         {
             client.DefaultRequestHeaders.Add("Authorization", profile.ApiKey);
-            HttpResponseMessage response = await client.GetAsync($"https://api.itch.io/games/{game.GameId}/uploads?download_key_id={game.DownloadKeyId}");
+            HttpResponseMessage response = await client.GetAsync($"https://api.itch.io/games/{game.Id}/uploads?download_key_id={game.DownloadKeyId}");
             if (!response.IsSuccessStatusCode)
                 return null;
 
@@ -26,7 +26,6 @@ public class ItchApiGameUploads
 
                 if (uploads != null)
                 {
-                    uploads._game = game;
                     uploads._profile = profile;
                 }
 
@@ -72,10 +71,10 @@ public class ItchApiUpload
     [JsonProperty("updated_at")]
     public DateTimeOffset UpdatedAt { get; set; }
 
-    [JsonProperty("traits")]
-    public List<string> Traits { get; set; }
-
     [JsonProperty("id")]
     public long Id { get; set; }
+
+    public string GetDownloadUrl(long downloadKeyId, ItchApiProfile profile) =>
+        $"https://api.itch.io/uploads/{Id}/download?download_key_id={downloadKeyId}&api_key={profile.ApiKey}";
 }
 

@@ -20,21 +20,17 @@ public class LoginForm
     {
         List<FormEntry> entries = new()
         {
-            new(FormEntryType.TextBox, "Itch.io login", "Bold", alignment: FormAlignment.Center),
-            new(FormEntryType.TextBox, "Log in using an api key, generated via the itch.io site."),
-            new(FormEntryType.ClickableLinkBox, "Take me to the api page", "https://itch.io/user/settings/api-keys",
-                linkClick: x => Utils.OpenUrl(x.Value)),
-            new(FormEntryType.TextInput, "Api Key:"),
-            new(FormEntryType.ButtonList, buttonList: new()
-            {
-                {"Back", x => _app.HideOverlay()},
-                {"Login", x => AttemptLogin(x.ContainingForm)}
-            })
+            Form.TextBox("Itch.io login", FormAlignment.Center, "Bold"),
+            Form.TextBox("Log in using an api key, generated via the itch.io site."),
+            Form.ClickableLinkBox("Take me to the api page",
+                _ => Utils.OpenUrl("https://itch.io/user/settings/api-keys")),
+            Form.TextInput("Api Key:"),
+            Form.Button("Back", _ => _app.HideOverlay(), "Login", AttemptLogin)
         };
         
         if (errMessage != "")
-            entries.Add(new(FormEntryType.TextBox, errMessage, "Bold", alignment: FormAlignment.Center));
-        
+            entries.Add(Form.TextBox(errMessage, FormAlignment.Center, "Bold"));
+
         _app.ShowForm(new(entries));
     }
 
