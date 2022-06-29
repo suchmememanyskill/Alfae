@@ -196,4 +196,11 @@ public partial class GameViewSmall : UserControlExt<GameViewSmall>
         if (Game.ProgressStatus != null)
             Game.ProgressStatus.OnUpdate -= OnProgressUpdate;
     }
+
+    public void SetVisibility(bool visible)
+    {
+        IsVisible = visible;
+        if (visible)
+            UpdateCoverImage();
+    }
 }

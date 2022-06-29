@@ -35,11 +35,12 @@ public partial class MainView : UserControlExt<MainView>
         SearchBox.KeyUp += (_, _) =>
         {
             if (string.IsNullOrWhiteSpace(SearchBox.Text))
-                _app.GameViews.ForEach(x => x.IsVisible = true);
+                _app.GameViews.ForEach(x => x.SetVisibility(true));
             else
                 _app.GameViews.ForEach(x =>
-                    x.IsVisible = x.GameName.Contains(SearchBox.Text, StringComparison.OrdinalIgnoreCase) || 
-                                  x.Game.Source.ShortServiceName.Contains(SearchBox.Text, StringComparison.OrdinalIgnoreCase));
+                    x.SetVisibility(x.GameName.Contains(SearchBox.Text, StringComparison.OrdinalIgnoreCase) ||
+                                    x.Game.Source.ShortServiceName.Contains(SearchBox.Text,
+                                        StringComparison.OrdinalIgnoreCase)));
         };
     }
 
