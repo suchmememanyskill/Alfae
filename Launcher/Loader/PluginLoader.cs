@@ -19,6 +19,7 @@ public static class PluginLoader
             items.Add(Path.GetFullPath(Path.Join(path, "..", "..", "..", "..", "..", "LegendaryIntegration", "bin", "Debug", "net6.0", "LegendaryIntegration.dll")));
             items.Add(Path.GetFullPath(Path.Join(path, "..", "..", "..", "..", "..", "SteamExporterPlugin", "bin", "Debug", "net6.0", "SteamExporterPlugin.dll")));
             items.Add(Path.GetFullPath(Path.Join(path, "..", "..", "..", "..", "..", "BottlesPlugin", "bin", "Debug", "net6.0", "BottlesPlugin.dll")));
+            items.Add(Path.GetFullPath(Path.Join(path, "..", "..", "..", "..", "..", "ItchIoIntegration", "bin", "Debug", "net6.0", "ItchIoIntegration.dll")));
         #endif
         
         if (!Directory.Exists(path))
