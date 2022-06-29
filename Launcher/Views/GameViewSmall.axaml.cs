@@ -1,5 +1,6 @@
 ﻿using System;
 using System.Collections.Generic;
+using System.Diagnostics;
 using System.IO;
 using System.Linq;
 using Avalonia.Media;
@@ -38,6 +39,7 @@ public partial class GameViewSmall : UserControlExt<GameViewSmall>
     private bool _menuSet = false;
     private bool _isSelected = false;
     private bool _eventSpamPrevention = false;
+    private bool _downloadedImage = false;
 
     public GameViewSmall()
     {
@@ -50,6 +52,11 @@ public partial class GameViewSmall : UserControlExt<GameViewSmall>
         SetControls();
         OnUpdate();
         game.OnUpdate += OnUpdateWrapper;
+        EffectiveViewportChanged += (_, _) =>
+        { 
+            UpdateCoverImage();
+        };
+        Dispatcher.UIThread.Post(UpdateCoverImage, DispatcherPriority.Background);
     }
 
     public void Selected()
@@ -72,7 +79,8 @@ public partial class GameViewSmall : UserControlExt<GameViewSmall>
             SetMenu();
         
         UpdateView();
-        Dispatcher.UIThread.Post(GetCoverImage, DispatcherPriority.Background);
+        _downloadedImage = false;
+        UpdateCoverImage();
 
         if (HasProgress)
         {
@@ -80,6 +88,18 @@ public partial class GameViewSmall : UserControlExt<GameViewSmall>
             Game.ProgressStatus.OnUpdate += OnProgressUpdateWrapper;
             
             OnProgressUpdate();
+        }
+    }
+
+    private void UpdateCoverImage()
+    {
+        if (_downloadedImage)
+            return;
+        
+        if (!TransformedBounds?.Clip.IsEmpty ?? false || Game.InstalledStatus == InstalledStatus.Installed) // Is the element visible
+        {
+            _downloadedImage = true;
+            Dispatcher.UIThread.Post(GetCoverImage, DispatcherPriority.Background);
         }
     }
 
