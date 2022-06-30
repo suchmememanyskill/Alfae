@@ -21,6 +21,9 @@ public partial class MainView : UserControlExt<MainView>
 
     [Binding(nameof(GameCountLabel), "Content")]
     public string GameCountText => (_app.Games != null) ? $"Found {_app.Games.Count} games, {_app.InstalledGames.Count} installed" : "";
+
+    [Binding(nameof(NameLabel), "Content")]
+    public string VersionText => $"Launcher {Loader.App.Version}";
     
     private GameViewSmall _currentSelection;
     private Loader.App _app = Loader.App.GetInstance();

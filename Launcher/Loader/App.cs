@@ -18,6 +18,7 @@ namespace Launcher.Loader;
 
 public class App : IApp
 {
+    public static string Version => "v1.0";
     public string ConfigDir
     {
         get
