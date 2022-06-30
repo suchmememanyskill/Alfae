@@ -57,7 +57,7 @@ public class ItchGameDownload : ProgressStatus
         }
         catch (TaskCanceledException e)
         {
-            await fs.DisposeAsync();
+            await Task.Run(() => fs.Dispose());
             OnCompletionOrCancel?.Invoke();
             throw;
         }
@@ -65,7 +65,9 @@ public class ItchGameDownload : ProgressStatus
         _doneDownloading = true;
         progress.ProgressChanged -= OnProgressUpdate;
         Percentage = 100;
-        await fs.DisposeAsync();
+        Line1 = "Saving...";
+        InvokeOnUpdate();
+        await Task.Run(() => fs.Dispose());
 
         if (_filename.EndsWith(".zip"))
         {
