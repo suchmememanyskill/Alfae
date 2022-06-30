@@ -57,7 +57,7 @@ public class ItchGameDownload : ProgressStatus
         }
         catch (TaskCanceledException e)
         {
-            fs.Close();
+            await fs.DisposeAsync();
             OnCompletionOrCancel?.Invoke();
             throw;
         }
@@ -77,6 +77,8 @@ public class ItchGameDownload : ProgressStatus
 
         if (_filename.EndsWith(".tar.gz") && PlatformExtensions.CurrentPlatform == Platform.Linux)
         {
+            Line1 = "Unzipping...";
+            InvokeOnUpdate();
             Terminal t = new(app)
             {
                 WorkingDirectory = _path
