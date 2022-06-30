@@ -2,6 +2,8 @@
 using LauncherGamePlugin;
 using System.IO.Compression;
 using ItchIoIntegration.Extensions;
+using LauncherGamePlugin.Enums;
+using LauncherGamePlugin.Interfaces;
 
 namespace ItchIoIntegration.Service;
 
@@ -36,7 +38,7 @@ public class ItchGameDownload : ProgressStatus
         InvokeOnUpdate();
     }
     
-    public async Task Download()
+    public async Task Download(IApp app)
     {
         _doneDownloading = false;
         if (!Directory.Exists(_path))
@@ -73,6 +75,16 @@ public class ItchGameDownload : ProgressStatus
             File.Delete(filePath);
         }
 
+        if (_filename.EndsWith(".tar.gz") && PlatformExtensions.CurrentPlatform == Platform.Linux)
+        {
+            Terminal t = new(app)
+            {
+                WorkingDirectory = _path
+            };
+            await t.Exec("tar", $"-xf \"{filePath}\"");
+            File.Delete(filePath);
+        }
+        
         OnCompletionOrCancel?.Invoke();
     }
 

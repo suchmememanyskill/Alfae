@@ -57,7 +57,7 @@ public class ItchGame : IGame
 
         try
         {
-            await Download.Download();
+            await Download.Download(ItchSource.App);
         }
         catch
         {

@@ -11,6 +11,7 @@ public class Terminal
     public bool IsActive { get; private set; } = false;
     public Dictionary<string, string> Env { get; set; } = new();
     public bool Killed { get; private set; }
+    public string WorkingDirectory { get; set; } = "";
     public event Action<Terminal, string> OnNewLine;
     public event Action<Terminal, string> OnNewErrLine;
 
@@ -38,6 +39,9 @@ public class Terminal
             CreateNoWindow = true,
             UseShellExecute = false
         };
+
+        if (!string.IsNullOrWhiteSpace(WorkingDirectory))
+            proc.StartInfo.WorkingDirectory = WorkingDirectory;
         
         List<string> env = new();
         foreach (var x in Env)
