@@ -13,7 +13,7 @@ namespace LegendaryIntegration;
 public class LegendaryGameSource : IGameSource
 {
     public string ServiceName => "Epic Games Integration";
-    public string Version => "v0.1";
+    public string Version => "v1.0";
     public string SlugServiceName => "epic-games";
     public string ShortServiceName => "EpicGames";
     public LegendaryAuth? auth;
