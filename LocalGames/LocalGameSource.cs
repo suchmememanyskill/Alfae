@@ -12,7 +12,6 @@ public class LocalGameSource : IGameSource
 {
     public string ServiceName => "Local Games Integration";
     public string ShortServiceName => "Local";
-    public string Description => "Games added manually will be shown using this plugin";
     public string Version => "v0.1";
     public string SlugServiceName => "local-games";
 

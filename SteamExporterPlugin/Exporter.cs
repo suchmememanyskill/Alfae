@@ -13,7 +13,6 @@ namespace SteamExporterPlugin;
 public class Exporter : IGameSource
 {
     public string ServiceName => "Steam Exporter";
-    public string Description => "Exports installed games to steam";
     public string Version => "v0.1";
     public string SlugServiceName => "steam-exporter";
     public string ShortServiceName => "Steam";

@@ -12,7 +12,6 @@ namespace BottlesPlugin;
 public class Bottles : IGameSource
 {
     public string ServiceName => "Bottles Integration";
-    public string Description => "Provides bottles integration";
     public string Version => "v0.1";
     public string SlugServiceName => "bottles";
     public string ShortServiceName => "bottles";
