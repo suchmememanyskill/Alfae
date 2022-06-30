@@ -14,6 +14,7 @@ public class BottlesProgram : IGame
 
     public async Task<byte[]?> BackgroundImage() => null;
     public InstalledStatus InstalledStatus { get; } = InstalledStatus.Installed;
+    public Platform EstimatedGamePlatform => Platform.None;
     public ProgressStatus? ProgressStatus { get; } = null;
     public event Action? OnUpdate;
     private string _bottleName;

@@ -37,6 +37,7 @@ public class LegendaryGame : IGame
     public bool HasCloudSave { get { if (Metadata != null && Metadata.Metadata != null && Metadata.Metadata.CustomAttributes != null) return Metadata.Metadata.CustomAttributes.ContainsKey("CloudSaveFolder"); return false; } }
     
     public InstalledStatus InstalledStatus => IsInstalled ? InstalledStatus.Installed : InstalledStatus.NotInstalled;
+    public Platform EstimatedGamePlatform => Platform.Windows;
     public ProgressStatus? ProgressStatus => Download;
     public LegendaryDownload? Download { get; set; }
     public event Action? OnUpdate;

@@ -32,6 +32,7 @@ public class LocalGame : IGame
     }
 
     [JsonIgnore] public InstalledStatus InstalledStatus => InstalledStatus.Installed;
+    [JsonIgnore] public Platform EstimatedGamePlatform => ExecPath.EndsWith(".exe") ? Platform.Windows : Platform.Linux;
     [JsonIgnore] public ProgressStatus? ProgressStatus { get; set; }
     [JsonIgnore] public string InstalledPath => Path.GetDirectoryName(ExecPath);
     [JsonIgnore] public IGameSource Source { get; set; }

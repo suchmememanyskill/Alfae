@@ -49,7 +49,7 @@ namespace Launcher
             }
             
             command.Action?.Invoke();
-            Thread.Sleep(20000);
+            Thread.Sleep(10000);
         }
 
         // Avalonia configuration, don't remove; also used by visual designer.

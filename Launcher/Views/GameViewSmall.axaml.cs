@@ -163,7 +163,7 @@ public partial class GameViewSmall : UserControlExt<GameViewSmall>
             SecondaryButtonLabel.Content = functions[1].Text;
         }
 
-        if (Menu.IsVisible && Game.InstalledStatus == InstalledStatus.Installed)
+        if (Menu.IsVisible && Game.InstalledStatus == InstalledStatus.Installed && Game.EstimatedGamePlatform != Platform.None)
         {
             commands.Add(new("Set Boot Configuration", () => new BootProfileSelectGUI(Loader.App.GetInstance(), Game).ShwoGUI()));
         }

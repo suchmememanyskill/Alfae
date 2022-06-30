@@ -11,6 +11,7 @@ public interface IGame
     public Task<byte[]?> CoverImage();
     public Task<byte[]?> BackgroundImage();
     public InstalledStatus InstalledStatus { get; }
+    public Platform EstimatedGamePlatform { get; } // Used to limit options for the boot profiles
     public ProgressStatus? ProgressStatus { get; }
     public event Action? OnUpdate;
 }

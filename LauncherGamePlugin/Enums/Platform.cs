@@ -7,6 +7,7 @@ public enum Platform
     Windows,
     Linux,
     Unknown,
+    None,
 }
 
 public static class PlatformExtensions

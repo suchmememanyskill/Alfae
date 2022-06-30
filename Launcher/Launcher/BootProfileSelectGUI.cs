@@ -1,5 +1,6 @@
 ﻿using System.Collections.Generic;
 using System.Linq;
+using LauncherGamePlugin.Enums;
 using LauncherGamePlugin.Forms;
 using LauncherGamePlugin.Interfaces;
 
@@ -15,14 +16,21 @@ public class BootProfileSelectGUI
         _app = app;
         _game = game;
     }
-
+    
     public void ShwoGUI()
     {
         string? currentConfig = _app.Launcher.GetGameConfiguration(_game);
         currentConfig ??= "Default";
 
         List<string> configs = new() {"Default"};
-        configs.AddRange(_app.Launcher.Profiles.Select(x => x.Name));
+        configs.AddRange(_app.Launcher.Profiles.Where(x =>
+        {
+            if (_game.EstimatedGamePlatform == Platform.Unknown)
+                return true;
+
+            return (_game.EstimatedGamePlatform == x.CompatibleExecutable);
+        }).Select(x => x.Name));
+        
         
         _app.ShowForm(new(new()
         {

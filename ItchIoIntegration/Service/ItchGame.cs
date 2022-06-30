@@ -23,7 +23,7 @@ public class ItchGame : IGame
 
     [JsonIgnore] public ItchGameDownload? Download { get; private set; }
     [JsonIgnore] public InstalledStatus InstalledStatus { get; private set; }
-    
+    [JsonIgnore] public Platform EstimatedGamePlatform => EstimateGamePlatform();
     [JsonIgnore] public IGameSource Source => ItchSource;
     [JsonIgnore] public ProgressStatus? ProgressStatus => Download;
 
@@ -109,19 +109,28 @@ public class ItchGame : IGame
             if (Directory.Exists(InstallPath!)) Directory.Delete(InstallPath!, true);
         });
     }
-    
-    public void Play()
+
+    private ItchApiLaunchTarget? GetLaunchTarget()
     {
         if (PreferredTarget < 0 && Targets.Count == 1)
             PreferredTarget = 0;
 
         if (PreferredTarget < 0 || PreferredTarget >= Targets.Count)
+            return null;
+        
+        return Targets[PreferredTarget];
+    }
+    
+    public void Play()
+    {
+        ItchApiLaunchTarget? target = GetLaunchTarget();
+
+        if (target == null)
         {
             new GameOptionsGui(this).ShowGui("Current preferred boot entry is invalid, please reconfigure");
             return;
         }
-
-        ItchApiLaunchTarget target = Targets[PreferredTarget];
+        
         string path = Path.Join(InstallPath, target.Path);
 
         LaunchParams args = new(path, CommandlineArgs, Path.GetDirectoryName(path), this, target.GetPlatform());
@@ -156,4 +165,14 @@ public class ItchGame : IGame
     public async Task<byte[]?> BackgroundImage() => null;
     public void InvokeOnUpdate() => OnUpdate?.Invoke();
     public Task<ItchApiGameUploads?> GetUploads() => ItchApiGameUploads.Get(ItchSource.Profile!, this);
+
+    public Platform EstimateGamePlatform()
+    {
+        ItchApiLaunchTarget? target = GetLaunchTarget();
+
+        if (target == null)
+            return Platform.Unknown;
+
+        return target.GetPlatform();
+    }
 }
