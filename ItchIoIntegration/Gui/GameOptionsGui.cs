@@ -1,13 +1,14 @@
 ﻿using ItchIoIntegration.Service;
+using LauncherGamePlugin;
 using LauncherGamePlugin.Forms;
 
 namespace ItchIoIntegration.Gui;
 
-public class ChangePreferredTargetGui
+public class GameOptionsGui
 {
     private ItchGame _game;
 
-    public ChangePreferredTargetGui(ItchGame game) => _game = game;
+    public GameOptionsGui(ItchGame game) => _game = game;
 
     public void ShowGui(string errMessage = "")
     {
@@ -21,13 +22,17 @@ public class ChangePreferredTargetGui
 
         List<FormEntry> entries = new()
         {
-            Form.TextBox($"Boot entries for {_game.Name}", FormAlignment.Center, "Bold"),
+            Form.TextBox($"Configuration for {_game.Name}", FormAlignment.Center, "Bold"),
+            Form.ClickableLinkBox($"Install location: {_game.InstallPath}", x => Utils.OpenFolder(_game.InstallPath!)),
+            Form.TextInput("Commandline args:", _game.CommandlineArgs),
             Form.Dropdown("Boot entry:", options, currentChoice),
             Form.Button("Back", x => _game.ItchSource.App.HideOverlay(), "Save", x =>
             {
                 string choice = x.GetValue("Boot entry:")!;
+                string args = x.GetValue("Commandline args:")!;
                 int choiceIdx = options.IndexOf(choice);
                 _game.PreferredTarget = choiceIdx;
+                _game.CommandlineArgs = args;
                 _game.ItchSource.SaveConfig();
                 _game.ItchSource.App.HideOverlay();
             })

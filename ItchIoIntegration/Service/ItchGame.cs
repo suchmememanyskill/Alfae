@@ -19,6 +19,7 @@ public class ItchGame : IGame
     public long DownloadKeyId { get; set; }
     public List<ItchApiLaunchTarget> Targets { get; set; } = new();
     public int PreferredTarget { get; set; } = -1;
+    public string CommandlineArgs { get; set; } = "";
 
     [JsonIgnore] public ItchGameDownload? Download { get; private set; }
     [JsonIgnore] public InstalledStatus InstalledStatus { get; private set; }
@@ -117,14 +118,14 @@ public class ItchGame : IGame
 
         if (PreferredTarget < 0 || PreferredTarget >= Targets.Count)
         {
-            new ChangePreferredTargetGui(this).ShowGui("Current preferred boot target is invalid, please reconfigure");
+            new GameOptionsGui(this).ShowGui("Current preferred boot entry is invalid, please reconfigure");
             return;
         }
 
         ItchApiLaunchTarget target = Targets[PreferredTarget];
         string path = Path.Join(InstallPath, target.Path);
 
-        LaunchParams args = new(path, "", Path.GetDirectoryName(path), this, target.GetPlatform());
+        LaunchParams args = new(path, CommandlineArgs, Path.GetDirectoryName(path), this, target.GetPlatform());
         ItchSource.App.Launch(args);
     }
     
