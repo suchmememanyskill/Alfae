@@ -143,12 +143,7 @@ public class ItchGameSource : IGameSource
         if (itchGame.InstalledStatus == InstalledStatus.Installed)
         {
             commands.Add(new("Launch", itchGame.Play));
-            
-            if (itchGame.Targets.Count > 1)
-            {
-                commands.Add(new("Configure", () => new GameOptionsGui(itchGame).ShowGui()));
-            }
-            
+            commands.Add(new("Configure", () => new GameOptionsGui(itchGame).ShowGui()));
             commands.Add(new("Uninstall", () => App.Show2ButtonTextPrompt($"Are you sure you want to uninstall {itchGame.Name}?", "Uninstall", "Back", x => Uninstall(itchGame), x => App.HideForm())));
         }
         else
