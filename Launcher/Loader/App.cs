@@ -68,21 +68,40 @@ public class App : IApp
 
     private bool _initialised = false;
 
+    private async Task<IGameSource> InitialiseService(IGameSource source)
+    {
+        await source.Initialize(this);
+        return source;
+    }
+    
     public async Task InitializeGameSources()
     {
         if (_initialised)
             return;
         
         List<IGameSource> sources = PluginLoader.GetGameSources(this);
-        List<Task> tasks = new();
+        List<Task<IGameSource>> tasks = new();
         sources.ForEach(x =>
         {
             Logger.Log($"Initialising {x.ServiceName}...");
-            tasks.Add(x.Initialize(this));
+            tasks.Add(InitialiseService(x));
         });
 
-        await Task.WhenAll(tasks);
-        GameSources = sources;
+        while (true)
+        {
+            try
+            {
+                await Task.WhenAll(tasks);
+                break;
+            }
+            catch (Exception e)
+            {
+                tasks.RemoveAll(x => x.IsFaulted);
+                Logger.Log("One or more plugins failed to initialize properly!", LogType.Error);
+            }
+        }        
+        
+        GameSources = tasks.Select(x => x.Result).ToList();
         
         Launcher.Load();
         await Launcher.GetProfiles();
