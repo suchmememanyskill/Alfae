@@ -66,4 +66,22 @@ public static class Utils
         else
             return Path.Join(AppContext.BaseDirectory, AppDomain.CurrentDomain.FriendlyName);
     }
+    
+    public static bool HasNetwork()
+    {
+        try
+        {
+            using (var client = new HttpClient())
+            {
+                client.GetAsync(new Uri("http://www.google.com")).GetAwaiter().GetResult()
+                    .EnsureSuccessStatusCode();
+            }
+
+            return true;
+        }
+        catch
+        {
+            return false;
+        }
+    }
 }

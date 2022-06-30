@@ -109,8 +109,7 @@ public class ItchGame : IGame
             if (Directory.Exists(InstallPath!)) Directory.Delete(InstallPath!, true);
         });
     }
-
-    // TODO: implement args
+    
     public void Play()
     {
         if (PreferredTarget < 0 && Targets.Count == 1)

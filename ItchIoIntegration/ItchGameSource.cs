@@ -10,7 +10,6 @@ using LauncherGamePlugin.Interfaces;
 
 namespace ItchIoIntegration;
 
-// TODO: Offline compatibility
 public class ItchGameSource : IGameSource
 {
     public string ServiceName => "Itch.io Integration";
@@ -52,6 +51,12 @@ public class ItchGameSource : IGameSource
         if (string.IsNullOrWhiteSpace(_config.ApiKey))
         {
             Log("Api key is empty!", LogType.Warn);
+            return;
+        }
+
+        if (!Utils.HasNetwork())
+        {
+            Log("Cannot seem to connect online?");
             return;
         }
         
@@ -97,7 +102,13 @@ public class ItchGameSource : IGameSource
         LoadWithGui();
     }
 
-    public async Task<List<IGame>> GetGames() => _games.Select(x => (IGame) x).ToList();
+    public async Task<List<IGame>> GetGames()
+    {
+        if (Profile == null)
+            return _games.Select(x => (IGame) x).Where(x => x.InstalledStatus == InstalledStatus.Installed).ToList();
+        else
+            return _games.Select(x => (IGame) x).ToList();
+    }
 
     public List<Command> GetGlobalCommands()
     {

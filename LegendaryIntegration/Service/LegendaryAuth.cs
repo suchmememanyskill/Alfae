@@ -7,24 +7,6 @@ namespace LegendaryIntegration.Service;
 
 public class LegendaryAuth
 {
-    public static bool HasNetwork()
-    {
-        try
-        {
-            using (var client = new HttpClient())
-            {
-                client.GetAsync(new Uri("http://www.google.com")).GetAwaiter().GetResult()
-                    .EnsureSuccessStatusCode();
-            }
-
-            return true;
-        }
-        catch
-        {
-            return false;
-        }
-    }
-
     public static string LegendaryPath { get; set; } = "legendary";
     public LegendaryStatusResponse StatusResponse { get; private set; }
     public bool OfflineLogin { get; private set; }
@@ -35,7 +17,7 @@ public class LegendaryAuth
         Terminal t = new Terminal(LegendaryGameSource.Source.App);
         LegendaryInstalled = true;        
 
-        if (HasNetwork())
+        if (Utils.HasNetwork())
         {
             if (!(await t.ExecLegendary("status --json")))
             {
