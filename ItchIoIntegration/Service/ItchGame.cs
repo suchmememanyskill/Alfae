@@ -76,7 +76,10 @@ public class ItchGame : IGame
             throw new Exception("Not installed");
 
         InstalledStatus = InstalledStatus.NotInstalled;
-        await Task.Run(() => Directory.Delete(InstallPath!, true));
+        await Task.Run(() =>
+        {
+            if (Directory.Exists(InstallPath!)) Directory.Delete(InstallPath!, true);
+        });
     }
     
     public async Task<byte[]?> CoverImage()

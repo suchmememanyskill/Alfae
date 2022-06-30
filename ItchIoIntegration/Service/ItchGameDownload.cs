@@ -14,6 +14,7 @@ public class ItchGameDownload : ProgressStatus
     private string _filename;
     private readonly CancellationTokenSource _cts = new();
     private bool _doneDownloading = false;
+    private int _lastSecond = 0;
 
     public ItchGameDownload(string url, string path, string filename)
     {
@@ -22,6 +23,19 @@ public class ItchGameDownload : ProgressStatus
         _filename = filename;
     }
 
+    private void OnProgressUpdate(object? obj, float progress)
+    {
+        if (_doneDownloading || _lastSecond == DateTime.Now.Second) // Only make the UI respond once a second
+            return;
+
+        _lastSecond = DateTime.Now.Second;
+        
+        progress *= 100;
+        Line1 = $"Downloading: {progress:0}%";
+        Percentage = progress;
+        InvokeOnUpdate();
+    }
+    
     public async Task Download()
     {
         _doneDownloading = false;
@@ -33,13 +47,7 @@ public class ItchGameDownload : ProgressStatus
         var fs = new FileStream(filePath, FileMode.Create);
 
         Progress<float> progress = new();
-        progress.ProgressChanged += (_, val) =>
-        {
-            val *= 100;
-            Line1 = $"Downloading: {val:0.00}%";
-            Percentage = val;
-            InvokeOnUpdate();
-        };
+        progress.ProgressChanged += OnProgressUpdate;
 
         try
         {
@@ -53,6 +61,8 @@ public class ItchGameDownload : ProgressStatus
         }
 
         _doneDownloading = true;
+        progress.ProgressChanged -= OnProgressUpdate;
+        Percentage = 100;
         fs.Close();
 
         if (_filename.EndsWith(".zip"))

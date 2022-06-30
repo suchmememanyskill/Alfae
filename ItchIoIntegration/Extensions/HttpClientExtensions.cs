@@ -20,7 +20,7 @@ public static class HttpClientExtensions
                 // Convert absolute progress (bytes downloaded) into relative progress (0% - 100%)
                 var relativeProgress = new Progress<long>(totalBytes => progress.Report((float)totalBytes / contentLength.Value));
                 // Use extension method to report progress while downloading
-                await download.CopyToAsync(destination, 81920, relativeProgress, cancellationToken);
+                await download.CopyToAsync(destination, 0x800000, relativeProgress, cancellationToken);
                 progress.Report(1);
             }
         }
