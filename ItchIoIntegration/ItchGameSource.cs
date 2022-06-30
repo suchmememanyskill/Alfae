@@ -128,30 +128,32 @@ public class ItchGameSource : IGameSource
         if (itchGame == null)
             throw new InvalidDataException();
 
+        List<Command> commands = new();
+        
         if (itchGame.InstalledStatus == InstalledStatus.Installed)
         {
-            return new()
+            commands.Add(new("Launch", itchGame.Play));
+            
+            if (itchGame.Targets.Count > 1)
             {
-                new("Uninstall", () => App.Show2ButtonTextPrompt($"Are you sure you want to uninstall {itchGame.Name}?", "Uninstall", "Back", x => Uninstall(itchGame), x => App.HideOverlay()))
-            };
+                commands.Add(new("Edit executable", () => new ChangePreferredTargetGui(itchGame).ShowGui()));
+            }
+            
+            commands.Add(new("Uninstall", () => App.Show2ButtonTextPrompt($"Are you sure you want to uninstall {itchGame.Name}?", "Uninstall", "Back", x => Uninstall(itchGame), x => App.HideOverlay())));
         }
         else
         {
             if (itchGame.Download == null)
             {
-                return new()
-                {
-                    new("Install", () => new DownloadSelectForm(itchGame, App, this).InitiateForm())
-                };
+                commands.Add(new("Install", () => new DownloadSelectForm(itchGame, App, this).InitiateForm()));
             }
             else
             {
-                return new()
-                {
-                    new("Stop", () => itchGame.Download.Stop())
-                };
+                commands.Add(new("Stop", () => itchGame.Download.Stop()));
             }
         }
+
+        return commands;
     }
 
     public void AddToInstalled(ItchGame game)
@@ -170,4 +172,6 @@ public class ItchGameSource : IGameSource
         App.ReloadGames();
         App.HideOverlay();
     }
+
+    public void SaveConfig() => _config.Save(App);
 }
