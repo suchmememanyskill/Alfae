@@ -47,7 +47,7 @@ public class Form
             new(FormEntryType.TextBox, text, alignment: FormAlignment.Center),
             new (FormEntryType.ButtonList, buttonList: new()
             {
-                {"Back", x => app.HideOverlay()}
+                {"Back", x => app.HideForm()}
             })
         });
     }

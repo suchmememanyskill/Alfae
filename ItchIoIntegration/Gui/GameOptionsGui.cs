@@ -26,7 +26,7 @@ public class GameOptionsGui
             Form.ClickableLinkBox($"Install location: {_game.InstallPath}", x => Utils.OpenFolder(_game.InstallPath!)),
             Form.TextInput("Commandline args:", _game.CommandlineArgs),
             Form.Dropdown("Boot entry:", options, currentChoice),
-            Form.Button("Back", x => _game.ItchSource.App.HideOverlay(), "Save", x =>
+            Form.Button("Back", x => _game.ItchSource.App.HideForm(), "Save", x =>
             {
                 string choice = x.GetValue("Boot entry:")!;
                 string args = x.GetValue("Commandline args:")!;
@@ -34,7 +34,7 @@ public class GameOptionsGui
                 _game.PreferredTarget = choiceIdx;
                 _game.CommandlineArgs = args;
                 _game.ItchSource.SaveConfig();
-                _game.ItchSource.App.HideOverlay();
+                _game.ItchSource.App.HideForm();
             })
         };
 

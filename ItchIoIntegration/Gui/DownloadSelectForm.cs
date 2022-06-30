@@ -45,7 +45,7 @@ public class DownloadSelectForm
             entries.Add(Form.ClickableLinkBox( string.IsNullOrWhiteSpace(x.DisplayName) ? x.Filename : $"{x.DisplayName} ({x.Filename})", y => ContinueDownload(x)));
         });
         
-        entries.Add(Form.Button("Back", _ => _app.HideOverlay()));
+        entries.Add(Form.Button("Back", _ => _app.HideForm()));
         
         _app.ShowForm(entries);
     }
@@ -53,7 +53,7 @@ public class DownloadSelectForm
     private async void ContinueDownload(ItchApiUpload upload)
     {
         _source.Log($"Selected download {upload.DisplayName}");
-        _app.HideOverlay();
+        _app.HideForm();
         _game.DownloadGame(upload);
     }
 }

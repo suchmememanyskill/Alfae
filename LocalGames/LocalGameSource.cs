@@ -73,11 +73,11 @@ public class LocalGameSource : IGameSource
             new FormEntry(FormEntryType.TextInput, "CLI Arguments:", args),
             new FormEntry(FormEntryType.ButtonList, "", buttonList: new()
             {
-                {"Cancel", entry => _app.HideOverlay()},
+                {"Cancel", entry => _app.HideForm()},
                 {
                     addOrEdit, entry =>
                     {
-                        _app.HideOverlay();
+                        _app.HideForm();
                         new Thread(() => AddGame(entry.ContainingForm)).Start();
                     }
                 }
@@ -151,7 +151,7 @@ public class LocalGameSource : IGameSource
 
         _app.ReloadGames();
         Save();
-        _app.HideOverlay();
+        _app.HideForm();
     }
 
     public void Log(string message, LogType type = LogType.Info) => _app.Logger.Log(message, type, "LocalGames");
@@ -176,7 +176,7 @@ public class LocalGameSource : IGameSource
             new Command("Edit", () => AddGameForm(game: localGame)),
             new Command("Remove From Launcher", () =>
             {
-                _app.Show2ButtonTextPrompt($"Are you sure you want to remove '{localGame.Name}' from the launcher?", "Remove", "Back", x => Remove(localGame), x => _app.HideOverlay());
+                _app.Show2ButtonTextPrompt($"Are you sure you want to remove '{localGame.Name}' from the launcher?", "Remove", "Back", x => Remove(localGame), x => _app.HideForm());
             }),
         };
     }
@@ -193,9 +193,9 @@ public class LocalGameSource : IGameSource
         _app.ShowTextPrompt($"Removing {localGame.Name}...");
         _games.Remove(localGame);
         _app.ReloadGames();
-        _app.HideOverlay();
+        _app.HideForm();
         await Save();
-        _app.HideOverlay();
+        _app.HideForm();
     }
     
 }

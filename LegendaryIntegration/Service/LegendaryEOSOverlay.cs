@@ -30,7 +30,7 @@ public class LegendaryEOSOverlay
             }
         }
 
-        Dictionary<string, Action<FormEntry>> buttons = new() {{"Back", x => _app.HideOverlay()}};
+        Dictionary<string, Action<FormEntry>> buttons = new() {{"Back", x => _app.HideForm()}};
 
         if (installed)
         {
@@ -51,7 +51,7 @@ public class LegendaryEOSOverlay
         _app.ShowTextPrompt("Uninstalling...");
         Terminal t = new(LegendaryGameSource.Source.App);
         await t.ExecLegendary("eos-overlay remove -y");
-        _app.HideOverlay();
+        _app.HideForm();
     }
 
     public async void Install()
@@ -63,6 +63,6 @@ public class LegendaryEOSOverlay
         
         Terminal t = new(LegendaryGameSource.Source.App);
         await t.ExecLegendary($"eos-overlay --path \"{path}\" install -y");
-        _app.HideOverlay();
+        _app.HideForm();
     }
 }

@@ -41,10 +41,10 @@ public class CustomBootProfileGUI
             new (FormEntryType.Toggle, "Escape special characters (Linux only)", _profile.EscapeReplaceables ? "1" : "0"),
             new(FormEntryType.ButtonList, buttonList: new()
             {
-                {"Back", x => _app.HideOverlay()},
+                {"Back", x => _app.HideForm()},
                 {"Save", x =>
                 {
-                    _app.HideOverlay();
+                    _app.HideForm();
                     CreateProfile(x.ContainingForm);
                 }}
             })

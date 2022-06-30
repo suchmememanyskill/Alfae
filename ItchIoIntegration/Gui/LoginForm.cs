@@ -25,7 +25,7 @@ public class LoginForm
             Form.ClickableLinkBox("Take me to the api page",
                 _ => Utils.OpenUrl("https://itch.io/user/settings/api-keys")),
             Form.TextInput("Api Key:"),
-            Form.Button("Back", _ => _app.HideOverlay(), "Login", AttemptLogin)
+            Form.Button("Back", _ => _app.HideForm(), "Login", AttemptLogin)
         };
         
         if (errMessage != "")

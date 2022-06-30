@@ -30,7 +30,7 @@ public class BootProfileSelectGUI
             new FormEntry(FormEntryType.Dropdown, "Boot Profile:", currentConfig, configs),
             new FormEntry(FormEntryType.ButtonList, buttonList: new()
             {
-                {"Back", x => _app.HideOverlay()},
+                {"Back", x => _app.HideForm()},
                 {"Save", x =>
                 {
                     string config = x.ContainingForm.GetValue("Boot Profile:")!;
@@ -38,7 +38,7 @@ public class BootProfileSelectGUI
                         config = "";
                     
                     _app.Launcher.SetGameConfiguration(_game, config);
-                    _app.HideOverlay();
+                    _app.HideForm();
                 }}
             })
         }));

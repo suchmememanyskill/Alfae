@@ -24,7 +24,7 @@ public static class LegendaryGameForm
             new FormEntry(FormEntryType.TextInput, "Additional game arguments", game.ConfigAdditionalGameArgs),
             new FormEntry(FormEntryType.ButtonList, buttonList: new()
             {
-                {"Back", x => LegendaryGameSource.Source.App.HideOverlay()},
+                {"Back", x => LegendaryGameSource.Source.App.HideForm()},
                 {"Save", x =>
                 {
                     Form localForm = x.ContainingForm;
@@ -40,7 +40,7 @@ public static class LegendaryGameForm
                     legendaryGame.ConfigAdditionalGameArgs = args;
                     legendaryGame.Parser.SaveConfig();
                     
-                    LegendaryGameSource.Source.App.HideOverlay();
+                    LegendaryGameSource.Source.App.HideForm();
                 }}
             })
         });

@@ -88,7 +88,7 @@ public class Bottles : IGameSource
         _app.ShowTextPrompt("Reloading bottles...");
         await LoadBottles();
         _app.ReloadGames();
-        _app.HideOverlay();
+        _app.HideForm();
     }
 
     public void SetOrUnsetImportGames()

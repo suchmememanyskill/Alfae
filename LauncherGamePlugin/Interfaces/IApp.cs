@@ -9,7 +9,7 @@ public interface IApp
     public string GameDir { get; }
     public Logger Logger { get; }
     void ShowForm(Form form);
-    void HideOverlay();
+    void HideForm();
     void ReloadGames();
     void ReloadGlobalCommands();
     void Launch(LaunchParams launchParams);

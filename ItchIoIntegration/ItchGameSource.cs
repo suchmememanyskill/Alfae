@@ -92,7 +92,7 @@ public class ItchGameSource : IGameSource
         App.ShowTextPrompt("Reloading Itch.io games...");
         await Load();
         App.ReloadGames();
-        App.HideOverlay();
+        App.HideForm();
     }
 
     public async void SetNewApiKey(string key)
@@ -150,7 +150,7 @@ public class ItchGameSource : IGameSource
                 commands.Add(new("Configure", () => new GameOptionsGui(itchGame).ShowGui()));
             }
             
-            commands.Add(new("Uninstall", () => App.Show2ButtonTextPrompt($"Are you sure you want to uninstall {itchGame.Name}?", "Uninstall", "Back", x => Uninstall(itchGame), x => App.HideOverlay())));
+            commands.Add(new("Uninstall", () => App.Show2ButtonTextPrompt($"Are you sure you want to uninstall {itchGame.Name}?", "Uninstall", "Back", x => Uninstall(itchGame), x => App.HideForm())));
         }
         else
         {
@@ -181,7 +181,7 @@ public class ItchGameSource : IGameSource
         _config.InstalledGames.Remove(game);
         _config.Save(App);
         App.ReloadGames();
-        App.HideOverlay();
+        App.HideForm();
     }
 
     public void SaveConfig() => _config.Save(App);

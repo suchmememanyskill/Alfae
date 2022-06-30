@@ -137,7 +137,7 @@ public class App : IApp
             ShowForm(_startForm);
     }
 
-    public void HideOverlay()
+    public void HideForm()
     {
         if (HeadlessMode)
             return;
@@ -174,7 +174,7 @@ public class App : IApp
                 new FormEntry(FormEntryType.TextBox, $"Failed to launch game\n{e.Message}", alignment: FormAlignment.Center),
                 new FormEntry(FormEntryType.ButtonList, "", buttonList: new()
                 {
-                    {"Back", x => HideOverlay()}
+                    {"Back", x => HideForm()}
                 })
             }));
         }

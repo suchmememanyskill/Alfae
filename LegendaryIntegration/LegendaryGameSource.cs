@@ -78,7 +78,7 @@ public class LegendaryGameSource : IGameSource
                     {
                         LegendaryGame xGame = x.ContainingForm.Game as LegendaryGame;
                         Uninstall(xGame);
-                    }, x => App.HideOverlay(), legendaryGame);
+                    }, x => App.HideForm(), legendaryGame);
             }));
         }
 
@@ -149,7 +149,7 @@ public class LegendaryGameSource : IGameSource
         Terminal t = new(App);
         await t.ExecLegendary("list-games");
         App.ReloadGames();
-        App.HideOverlay();
+        App.HideForm();
     }
 
     public async void Launch(LegendaryGame game, bool ignoreUpdate = false)
@@ -167,14 +167,14 @@ public class LegendaryGameSource : IGameSource
         {
             Dictionary<string, Action<FormEntry>> buttons = new()
             {
-                {"Back", x => App.HideOverlay() }
+                {"Back", x => App.HideForm() }
             };
             
             if (e.Message == "Game has an update available")
                 buttons.Add("Launch anyway", x =>
                 {
                     Launch(game, true);
-                    App.HideOverlay();
+                    App.HideForm();
                 });
             
             App.ShowForm(new(new()
@@ -192,7 +192,7 @@ public class LegendaryGameSource : IGameSource
         App.ShowTextPrompt($"Uninstalling {game.Name}...");
         await game.Uninstall();
         App.ReloadGames();
-        App.HideOverlay();
+        App.HideForm();
     }
 
     public async void Download(LegendaryGame game)
@@ -228,7 +228,7 @@ public class LegendaryGameSource : IGameSource
         }
         
         App.ReloadGames();
-        App.HideOverlay();
+        App.HideForm();
     }
 
     private void LoginForm(string warningMessage = "")
@@ -242,10 +242,10 @@ public class LegendaryGameSource : IGameSource
             new FormEntry(FormEntryType.TextInput, "SID:"),
             new FormEntry(FormEntryType.ButtonList, "", buttonList: new()
             {
-                {"Back", entry => App.HideOverlay() },
+                {"Back", entry => App.HideForm() },
                 {"Login", entry =>
                 {
-                    App.HideOverlay();
+                    App.HideForm();
                     Login(entry.ContainingForm);
                 }}
             })
@@ -273,7 +273,7 @@ public class LegendaryGameSource : IGameSource
         auth = null;
         manager = null;
         App.ReloadGames();
-        App.HideOverlay();
+        App.HideForm();
     }
     
     public void Log(string message, LogType type = LogType.Info) => App.Logger.Log(message, type, "EpicGames");
