@@ -63,7 +63,7 @@ public class ItchGameDownload : ProgressStatus
         _doneDownloading = true;
         progress.ProgressChanged -= OnProgressUpdate;
         Percentage = 100;
-        fs.Close();
+        await fs.DisposeAsync();
 
         if (_filename.EndsWith(".zip"))
         {
@@ -72,7 +72,7 @@ public class ItchGameDownload : ProgressStatus
             await Task.Run(() => ZipFile.ExtractToDirectory(filePath, _path), _cts.Token);
             File.Delete(filePath);
         }
-        
+
         OnCompletionOrCancel?.Invoke();
     }
 
