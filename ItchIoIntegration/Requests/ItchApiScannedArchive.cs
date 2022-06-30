@@ -41,7 +41,7 @@ public class ItchApiLaunchTarget
 
     public Platform GetPlatform()
     {
-        string[] winPlatforms = {"windows"};
+        string[] winPlatforms = {"windows-script", "windows"};
         string[] linuxPlatforms = {"script", "linux"};
 
         if (winPlatforms.Contains(Flavour))

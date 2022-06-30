@@ -122,8 +122,9 @@ public class ItchGame : IGame
         }
 
         ItchApiLaunchTarget target = Targets[PreferredTarget];
+        string path = Path.Join(InstallPath, target.Path);
 
-        LaunchParams args = new(Path.Join(InstallPath, target.Path), "", InstallPath!, this, target.GetPlatform());
+        LaunchParams args = new(path, "", Path.GetDirectoryName(path), this, target.GetPlatform());
         ItchSource.App.Launch(args);
     }
     
