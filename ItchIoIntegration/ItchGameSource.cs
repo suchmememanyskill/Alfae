@@ -144,6 +144,10 @@ public class ItchGameSource : IGameSource
         {
             commands.Add(new("Launch", itchGame.Play));
             commands.Add(new("Configure", () => new GameOptionsGui(itchGame).ShowGui()));
+            
+            if (itchGame.GameUrl != null)
+                commands.Add(new("Open page", () => Utils.OpenUrl(itchGame.GameUrl.AbsoluteUri)));
+            
             commands.Add(new("Uninstall", () => App.Show2ButtonTextPrompt($"Are you sure you want to uninstall {itchGame.Name}?", "Uninstall", "Back", x => Uninstall(itchGame), x => App.HideForm())));
         }
         else
@@ -151,6 +155,8 @@ public class ItchGameSource : IGameSource
             if (itchGame.Download == null)
             {
                 commands.Add(new("Install", () => new DownloadSelectForm(itchGame, App, this).InitiateForm()));
+                if (itchGame.GameUrl != null)
+                    commands.Add(new("Open page", () => Utils.OpenUrl(itchGame.GameUrl.AbsoluteUri)));
             }
             else
             {

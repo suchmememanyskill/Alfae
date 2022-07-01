@@ -20,6 +20,7 @@ public class ItchGame : IGame
     public List<ItchApiLaunchTarget> Targets { get; set; } = new();
     public int PreferredTarget { get; set; } = -1;
     public string CommandlineArgs { get; set; } = "";
+    public Uri? GameUrl { get; set; }
 
     [JsonIgnore] public ItchGameDownload? Download { get; private set; }
     [JsonIgnore] public InstalledStatus InstalledStatus { get; private set; }
@@ -43,6 +44,7 @@ public class ItchGame : IGame
         Id = key.GameId;
         CoverUri = key.Game.GetCoverUrl();
         DownloadKeyId = key.DownloadKeyId;
+        GameUrl = key.Game.Url;
     }
 
     public async void DownloadGame(ItchApiUpload upload)
