@@ -62,7 +62,7 @@ public class LegendaryGameSource : IGameSource
         }
         else
         {
-            if (legendaryGame.UpdateAvailable)
+            if (legendaryGame.UpdateAvailable && !auth!.OfflineLogin)
             {
                 commands.Add(new("Update", () => Download(legendaryGame)));
             }
