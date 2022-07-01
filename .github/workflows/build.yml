@@ -59,16 +59,14 @@ jobs:
         chmod a+x ../Release/Launcher
 
     - name: Zip Linux Build
-      uses: edgarrc/action-7z@v1
-      with:
-        args: 7z a Linux.7z ./Release
+      run: zip -r Linux.zip ./Release
 
     - name: Upload artifacts
       uses: actions/upload-artifact@v2
       with:
         name: Launcher Linux
         path: |
-          Linux.7z
+          Linux.zip
 
   build-windows:
     runs-on: windows-latest
