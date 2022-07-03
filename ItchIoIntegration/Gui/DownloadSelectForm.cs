@@ -26,8 +26,10 @@ public class DownloadSelectForm
         if (uploads == null)
         {
             _source.Log("Failed to get game files", LogType.Error);
+            _app.HideForm();
             return;
         }
+        
             
         _source.Log($"Got {uploads.Uploads.Count} upload(s)");
         ShowForm(uploads);
@@ -40,7 +42,7 @@ public class DownloadSelectForm
             Form.TextBox($"Available downloads for {_game.Name}", FormAlignment.Center, "Bold")
         };
         
-        uploads.Uploads.ForEach(x =>
+        uploads.Uploads.Where(x => !x.IsDemo()).ToList().ForEach(x =>
         {
             entries.Add(Form.ClickableLinkBox( string.IsNullOrWhiteSpace(x.DisplayName) ? x.Filename : $"{x.DisplayName} ({x.Filename})", y => ContinueDownload(x)));
         });

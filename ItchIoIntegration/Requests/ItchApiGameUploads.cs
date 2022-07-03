@@ -20,9 +20,18 @@ public class ItchApiGameUploads
                 return null;
 
             string text = await response.Content.ReadAsStringAsync();
+            
+            var jsonSettings = new JsonSerializerSettings
+            {
+                Error = ((sender, args) =>
+                {
+                    args.ErrorContext.Handled = true;
+                })
+            };
+            
             try
             {
-                ItchApiGameUploads? uploads = JsonConvert.DeserializeObject<ItchApiGameUploads>(text);
+                ItchApiGameUploads? uploads = JsonConvert.DeserializeObject<ItchApiGameUploads>(text, jsonSettings);
 
                 if (uploads != null)
                 {
@@ -70,9 +79,14 @@ public class ItchApiUpload
 
     [JsonProperty("updated_at")]
     public DateTimeOffset UpdatedAt { get; set; }
+    
+    [JsonProperty("traits")]
+    public List<string> Traits { get; set; }
 
     [JsonProperty("id")]
     public long Id { get; set; }
+
+    public bool IsDemo() => Traits?.Contains("demo") ?? false;
 
     public string GetDownloadUrl(long downloadKeyId, ItchApiProfile profile) =>
         $"https://api.itch.io/uploads/{Id}/download?download_key_id={downloadKeyId}&api_key={profile.ApiKey}";
