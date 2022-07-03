@@ -25,7 +25,10 @@ public class ItchApiGameUploads
             {
                 Error = ((sender, args) =>
                 {
-                    args.ErrorContext.Handled = true;
+                    if ("traits".Equals(args.ErrorContext.Member))
+                        args.ErrorContext.Handled = true;
+                    else
+                        throw args.ErrorContext.Error;
                 })
             };
             
