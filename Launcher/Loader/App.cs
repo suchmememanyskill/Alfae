@@ -7,6 +7,7 @@ using Avalonia;
 using Avalonia.Threading;
 using Launcher.Forms;
 using Launcher.Launcher;
+using Launcher.Utils;
 using Launcher.Views;
 using LauncherGamePlugin;
 using LauncherGamePlugin.Enums;
@@ -18,7 +19,7 @@ namespace Launcher.Loader;
 
 public class App : IApp
 {
-    public static string Version => "v1.0";
+    public static string Version => $"v{NewVersionCheck.Version}";
     public string ConfigDir
     {
         get
@@ -132,6 +133,7 @@ public class App : IApp
 
     private Form? _startForm = null;
 
+    public bool HasStartForm() => _startForm != null;
     public void ShowPossibleStartForm()
     {
         if (_startForm != null)
@@ -244,6 +246,7 @@ public class App : IApp
             _gameDir = File.ReadAllText(Path.Join(ConfigDir, "dlloc.txt"));
 
         Launcher = new(this);
+        Logger.Log($"Launcher {Version}");
     }
 
     private static App? _instance;

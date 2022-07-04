@@ -12,7 +12,7 @@
                     <Label VerticalAlignment="Center" Name="GameCountLabel" FontSize="20">Found 6 games, 9 installed</Label>
                 </StackPanel>
                 <StackPanel DockPanel.Dock="Right" Orientation="Horizontal" HorizontalAlignment="Right" Spacing="10" Name="TopBarRightSide" Margin="0,0,10,0">
-                    <TextBox Width="300" Watermark="Search..." Name="SearchBox" VerticalAlignment="Center" />
+                    <TextBox Width="200" Watermark="Search..." Name="SearchBox" VerticalAlignment="Center" />
                     <Menu VerticalAlignment="Center">
                         <MenuItem Header="Boot Profiles" Classes="ButtonLike" Name="ProfileMenu" FontSize="16"  />
                     </Menu>

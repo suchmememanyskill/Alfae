@@ -73,7 +73,7 @@ public class ItchGameSource : IGameSource
             ItchApiProfileOwnedKeys? keys = await Profile.GetOwnedKeys(page);
             if (keys == null)
             {
-                Log("Failed to get games!", LogType.Error);
+                Log($"Failed to get games at page {page}!", LogType.Error);
                 break;
             }
 

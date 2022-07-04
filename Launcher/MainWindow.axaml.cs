@@ -1,6 +1,8 @@
 using Avalonia.Controls;
 using Avalonia.Threading;
+using Launcher.Utils;
 using Launcher.Views;
+using LauncherGamePlugin.Forms;
 
 namespace Launcher
 {
@@ -23,7 +25,18 @@ namespace Launcher
             app.MainView = new MainView();
             Content = app.MainView;
             await app.ReloadGames2Task();
-            app.ShowPossibleStartForm();
+            if (app.HasStartForm())
+            {
+                app.ShowPossibleStartForm();
+            }
+            else
+            {
+                string? gitVersion = await NewVersionCheck.GetGitVersion();
+                if (gitVersion != null && gitVersion != NewVersionCheck.Version)
+                {
+                    app.Show2ButtonTextPrompt($"Launcher has an update available, v{gitVersion}. Would you like to update?", "Back", "Update", x => app.HideForm(), x => LauncherGamePlugin.Utils.OpenUrl("https://github.com/suchmememanyskill/Launcher/releases"));
+                }
+            }
         }
     }
 }
