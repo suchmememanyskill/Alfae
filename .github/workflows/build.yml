@@ -28,34 +28,34 @@ jobs:
     - name: Build LocalGames plugin
       run: |
         cd LocalGames
-        dotnet publish -o ../Release/plugins/LocalGames
+        dotnet publish -o ../Release/plugins/LocalGames -p:Configuration=Release
 
     - name: Build SteamExporterPlugin plugin
       run: |
         cd SteamExporterPlugin
-        dotnet publish -o ../Release/plugins/SteamExporterPlugin
+        dotnet publish -o ../Release/plugins/SteamExporterPlugin -p:Configuration=Release
     
     - name: Build BottlesPlugin plugin
       run: |
         cd BottlesPlugin
-        dotnet publish -o ../Release/plugins/BottlesPlugin
+        dotnet publish -o ../Release/plugins/BottlesPlugin -p:Configuration=Release
 
     - name: Build ItchIoIntegration
       run: |
         cd ItchIoIntegration
-        dotnet publish -o ../Release/plugins/ItchIoIntegration
+        dotnet publish -o ../Release/plugins/ItchIoIntegration -p:Configuration=Release
 
     - name: Build LegendaryIntegration plugin
       run: |
         cd LegendaryIntegration
-        dotnet publish -o ../Release/plugins/LegendaryIntegration
+        dotnet publish -o ../Release/plugins/LegendaryIntegration -p:Configuration=Release
         wget -O ../Release/legendary https://github.com/derrod/legendary/releases/latest/download/legendary
         chmod a+x ../Release/legendary
     
     - name: Build app
       run: |
         cd Launcher
-        dotnet publish -o ../Release -r linux-x64 --self-contained -p:PublishSingleFile=true
+        dotnet publish -o ../Release -r linux-x64 --self-contained -p:PublishSingleFile=true -p:Configuration=Release
         chmod a+x ../Release/Launcher
 
     - name: Zip Linux Build
@@ -89,28 +89,28 @@ jobs:
       - name: Build LocalGames plugin
         run: |
           cd LocalGames
-          dotnet publish -o ../Release/plugins/LocalGames
+          dotnet publish -o ../Release/plugins/LocalGames -p:Configuration=Release
 
       - name: Build SteamExporterPlugin plugin
         run: |
           cd SteamExporterPlugin
-          dotnet publish -o ../Release/plugins/SteamExporterPlugin
+          dotnet publish -o ../Release/plugins/SteamExporterPlugin -p:Configuration=Release
 
       - name: Build ItchIoIntegration
         run: |
           cd ItchIoIntegration
-          dotnet publish -o ../Release/plugins/ItchIoIntegration
+          dotnet publish -o ../Release/plugins/ItchIoIntegration -p:Configuration=Release
 
       - name: Build LegendaryIntegration plugin
         run: |
           cd LegendaryIntegration
-          dotnet publish -o ../Release/plugins/LegendaryIntegration
+          dotnet publish -o ../Release/plugins/LegendaryIntegration -p:Configuration=Release
           curl -L -o ../Release/legendary.exe https://github.com/derrod/legendary/releases/latest/download/legendary.exe
 
       - name: Build app
         run: |
           cd Launcher
-          dotnet publish -o ../Release -r win-x64 --self-contained -p:PublishSingleFile=true
+          dotnet publish -o ../Release -r win-x64 --self-contained -p:PublishSingleFile=true -p:Configuration=Release
 
       - name: Zip Windows Build
         run: |
