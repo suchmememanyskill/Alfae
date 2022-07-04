@@ -6,6 +6,7 @@
              x:Class="Launcher.Forms.FormTemplates.Dropdown">
     <StackPanel Height="40" Orientation="Horizontal" Spacing="10">
         <Label VerticalAlignment="Center" Name="Label">Label:</Label>
+        <Button Name="CycleButton">Cycle</Button>
         <ComboBox VerticalAlignment="Center" Name="ComboBox" />
     </StackPanel>
 </UserControl>

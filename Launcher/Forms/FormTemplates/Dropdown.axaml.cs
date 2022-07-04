@@ -1,4 +1,5 @@
 ﻿using Avalonia.Controls;
+using Launcher.Utils;
 using LauncherGamePlugin.Forms;
 
 namespace Launcher.Forms.FormTemplates;
@@ -19,5 +20,7 @@ public partial class Dropdown : UserControl
             idx = 0;
         ComboBox.SelectedIndex = idx;
         ComboBox.SelectionChanged += (_, _) => formEntry.Value = formEntry.DropdownOptions[ComboBox.SelectedIndex];
+        CycleButton.Command = new LambdaCommand(x =>
+            ComboBox.SelectedIndex = (ComboBox.SelectedIndex + 1) % formEntry.DropdownOptions.Count);
     }
 }
