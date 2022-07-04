@@ -19,26 +19,15 @@ public class ItchApiProfileOwnedKeys
     {
         using (HttpClient client = new())
         {
-            client.DefaultRequestHeaders.Add("Authorization", profile.ApiKey);
-            HttpResponseMessage response = await client.GetAsync($"https://api.itch.io/profile/owned-keys?page={page}");
-            if (!response.IsSuccessStatusCode)
-                return null;
-
-            string text = await response.Content.ReadAsStringAsync();
-            try
+            var p = await ItchApiRequest.ItchRequest<ItchApiProfileOwnedKeys>(profile,
+                $"https://api.itch.io/profile/owned-keys?page={page}");
+            
+            if (p != null)
             {
-                var p = JsonConvert.DeserializeObject<ItchApiProfileOwnedKeys>(text);
-                if (p != null)
-                {
-                    p.Profile = profile;
-                }
+                p.Profile = profile;
+            }
 
-                return p;
-            }
-            catch (Exception e)
-            {
-                return null;
-            }
+            return p;
         }
     }
 }
@@ -104,6 +93,12 @@ public class ItchApiGame
     
     [JsonProperty("still_cover_url", NullValueHandling = NullValueHandling.Ignore)]
     public Uri? StillCoverUrl { get; set; }
+    
+    [JsonProperty("traits")]
+    public List<string> Traits { get; set; }
+
+    public bool HasDemo() => Traits?.Contains("has_demo") ?? false;
+    public bool IsPaid() => Traits?.Contains("can_be_bought") ?? false;
     
     public Uri? GetCoverUrl()
     {

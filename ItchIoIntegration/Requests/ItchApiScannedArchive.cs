@@ -11,23 +11,12 @@ public class ItchApiScannedArchive
 
     public async static Task<ItchApiScannedArchive?> Get(ItchApiProfile profile, ItchGame game, ItchApiUpload upload)
     {
-        using (HttpClient client = new())
-        {
-            client.DefaultRequestHeaders.Add("Authorization", profile.ApiKey);
-            HttpResponseMessage response = await client.GetAsync($"https://api.itch.io/uploads/{upload.Id}/scanned-archive?download_key_id={game.DownloadKeyId}");
-            if (!response.IsSuccessStatusCode)
-                return null;
+        string url = $"https://api.itch.io/uploads/{upload.Id}/scanned-archive";
 
-            string text = await response.Content.ReadAsStringAsync();
-            try
-            {
-                return JsonConvert.DeserializeObject<ItchApiScannedArchiveWrapper>(text)?.Archive ?? null;
-            }
-            catch (Exception e)
-            {
-                return null;
-            }
-        }
+        if (game.DownloadKeyId != null)
+            url += $"?download_key_id={game.DownloadKeyId}";
+
+        return (await ItchApiRequest.ItchRequest<ItchApiScannedArchiveWrapper>(profile, url))?.Archive ?? null;
     }
 }
 

@@ -126,7 +126,8 @@ public class ItchGameSource : IGameSource
             new($"Logged in as {Profile.User.Username}"),
             new(),
             new("Reload games", LoadWithGui),
-            new("Logout", () => SetNewApiKey(""))
+            new("Logout", () => SetNewApiKey("")),
+            new("Search free games/demos", () => new SearchForm(App, Profile!, this).ShowForm())
         };
     }
 
@@ -171,6 +172,12 @@ public class ItchGameSource : IGameSource
     {
         _config.InstalledGames.Add(game);
         _config.Save(App);
+        App.ReloadGames();
+    }
+
+    public void AddFakeGameToGames(ItchGame fakeGame)
+    {
+        _games.Add(fakeGame);
         App.ReloadGames();
     }
 

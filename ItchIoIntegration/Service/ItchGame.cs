@@ -16,7 +16,7 @@ public class ItchGame : IGame
     public long? Size { get; set; } = 0;
     public string? InstallPath { get; set; }
     public Uri? CoverUri { get; set; }
-    public long DownloadKeyId { get; set; }
+    public long? DownloadKeyId { get; set; }
     public List<ItchApiLaunchTarget> Targets { get; set; } = new();
     public int PreferredTarget { get; set; } = -1;
     public string CommandlineArgs { get; set; } = "";
@@ -37,14 +37,19 @@ public class ItchGame : IGame
     }
 
     public ItchGame(ItchApiOwnedGameKey key, ItchGameSource itchSource)
+        : this(key.Game, itchSource)
+    {
+        DownloadKeyId = key.DownloadKeyId;
+    }
+
+    public ItchGame(ItchApiGame game, ItchGameSource itchSource)
     {
         InstalledStatus = InstalledStatus.NotInstalled;
         ItchSource = itchSource;
-        Name = key.Game.Title;
-        Id = key.GameId;
-        CoverUri = key.Game.GetCoverUrl();
-        DownloadKeyId = key.DownloadKeyId;
-        GameUrl = key.Game.Url;
+        Name = game.Title;
+        Id = game.Id;
+        CoverUri = game.GetCoverUrl();
+        GameUrl = game.Url;
     }
 
     public async void DownloadGame(ItchApiUpload upload)

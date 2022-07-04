@@ -12,42 +12,16 @@ public class ItchApiGameUploads
 
     public async static Task<ItchApiGameUploads?> Get(ItchApiProfile profile, ItchGame game)
     {
-        using (HttpClient client = new())
-        {
-            client.DefaultRequestHeaders.Add("Authorization", profile.ApiKey);
-            HttpResponseMessage response = await client.GetAsync($"https://api.itch.io/games/{game.Id}/uploads?download_key_id={game.DownloadKeyId}");
-            if (!response.IsSuccessStatusCode)
-                return null;
+        string url = $"https://api.itch.io/games/{game.Id}/uploads";
+        if (game.DownloadKeyId != null)
+            url += $"?download_key_id={game.DownloadKeyId}";
 
-            string text = await response.Content.ReadAsStringAsync();
-            
-            var jsonSettings = new JsonSerializerSettings
-            {
-                Error = ((sender, args) =>
-                {
-                    if ("traits".Equals(args.ErrorContext.Member))
-                        args.ErrorContext.Handled = true;
-                    else
-                        throw args.ErrorContext.Error;
-                })
-            };
-            
-            try
-            {
-                ItchApiGameUploads? uploads = JsonConvert.DeserializeObject<ItchApiGameUploads>(text, jsonSettings);
+        var uploads = await ItchApiRequest.ItchRequest<ItchApiGameUploads>(profile, url);
+        
+        if (uploads != null)
+            uploads._profile = profile;
 
-                if (uploads != null)
-                {
-                    uploads._profile = profile;
-                }
-
-                return uploads;
-            }
-            catch
-            {
-                return null;
-            }
-        }
+        return uploads;
     }
 }
 
@@ -91,7 +65,13 @@ public class ItchApiUpload
 
     public bool IsDemo() => Traits?.Contains("demo") ?? false;
 
-    public string GetDownloadUrl(long downloadKeyId, ItchApiProfile profile) =>
-        $"https://api.itch.io/uploads/{Id}/download?download_key_id={downloadKeyId}&api_key={profile.ApiKey}";
+    public string GetDownloadUrl(long? downloadKeyId, ItchApiProfile profile)
+    {
+        string url = $"https://api.itch.io/uploads/{Id}/download?api_key={profile.ApiKey}";
+        if (downloadKeyId != null)
+            url += $"&download_key_id={downloadKeyId}";
+        return url;
+    }
+        
 }
 

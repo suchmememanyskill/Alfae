@@ -59,8 +59,8 @@ public class Form
         => new(FormEntryType.TextBox, text, fontWeight, alignment: alignment);
 
     public static FormEntry ClickableLinkBox(string text, Action<Form> action,
-        FormAlignment alignment = FormAlignment.Default)
-        => new(FormEntryType.ClickableLinkBox, text, alignment: alignment, linkClick: x => action(x.ContainingForm));
+        FormAlignment alignment = FormAlignment.Default, string fontWeight = "")
+        => new(FormEntryType.ClickableLinkBox, text, alignment: alignment, linkClick: x => action(x.ContainingForm), value: fontWeight);
 
     public static FormEntry Toggle(string label, bool value, FormAlignment alignment = FormAlignment.Default)
         => new(FormEntryType.Toggle, label, value ? "1" : "0", alignment: alignment);
@@ -74,7 +74,7 @@ public class Form
     public static FormEntry Dropdown(string label, List<string> dropdownOptions, string value = "")
         => new(FormEntryType.Dropdown, label, value, dropdownOptions: dropdownOptions);
 
-    public static FormEntry ButtonList(Dictionary<string, Action<Form>> buttons)
+    public static FormEntry ButtonList(Dictionary<string, Action<Form>> buttons, FormAlignment alignment = FormAlignment.Default)
     {
         Dictionary<string, Action<FormEntry>> forms = new();
 
@@ -83,17 +83,17 @@ public class Form
             forms.Add(key, x => value(x.ContainingForm));
         }
 
-        return new(FormEntryType.ButtonList, buttonList: forms);
+        return new(FormEntryType.ButtonList, buttonList: forms, alignment: alignment);
     }
 
-    public static FormEntry Button(string label, Action<Form> action)
-        => ButtonList(new() {{label, action}});
+    public static FormEntry Button(string label, Action<Form> action, FormAlignment alignment = FormAlignment.Default)
+        => ButtonList(new() {{label, action}}, alignment);
 
-    public static FormEntry Button(string label1, Action<Form> action1, string label2, Action<Form> action2)
-        => ButtonList(new() {{label1, action1}, {label2, action2}});
+    public static FormEntry Button(string label1, Action<Form> action1, string label2, Action<Form> action2, FormAlignment alignment = FormAlignment.Default)
+        => ButtonList(new() {{label1, action1}, {label2, action2}}, alignment);
     
-    public static FormEntry Button(string label1, Action<Form> action1, string label2, Action<Form> action2, string label3, Action<Form> action3)
-        => ButtonList(new() {{label1, action1}, {label2, action2}, {label3, action3}});
+    public static FormEntry Button(string label1, Action<Form> action1, string label2, Action<Form> action2, string label3, Action<Form> action3, FormAlignment alignment = FormAlignment.Default)
+        => ButtonList(new() {{label1, action1}, {label2, action2}, {label3, action3}}, alignment);
 }
 
 public static class FormExtensions

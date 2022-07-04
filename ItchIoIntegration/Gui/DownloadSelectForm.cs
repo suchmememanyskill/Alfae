@@ -41,12 +41,13 @@ public class DownloadSelectForm
         {
             Form.TextBox($"Available downloads for {_game.Name}", FormAlignment.Center, "Bold")
         };
+
+        List<ItchApiUpload> shownUploads = uploads.Uploads;
+
+        if (_game.DownloadKeyId != null)
+            shownUploads = shownUploads.Where(x => !x.IsDemo()).ToList();
         
-        uploads.Uploads.Where(x => !x.IsDemo()).ToList().ForEach(x =>
-        {
-            entries.Add(Form.ClickableLinkBox( string.IsNullOrWhiteSpace(x.DisplayName) ? x.Filename : $"{x.DisplayName} ({x.Filename})", y => ContinueDownload(x)));
-        });
-        
+        entries.AddRange(shownUploads.Select(x => Form.ClickableLinkBox( string.IsNullOrWhiteSpace(x.DisplayName) ? x.Filename : $"{x.DisplayName} ({x.Filename})", y => ContinueDownload(x))));
         entries.Add(Form.Button("Back", _ => _app.HideForm()));
         
         _app.ShowForm(entries);
