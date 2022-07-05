@@ -54,7 +54,7 @@ public partial class GameViewSmall : UserControlExt<GameViewSmall>
         OnUpdate();
         game.OnUpdate += OnUpdateWrapper;
         EffectiveViewportChanged += EffectiveViewportChangedReact;
-        Dispatcher.UIThread.Post(UpdateCoverImage, DispatcherPriority.Background);
+        Dispatcher.UIThread.Post(() => UpdateCoverImage(), DispatcherPriority.Background);
     }
 
     public void Selected()
@@ -76,6 +76,9 @@ public partial class GameViewSmall : UserControlExt<GameViewSmall>
         if (_isSelected)
             SetMenu();
         
+        if (!TopPanel.IsVisible && HasProgress)
+            Loader.App.GetInstance().MainView.SetNewSelection(this);
+        
         UpdateView();
         _downloadedImage = false;
         UpdateCoverImage();
@@ -89,12 +92,12 @@ public partial class GameViewSmall : UserControlExt<GameViewSmall>
         }
     }
 
-    private void UpdateCoverImage()
+    public void UpdateCoverImage(bool force = false)
     {
         if (_downloadedImage)
             return;
         
-        if (!TransformedBounds?.Clip.IsEmpty ?? false || Game.InstalledStatus == InstalledStatus.Installed) // Is the element visible
+        if (force || (!TransformedBounds?.Clip.IsEmpty ?? false) || Game.InstalledStatus == InstalledStatus.Installed) // Is the element visible
         {
             _downloadedImage = true;
             Dispatcher.UIThread.Post(GetCoverImage, DispatcherPriority.Background);

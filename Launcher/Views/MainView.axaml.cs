@@ -5,6 +5,7 @@ using Avalonia.Controls;
 using Avalonia.Controls.Primitives;
 using Launcher.Extensions;
 using LauncherGamePlugin.Commands;
+using LauncherGamePlugin.Enums;
 
 namespace Launcher.Views;
 
@@ -47,12 +48,8 @@ public partial class MainView : UserControlExt<MainView>
         };
     }
 
-    private void MonitorListBox(ListBox box)
+    public void SetNewSelection(GameViewSmall gameViewSmall)
     {
-        GameViewSmall? gameViewSmall = box.SelectedItem as GameViewSmall;
-        if (gameViewSmall == null)
-            return;
-            
         if (_currentSelection != null)
         {
             if (Equals(_currentSelection, gameViewSmall))
@@ -63,40 +60,52 @@ public partial class MainView : UserControlExt<MainView>
 
         _currentSelection = gameViewSmall;
         _currentSelection.Selected();
+
+        if (gameViewSmall.Game.InstalledStatus == InstalledStatus.Installed)
+        {
+            InstalledListBox.SelectedItem = gameViewSmall;
+            NotInstalledListBox.SelectedItem = null;
+        }
+        else
+        {
+            InstalledListBox.SelectedItem = null;
+            NotInstalledListBox.SelectedItem = gameViewSmall;
+        }
+        
+        gameViewSmall.UpdateCoverImage(true);
+    }
+    
+
+    private void MonitorListBox(ListBox box)
+    {
+        GameViewSmall? gameViewSmall = box.SelectedItem as GameViewSmall;
+        if (gameViewSmall == null)
+            return;
+            
+        SetNewSelection(gameViewSmall);
     }
 
     private List<TemplatedControl> GenerateMenuItems()
     {
         Loader.App app = Loader.App.GetInstance();
-        List<TemplatedControl> items = new();
-        
-        app.GameSources.ForEach(x =>
-        {
-            MenuItem item = new MenuItem();
-            item.IsEnabled = false;
-            item.Header = $"{x.ServiceName} - {x.Version}";
-            items.Add(item);
-        });
-        
-        items.Add(new Separator());
-        
-        app.GameSources.ForEach(x =>
-        {
-            List<Command> commands = x.GetGlobalCommands();
-            
-            if (commands.Count > 0)
-            {
-                MenuItem root = new()
-                {
-                    Header = x.ServiceName
-                };
-                List<TemplatedControl> controls = commands.Select(x => x.ToTemplatedControl()).ToList();
-                root.Items = controls;
-                items.Add(root);
-            }
-        });
 
-        return items;
+        List<TemplatedControl> controls = app.GameSources.Select(x =>
+        {
+            List<Command> pluginCommands = x.GetGlobalCommands();
+
+            if (pluginCommands.Count > 0)
+                return new Command($"{x.ServiceName} - {x.Version}", pluginCommands);
+            else
+                return new Command($"{x.ServiceName} - {x.Version}");
+        }).Select(x => x.ToTemplatedControl()).ToList();
+
+        controls.Add(new Command($"Launcher {Loader.App.Version}", new List<Command>()
+        {
+            new("Open configuration folder", () => LauncherGamePlugin.Utils.OpenFolder(app.ConfigDir)),
+            new("Open games folder", () => LauncherGamePlugin.Utils.OpenFolder(app.GameDir))
+        }).ToTemplatedControl());
+
+        return controls;
     }
 
     [Command(nameof(DownloadLocationButton))]
