@@ -19,8 +19,20 @@ public class GogIntegration : IGameSource
     public GogApiUserData? UserData { get; private set; }
     private bool _successfulLogin = false;
     
-    private string ConfigFile => Path.Join(App.ConfigDir, "gog.json");
+    public static string IMAGECACHEDIR
+    {
+        get
+        {
+            string path = Path.Join(Path.GetTempPath(), "GOGPluginImageCache");
+            if (!Directory.Exists(path))
+                Directory.CreateDirectory(path);
+            return path;
+        }
+    }
     
+    private string ConfigFile => Path.Join(App.ConfigDir, "gog.json");
+    private List<GogGame> _games = new();
+
     public async Task Initialize(IApp app)
     {
         App = app;
@@ -33,6 +45,7 @@ public class GogIntegration : IGameSource
         }
 
         await AttemptLogin();
+        await ReloadGames();
     }
 
     public async Task AttemptLogin()
@@ -63,12 +76,35 @@ public class GogIntegration : IGameSource
         return Config.Auth;
     }
 
+    public async Task ReloadGames()
+    {
+        _games = new();
+
+        if (!_successfulLogin)
+            return;
+
+        GogApiAuth? auth = await GetAuth();
+
+        if (auth == null)
+            return;
+
+        GogApiGames? games = await GogApiGames.Get(auth);
+
+        if (games == null)
+            return;
+
+        // TODO: add all pages, not just the first one
+        _games = games.Products.Select(x => new GogGame(this, x)).ToList();
+    }
+
+    public async Task<List<IGame>> GetGames() => _games.Select(x => (IGame) x).ToList();
+
     public async void Logout()
     {
         Config.Auth = null;
         Config.Save(ConfigFile);
         await AttemptLogin();
-        // TODO: Reload games
+        await ReloadGames();
         App.ReloadGames();
     }
 
@@ -100,8 +136,8 @@ public class GogIntegration : IGameSource
 
         if (!_successfulLogin)
             return false;
-        
-        // TODO: reload games
+
+        await ReloadGames();
         App.ReloadGames();
         return true;
     }
