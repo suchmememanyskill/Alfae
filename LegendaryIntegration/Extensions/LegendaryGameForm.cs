@@ -22,12 +22,10 @@ public static class LegendaryGameForm
             new FormEntry(FormEntryType.Toggle, "Always launch offline", game.ConfigAlwaysOffline ? "1" : "0"),
             new FormEntry(FormEntryType.Toggle, "Always skip version check", game.ConfigAlwaysSkipUpdateCheck ? "1" : "0"),
             new FormEntry(FormEntryType.TextInput, "Additional game arguments", game.ConfigAdditionalGameArgs),
-            new FormEntry(FormEntryType.ButtonList, buttonList: new()
-            {
-                {"Back", x => LegendaryGameSource.Source.App.HideForm()},
-                {"Save", x =>
+            Form.Button("Back", _ => LegendaryGameSource.Source.App.HideForm(),
+                "Save", x =>
                 {
-                    Form localForm = x.ContainingForm;
+                    Form localForm = x;
 
                     string launchOffline = localForm.GetValue("Always launch offline")!;
                     string skipVersionCheck = localForm.GetValue("Always skip version check")!;
@@ -41,8 +39,7 @@ public static class LegendaryGameForm
                     legendaryGame.Parser.SaveConfig();
                     
                     LegendaryGameSource.Source.App.HideForm();
-                }}
-            })
+                })
         });
 
         f.Background = game.BackgroundImage;

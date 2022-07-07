@@ -177,14 +177,7 @@ public class App : IApp
         }
         catch (Exception e)
         {
-            ShowForm(new Form(new()
-            {
-                new FormEntry(FormEntryType.TextBox, $"Failed to launch game\n{e.Message}", alignment: FormAlignment.Center),
-                new FormEntry(FormEntryType.ButtonList, "", buttonList: new()
-                {
-                    {"Back", x => HideForm()}
-                })
-            }));
+            this.ShowDismissibleTextPrompt($"Failed to launch game\n{e.Message}");
         }
     }
 

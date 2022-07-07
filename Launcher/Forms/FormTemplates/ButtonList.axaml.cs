@@ -22,7 +22,7 @@ public partial class ButtonList : UserControl
         {
             Button b = new Button();
             b.Content = key;
-            b.Command = new LambdaCommand(x => value.Invoke(_formEntry));
+            b.Command = new LambdaCommand(x => value.Invoke(_formEntry.ContainingForm));
             StackPanel.Children.Add(b);
         }
 

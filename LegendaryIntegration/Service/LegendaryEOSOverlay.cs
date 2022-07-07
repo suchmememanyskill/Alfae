@@ -30,16 +30,20 @@ public class LegendaryEOSOverlay
             }
         }
 
-        Dictionary<string, Action<FormEntry>> buttons = new() {{"Back", x => _app.HideForm()}};
 
+        List<ButtonEntry> buttons = new()
+        {
+            new("Back", _ => _app.HideForm())
+        };
+        
         if (installed)
         {
-            buttons.Add("Uninstall Overlay", x => Uninstall());
-            buttons.Add("Update Overlay", x => Install());
+            buttons.Add(new("Uninstall Overlay", x => Uninstall()));
+            buttons.Add(new("Update Overlay", x => Install()));
         }
         else
         {
-            buttons.Add("Install Overlay", x => Install());
+            buttons.Add(new("Install Overlay", x => Install()));
         }
             
         entries.Add(new(FormEntryType.ButtonList, buttonList: buttons));

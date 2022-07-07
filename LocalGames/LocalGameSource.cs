@@ -70,16 +70,10 @@ public class LocalGameSource : IGameSource
             new FormEntry(FormEntryType.FilePicker, "Cover Image:", coverImage),
             new FormEntry(FormEntryType.FilePicker, "Background Image:", backgroundImage),
             new FormEntry(FormEntryType.TextInput, "CLI Arguments:", args),
-            new FormEntry(FormEntryType.ButtonList, "", buttonList: new()
+            Form.Button("Cancel", _ => _app.HideForm(), addOrEdit, entry =>
             {
-                {"Cancel", entry => _app.HideForm()},
-                {
-                    addOrEdit, entry =>
-                    {
-                        _app.HideForm();
-                        new Thread(() => AddGame(entry.ContainingForm)).Start();
-                    }
-                }
+                _app.HideForm();
+                new Thread(() => AddGame(entry)).Start();
             })
         };
         

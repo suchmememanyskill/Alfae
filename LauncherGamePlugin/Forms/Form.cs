@@ -19,16 +19,12 @@ public class Form
     public string? GetValue(string name) => FormEntries.Find(x => x.Name == name)?.Value;
 
     public static Form Create2ButtonTextPrompt(string text, string button1, string button2,
-        Action<FormEntry> buttonAction1, Action<FormEntry> buttonAction2)
+        Action<Form> buttonAction1, Action<Form> buttonAction2)
     {
         return new(new()
         {
-            new(FormEntryType.TextBox, text, alignment: FormAlignment.Center),
-            new(FormEntryType.ButtonList, buttonList: new()
-            {
-                {button1, buttonAction1},
-                {button2, buttonAction2}
-            })
+            TextBox(text, FormAlignment.Center),
+            Button(button1, buttonAction1, button2, buttonAction2)
         });
     }
 
@@ -36,7 +32,7 @@ public class Form
     {
         return new(new()
         {
-            new(FormEntryType.TextBox, text, alignment: FormAlignment.Center)
+            TextBox(text, FormAlignment.Center)
         });
     }
 
@@ -44,11 +40,8 @@ public class Form
     {
         return new(new()
         {
-            new(FormEntryType.TextBox, text, alignment: FormAlignment.Center),
-            new (FormEntryType.ButtonList, buttonList: new()
-            {
-                {"Back", x => app.HideForm()}
-            })
+            TextBox(text, FormAlignment.Center),
+            Button("Back", x => app.HideForm())
         });
     }
 
@@ -74,32 +67,23 @@ public class Form
     public static FormEntry Dropdown(string label, List<string> dropdownOptions, string value = "")
         => new(FormEntryType.Dropdown, label, value, dropdownOptions: dropdownOptions);
 
-    public static FormEntry ButtonList(Dictionary<string, Action<Form>> buttons, FormAlignment alignment = FormAlignment.Default)
-    {
-        Dictionary<string, Action<FormEntry>> forms = new();
-
-        foreach (var (key, value) in buttons)
-        {
-            forms.Add(key, x => value(x.ContainingForm));
-        }
-
-        return new(FormEntryType.ButtonList, buttonList: forms, alignment: alignment);
-    }
+    public static FormEntry ButtonList(List<ButtonEntry> buttons, FormAlignment alignment = FormAlignment.Default)
+        => new(FormEntryType.ButtonList, buttonList: buttons, alignment: alignment);
 
     public static FormEntry Button(string label, Action<Form> action, FormAlignment alignment = FormAlignment.Default)
-        => ButtonList(new() {{label, action}}, alignment);
+        => ButtonList(new() {new(label, action)}, alignment);
 
     public static FormEntry Button(string label1, Action<Form> action1, string label2, Action<Form> action2, FormAlignment alignment = FormAlignment.Default)
-        => ButtonList(new() {{label1, action1}, {label2, action2}}, alignment);
+        => ButtonList(new() {new(label1, action1), new(label2, action2)}, alignment);
     
     public static FormEntry Button(string label1, Action<Form> action1, string label2, Action<Form> action2, string label3, Action<Form> action3, FormAlignment alignment = FormAlignment.Default)
-        => ButtonList(new() {{label1, action1}, {label2, action2}, {label3, action3}}, alignment);
+        => ButtonList(new() {new(label1, action1), new(label2, action2), new(label3, action3)}, alignment);
 }
 
 public static class FormExtensions
 {
     public static void Show2ButtonTextPrompt(this IApp app, string text, string button1, string button2,
-        Action<FormEntry> buttonAction1, Action<FormEntry> buttonAction2, IGame? game = null)
+        Action<Form> buttonAction1, Action<Form> buttonAction2, IGame? game = null)
     {
         Form f = Form.Create2ButtonTextPrompt(text, button1, button2, buttonAction1, buttonAction2);
         if (game != null)

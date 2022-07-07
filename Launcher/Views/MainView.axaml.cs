@@ -4,6 +4,7 @@ using System.Linq;
 using Avalonia.Controls;
 using Avalonia.Controls.Primitives;
 using Launcher.Extensions;
+using Launcher.Forms;
 using LauncherGamePlugin.Commands;
 using LauncherGamePlugin.Enums;
 
@@ -42,6 +43,9 @@ public partial class MainView : UserControlExt<MainView>
                     x.SetVisibility(x.GameName.Contains(SearchBox.Text, StringComparison.OrdinalIgnoreCase) ||
                                     x.Game.Source.ShortServiceName.Contains(SearchBox.Text,
                                         StringComparison.OrdinalIgnoreCase)));
+
+            if (SearchBox.Text.ToLower() == "tic-tac-toe")
+                new TicTacToe(_app).Show();
         };
     }
 

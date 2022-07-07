@@ -34,20 +34,16 @@ public class BootProfileSelectGUI
         
         _app.ShowForm(new(new()
         {
-            new FormEntry(FormEntryType.TextBox, $"Boot profile for {_game.Name}", alignment: FormAlignment.Center),
-            new FormEntry(FormEntryType.Dropdown, "Boot Profile:", currentConfig, configs),
-            new FormEntry(FormEntryType.ButtonList, buttonList: new()
+            Form.TextBox($"Boot profile for {_game.Name}", FormAlignment.Center),
+            Form.Dropdown("Boot Profile:", configs, currentConfig),
+            Form.Button("Back", x => _app.HideForm(), "Save", x =>
             {
-                {"Back", x => _app.HideForm()},
-                {"Save", x =>
-                {
-                    string config = x.ContainingForm.GetValue("Boot Profile:")!;
-                    if (config == "Default")
-                        config = "";
+                string config = x.GetValue("Boot Profile:")!;
+                if (config == "Default")
+                    config = "";
                     
-                    _app.Launcher.SetGameConfiguration(_game, config);
-                    _app.HideForm();
-                }}
+                _app.Launcher.SetGameConfiguration(_game, config);
+                _app.HideForm();
             })
         }));
     }

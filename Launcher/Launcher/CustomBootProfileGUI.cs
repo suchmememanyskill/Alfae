@@ -39,14 +39,10 @@ public class CustomBootProfileGUI
                 _profile.CompatibleExecutable == Platform.Windows ? "Windows" : "Linux",
                 dropdownOptions: new() {"Windows", "Linux"}),
             new (FormEntryType.Toggle, "Escape special characters (Linux only)", _profile.EscapeReplaceables ? "1" : "0"),
-            new(FormEntryType.ButtonList, buttonList: new()
+            Form.Button("Back", _ => _app.HideForm(), "Save", x =>
             {
-                {"Back", x => _app.HideForm()},
-                {"Save", x =>
-                {
-                    _app.HideForm();
-                    CreateProfile(x.ContainingForm);
-                }}
+                _app.HideForm();
+                CreateProfile(x);
             })
         };
         

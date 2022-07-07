@@ -75,7 +75,7 @@ public class LegendaryGameSource : IGameSource
                 App.Show2ButtonTextPrompt($"Are you sure you want to uninstall {legendaryGame.Name}?", "Uninstall", "Back",
                     x =>
                     {
-                        LegendaryGame xGame = x.ContainingForm.Game as LegendaryGame;
+                        LegendaryGame xGame = x.Game as LegendaryGame;
                         Uninstall(xGame);
                     }, x => App.HideForm(), legendaryGame);
             }));
@@ -164,22 +164,22 @@ public class LegendaryGameSource : IGameSource
         }
         catch (Exception e)
         {
-            Dictionary<string, Action<FormEntry>> buttons = new()
+            List<ButtonEntry> buttons = new()
             {
-                {"Back", x => App.HideForm() }
+                new("Back", _ => App.HideForm())
             };
-            
+
             if (e.Message == "Game has an update available")
-                buttons.Add("Launch anyway", x =>
+                buttons.Add(new("Launch anyway", x =>
                 {
                     Launch(game, true);
                     App.HideForm();
-                });
+                }));
             
             App.ShowForm(new(new()
             {
-                new(FormEntryType.TextBox, $"Game failed to launch: {e.Message}", alignment: FormAlignment.Center),
-                new (FormEntryType.ButtonList, buttonList: buttons)
+                Form.TextBox($"Game failed to launch: {e.Message}", FormAlignment.Center),
+                Form.ButtonList(buttons)
             }));
             
             Log($"Something went wrong while launching {game.Name}: {e.Message}");
@@ -200,7 +200,7 @@ public class LegendaryGameSource : IGameSource
         game.Download!.OnCompletionOrCancel += _ => App.ReloadGames();
     }
 
-    public async Task Login(Form form)
+    public async void Login(Form form)
     {
         string? SID = form.GetValue("SID:");
         App.ShowTextPrompt("Logging in...");
@@ -239,15 +239,12 @@ public class LegendaryGameSource : IGameSource
             new FormEntry(FormEntryType.ClickableLinkBox,
                 "https://www.epicgames.com/id/login?redirectUrl=https://www.epicgames.com/id/api/redirect", linkClick: entry => Utils.OpenUrl(entry.Name)),
             new FormEntry(FormEntryType.TextInput, "SID:"),
-            new FormEntry(FormEntryType.ButtonList, "", buttonList: new()
-            {
-                {"Back", entry => App.HideForm() },
-                {"Login", entry =>
+            Form.Button("Back", _ => App.HideForm(),
+                "Login", x =>
                 {
                     App.HideForm();
-                    Login(entry.ContainingForm);
-                }}
-            })
+                    Login(x);
+                })
         };
         
         if (warningMessage != "")
