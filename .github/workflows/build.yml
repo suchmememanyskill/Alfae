@@ -52,6 +52,13 @@ jobs:
         wget -O ../Release/legendary https://github.com/derrod/legendary/releases/latest/download/legendary
         chmod a+x ../Release/legendary
     
+    - name: Build GogIntegration plugin
+      run: |
+        cd GogIntegration
+        dotnet publish -o ../Release/plugins/GogIntegration -p:Configuration=Release
+        cp ../bin/gogdl ../Release
+        chmod a+x ../Release/gogdl
+    
     - name: Build app
       run: |
         cd Launcher
@@ -106,6 +113,12 @@ jobs:
           cd LegendaryIntegration
           dotnet publish -o ../Release/plugins/LegendaryIntegration -p:Configuration=Release
           curl -L -o ../Release/legendary.exe https://github.com/derrod/legendary/releases/latest/download/legendary.exe
+
+      - name: Build GogIntegration plugin
+        run: |
+          cd GogIntegration
+          dotnet publish -o ../Release/plugins/GogIntegration -p:Configuration=Release
+          copy ../bin/gogdl.exe ../Release
 
       - name: Build app
         run: |
