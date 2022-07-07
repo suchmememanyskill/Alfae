@@ -1,5 +1,6 @@
 using System;
 using System.Collections.Generic;
+using System.Diagnostics;
 using System.IO;
 using System.Threading;
 using Avalonia;
@@ -50,9 +51,17 @@ namespace Launcher
                 app.ShowDismissibleTextPrompt($"Game {target.Name} does not have the command {args[2]} available");
                 return;
             }
-            
+
+            Stopwatch stopwatch = new();
+            stopwatch.Start();
             command.Action?.Invoke();
-            Thread.Sleep(10000);
+            stopwatch.Stop();
+            long time = 10000 - stopwatch.ElapsedMilliseconds;
+
+            if (time <= 0)
+                return;
+            
+            Thread.Sleep((int)time);
         }
 
         // Avalonia configuration, don't remove; also used by visual designer.
