@@ -20,6 +20,7 @@ namespace Launcher
             _app.MainWindow = this;
             Dispatcher.UIThread.Post(Initialize);
             Content = new LoadingScreen();
+            Title = $"Alfae {Loader.App.Version}: A Launcher For Almost Everything";
         }
 
         private async void CheckForUpdate()
@@ -39,7 +40,7 @@ namespace Launcher
                 {
                     _app.ShowForm(new List<FormEntry>()
                     {
-                        Form.TextBox($"Launcher has an update available, v{gitVersion}. Would you like to update?", FormAlignment.Center),
+                        Form.TextBox($"Alfae has an update available, v{gitVersion}. Would you like to update?", FormAlignment.Center),
                         Form.Button(
                             "Back", x => _app.HideForm(),
                             "Ignore this update", x =>

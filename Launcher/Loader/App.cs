@@ -24,7 +24,12 @@ public class App : IApp
     {
         get
         {
-            string path = Path.Join(Environment.GetFolderPath(Environment.SpecialFolder.ApplicationData), "Launcher");
+            string oldPath = Path.Join(Environment.GetFolderPath(Environment.SpecialFolder.ApplicationData), "Launcher");
+            string path = Path.Join(Environment.GetFolderPath(Environment.SpecialFolder.ApplicationData), "Alfae");
+            
+            if (Directory.Exists(oldPath) && !Directory.Exists(path))
+                Directory.Move(oldPath, path);
+            
             if (!Directory.Exists(path))
                 Directory.CreateDirectory(path);
 
@@ -229,7 +234,7 @@ public class App : IApp
         ReloadGlobalCommands();
         
         if (Games.Count <= 0)
-            this.ShowDismissibleTextPrompt("Welcome to Launcher!\nTo get started, add some plugins and configure them in the top right under the 'plugins' tab");
+            this.ShowDismissibleTextPrompt("Welcome to Alfae!\nTo get started, add some plugins and configure them in the top right under the 'plugins' tab");
     }
 
     public List<GameViewSmall> GameViews { get; private set; } = new();

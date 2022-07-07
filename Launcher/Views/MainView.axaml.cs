@@ -23,9 +23,6 @@ public partial class MainView : UserControlExt<MainView>
     [Binding(nameof(GameCountLabel), "Content")]
     public string GameCountText => (_app.Games != null) ? $"Found {_app.Games.Count} games, {_app.InstalledGames.Count} installed" : "";
 
-    [Binding(nameof(NameLabel), "Content")]
-    public string VersionText => $"Launcher {Loader.App.Version}";
-    
     private GameViewSmall _currentSelection;
     private Loader.App _app = Loader.App.GetInstance();
     
@@ -99,7 +96,7 @@ public partial class MainView : UserControlExt<MainView>
                 return new Command($"{x.ServiceName} - {x.Version}");
         }).Select(x => x.ToTemplatedControl()).ToList();
 
-        controls.Add(new Command($"Launcher {Loader.App.Version}", new List<Command>()
+        controls.Add(new Command($"Alfae {Loader.App.Version}", new List<Command>()
         {
             new("Open configuration folder", () => LauncherGamePlugin.Utils.OpenFolder(app.ConfigDir)),
             new("Open games folder", () => LauncherGamePlugin.Utils.OpenFolder(app.GameDir))

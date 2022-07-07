@@ -8,7 +8,6 @@
         <DockPanel>
             <DockPanel DockPanel.Dock="Top" Background="OrangeRed" Height="50">
                 <StackPanel DockPanel.Dock="Left" Orientation="Horizontal" Spacing="10" Name="TopBarLeftSide" Margin="10,0,0,0">
-                    <Label VerticalAlignment="Center" FontSize="24" FontWeight="Bold" Name="NameLabel">Launcher</Label>
                     <Label VerticalAlignment="Center" Name="GameCountLabel" FontSize="20">Found 6 games, 9 installed</Label>
                 </StackPanel>
                 <StackPanel DockPanel.Dock="Right" Orientation="Horizontal" HorizontalAlignment="Right" Spacing="10" Name="TopBarRightSide" Margin="0,0,10,0">
