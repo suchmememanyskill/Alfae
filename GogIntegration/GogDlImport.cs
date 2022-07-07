@@ -39,8 +39,12 @@ public class GogDlImport
         if (game.InstalledStatus != InstalledStatus.Installed)
             throw new Exception("Game is not installed");
         
+        string path = game.InstalledPlatform == LauncherGamePlugin.Enums.Platform.Linux
+            ? Path.Join(game.InstallPath!, "game")
+            : game.InstallPath!;
+        
         Terminal t = new(app);
-        if (!(await t.ExecGog($"import --token {auth.AccessToken} \"{game.InstallPath}\"")) || t.ExitCode != 0)
+        if (!(await t.ExecGog($"import --token {auth.AccessToken} \"{path}\"")) || t.ExitCode != 0)
             return null;
 
         return JsonConvert.DeserializeObject<GogDlImport>(t.StdOut.First());
@@ -65,7 +69,7 @@ public class GogDlTask
     public List<string> OsBitness { get; set; }
 
     [JsonProperty("path")]
-    public string Path { get; set; }
+    public string ExecPath { get; set; }
     
     [JsonProperty("type")]
     public string Type { get; set; }
@@ -78,7 +82,11 @@ public class GogDlTask
         if (Type != "FileTask")
             throw new Exception($"Unknown task type: {Type}");
 
-        LaunchParams launchParams = new(System.IO.Path.Join(game.InstallPath, Path), Args, game.InstallPath!, game, game.InstalledPlatform);
+        string execPath = game.InstalledPlatform == Platform.Linux
+            ? Path.Join(game.InstallPath, "game", ExecPath)
+            : Path.Join(game.InstallPath, ExecPath);
+        
+        LaunchParams launchParams = new(execPath, Args, Path.GetDirectoryName(execPath)!, game, game.InstalledPlatform);
         return launchParams;
     }
 }
