@@ -129,6 +129,7 @@ public class GogIntegration : IGameSource
             commands.Add(new($"Logged in as {UserData!.Username}"));
             commands.Add(new());
             commands.Add(new("Log out", Logout));
+            commands.Add(new("Reload games", ReloadGamesMenu));
         }
         else
         {
@@ -176,6 +177,7 @@ public class GogIntegration : IGameSource
         else
         {
             commands.Add(new("Launch", () => Play(gogGame)));
+            commands.Add(new("Config/Info", () => new ConfigurationGui(this, gogGame).Show()));
             commands.Add(new("Uninstall", () => App.Show2ButtonTextPrompt($"Are you sure you want to uninstall {gogGame.Name}?","Uninstall", "Back", x => Uninstall(gogGame), x => App.HideForm())));
         }
         
@@ -215,6 +217,14 @@ public class GogIntegration : IGameSource
         App.HideForm();
     }
 
+    public async void ReloadGamesMenu()
+    {
+        App.ShowTextPrompt("Reloading GOG games...");
+        await ReloadGames();
+        App.ReloadGames();
+        App.HideForm();
+    }
+
     public void Play(GogGame game)
     {
         try
@@ -226,4 +236,6 @@ public class GogIntegration : IGameSource
             App.ShowDismissibleTextPrompt(e.Message);
         }
     }
+
+    public void SaveConfig() => Config.Save(ConfigFile);
 }

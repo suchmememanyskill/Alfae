@@ -85,8 +85,13 @@ public class GogDlTask
         string execPath = game.InstalledPlatform == Platform.Linux
             ? Path.Join(game.InstallPath, "game", ExecPath)
             : Path.Join(game.InstallPath, ExecPath);
+
+        List<string> args = new(Args);
         
-        LaunchParams launchParams = new(execPath, Args, Path.GetDirectoryName(execPath)!, game, game.InstalledPlatform);
+        if (!string.IsNullOrWhiteSpace(game.ExtraArgs))
+            args.Add(game.ExtraArgs);
+        
+        LaunchParams launchParams = new(execPath, args, Path.GetDirectoryName(execPath)!, game, game.InstalledPlatform);
         return launchParams;
     }
 }

@@ -18,6 +18,7 @@ public class GogGame : IGame
     public long? Size { get; set; } = 0;
     public string? InstallPath { get; set; }
     public List<GogDlTask>? Tasks { get; set; }
+    public string ExtraArgs { get; set; } = "";
 
     [JsonIgnore]
     public string InternalName => Slug;
