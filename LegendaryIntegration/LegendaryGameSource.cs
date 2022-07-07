@@ -13,7 +13,7 @@ namespace LegendaryIntegration;
 public class LegendaryGameSource : IGameSource
 {
     public string ServiceName => "Epic Games Integration";
-    public string Version => "v1.0";
+    public string Version => "v1.0.0";
     public string SlugServiceName => "epic-games";
     public string ShortServiceName => "EpicGames";
     public LegendaryAuth? auth;
@@ -69,7 +69,7 @@ public class LegendaryGameSource : IGameSource
             
             commands.Add(new("Launch", () => Launch(legendaryGame, false)));
             commands.Add(new("Config/Info", () => App.ShowForm(legendaryGame.ToForm()!)));
-            commands.Add(new("Show in browser", legendaryGame.ShowInBrowser));
+            commands.Add(new("View in browser", legendaryGame.ShowInBrowser));
             commands.Add(new("Uninstall", () =>
             {
                 App.Show2ButtonTextPrompt($"Are you sure you want to uninstall {legendaryGame.Name}?", "Uninstall", "Back",

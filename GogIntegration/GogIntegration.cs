@@ -13,7 +13,7 @@ namespace GogIntegration;
 public class GogIntegration : IGameSource
 {
     public string ServiceName => "GOG Integration";
-    public string Version => "v1.0";
+    public string Version => "v1.0.0";
     public string SlugServiceName => "gog-integration";
     public string ShortServiceName => "GOG";
 
@@ -173,19 +173,19 @@ public class GogIntegration : IGameSource
         if (gogGame.InstalledStatus == InstalledStatus.NotInstalled)
         {
             commands.Add(new("Install", () => Download(gogGame)));
+            
+            if (gogGame.Size == 0)
+                commands.Add(new("Get game size", () => gogGame.GetDlInfo()));
+            
+            commands.Add(new("View in browser", () => Utils.OpenUrl(gogGame.PageUrl)));
         }
         else
         {
             commands.Add(new("Launch", () => Play(gogGame)));
             commands.Add(new("Config/Info", () => new ConfigurationGui(this, gogGame).Show()));
+            commands.Add(new("View in browser", () => Utils.OpenUrl(gogGame.PageUrl)));
             commands.Add(new("Uninstall", () => App.Show2ButtonTextPrompt($"Are you sure you want to uninstall {gogGame.Name}?","Uninstall", "Back", x => Uninstall(gogGame), x => App.HideForm())));
         }
-        
-        if (gogGame.Size == 0)
-            commands.Add(new("Get game size", () => gogGame.GetDlInfo()));
-        
-        // TODO: Unify all command names
-        commands.Add(new("View in browser", () => Utils.OpenUrl(gogGame.PageUrl)));
 
         return commands;
     }

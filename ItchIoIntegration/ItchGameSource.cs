@@ -13,7 +13,7 @@ namespace ItchIoIntegration;
 public class ItchGameSource : IGameSource
 {
     public string ServiceName => "Itch.io Integration";
-    public string Version => "v1.0";
+    public string Version => "v1.1.0";
     public string SlugServiceName => "itch-io";
     public string ShortServiceName => "Itch.io";
 
@@ -144,10 +144,10 @@ public class ItchGameSource : IGameSource
         if (itchGame.InstalledStatus == InstalledStatus.Installed)
         {
             commands.Add(new("Launch", itchGame.Play));
-            commands.Add(new("Configure", () => new GameOptionsGui(itchGame).ShowGui()));
+            commands.Add(new("Config/Info", () => new GameOptionsGui(itchGame).ShowGui()));
             
             if (itchGame.GameUrl != null)
-                commands.Add(new("Open page", () => Utils.OpenUrl(itchGame.GameUrl.AbsoluteUri)));
+                commands.Add(new("View in browser", () => Utils.OpenUrl(itchGame.GameUrl.AbsoluteUri)));
             
             commands.Add(new("Uninstall", () => App.Show2ButtonTextPrompt($"Are you sure you want to uninstall {itchGame.Name}?", "Uninstall", "Back", x => Uninstall(itchGame), x => App.HideForm())));
         }
@@ -157,7 +157,7 @@ public class ItchGameSource : IGameSource
             {
                 commands.Add(new("Install", () => new DownloadSelectForm(itchGame, App, this).InitiateForm()));
                 if (itchGame.GameUrl != null)
-                    commands.Add(new("Open page", () => Utils.OpenUrl(itchGame.GameUrl.AbsoluteUri)));
+                    commands.Add(new("View in browser", () => Utils.OpenUrl(itchGame.GameUrl.AbsoluteUri)));
             }
             else
             {

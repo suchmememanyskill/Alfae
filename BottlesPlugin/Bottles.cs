@@ -12,7 +12,7 @@ namespace BottlesPlugin;
 public class Bottles : IGameSource
 {
     public string ServiceName => "Bottles Integration";
-    public string Version => "v1.0";
+    public string Version => "v1.0.0";
     public string SlugServiceName => "bottles";
     public string ShortServiceName => "bottles";
     private string _message = "";
