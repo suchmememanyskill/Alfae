@@ -17,7 +17,7 @@ public static class LegendaryGameForm
             new FormEntry(FormEntryType.TextBox, $"{game.Name} by {game.Developer}"),
             new FormEntry(FormEntryType.TextBox, $"AppId: {game.InternalName}"),
             new FormEntry(FormEntryType.TextBox, $"Current Version: {game.InstalledVersion}"),
-            new FormEntry(FormEntryType.ClickableLinkBox, $"Location on disk: {game.InstallPath}", game.InstallPath, linkClick: x => Utils.OpenFolder(x.Value)),
+            new FormEntry(FormEntryType.ClickableLinkBox, $"Location on disk: {game.InstallPath}", linkClick: x => Utils.OpenFolder(game.InstallPath)),
             new FormEntry(FormEntryType.TextBox, "\nConfig", "Bold", alignment: FormAlignment.Center),
             new FormEntry(FormEntryType.Toggle, "Always launch offline", game.ConfigAlwaysOffline ? "1" : "0"),
             new FormEntry(FormEntryType.Toggle, "Always skip version check", game.ConfigAlwaysSkipUpdateCheck ? "1" : "0"),
