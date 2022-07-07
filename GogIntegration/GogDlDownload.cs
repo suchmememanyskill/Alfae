@@ -50,7 +50,7 @@ public class GogDlDownload : ProgressStatus
         await Terminal.ExecGog(
             $"download {game.Id} --platform {DownloadedPlatform.GetGogDlString()} --path=\"{InstallPath}\" --skip-dlcs --lang={game.DlInfo.UsedLanguage} --token {auth.AccessToken}");
         
-        InstallPath = Path.Join(InstallPath, game.Name);
+        InstallPath = Path.Join(InstallPath, game.DlInfo.FolderName);
         OnCompletionOrCancel?.Invoke();
     }
 
