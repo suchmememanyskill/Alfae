@@ -62,6 +62,9 @@ public class ItchApiUpload
 
     [JsonProperty("id")]
     public long Id { get; set; }
+    
+    [JsonProperty("build")]
+    public ItchApiBuild? Build { get; set; }
 
     public bool IsDemo() => Traits?.Contains("demo") ?? false;
 
@@ -75,3 +78,26 @@ public class ItchApiUpload
         
 }
 
+public class ItchApiBuild
+{
+    [JsonProperty("parent_build_id")]
+    public long ParentBuildId { get; set; }
+
+    [JsonProperty("version")]
+    public long Version { get; set; }
+
+    [JsonProperty("id")]
+    public long Id { get; set; }
+
+    [JsonProperty("created_at")]
+    public DateTimeOffset CreatedAt { get; set; }
+
+    [JsonProperty("user_version")]
+    public string? UserVersion { get; set; }
+
+    [JsonProperty("updated_at")]
+    public DateTimeOffset UpdatedAt { get; set; }
+
+    [JsonProperty("upload_id")]
+    public long UploadId { get; set; }
+}

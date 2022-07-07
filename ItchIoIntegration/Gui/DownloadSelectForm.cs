@@ -46,8 +46,8 @@ public class DownloadSelectForm
 
         if (_game.DownloadKeyId != null)
             shownUploads = shownUploads.Where(x => !x.IsDemo()).ToList();
-        
-        entries.AddRange(shownUploads.Select(x => Form.ClickableLinkBox( string.IsNullOrWhiteSpace(x.DisplayName) ? x.Filename : $"{x.DisplayName} ({x.Filename})", y => ContinueDownload(x))));
+
+        entries.AddRange(shownUploads.Select(x => Form.ClickableLinkBox( GenerateName(x), y => ContinueDownload(x))));
         entries.Add(Form.Button("Back", _ => _app.HideForm()));
         
         _app.ShowForm(entries);
@@ -58,5 +58,20 @@ public class DownloadSelectForm
         _source.Log($"Selected download {upload.DisplayName}");
         _app.HideForm();
         _game.DownloadGame(upload);
+    }
+
+    private string GenerateName(ItchApiUpload upload)
+    {
+        string text = "";
+        
+        if (upload.Build != null && !string.IsNullOrWhiteSpace(upload.Build.UserVersion))
+            text += $"[Version {upload.Build.UserVersion}] ";
+
+        if (!string.IsNullOrWhiteSpace(upload.DisplayName))
+            text += $"{upload.DisplayName} ({upload.Filename})";
+        else
+            text += upload.Filename;
+        
+        return text;
     }
 }
