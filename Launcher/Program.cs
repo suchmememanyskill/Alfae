@@ -1,5 +1,6 @@
 using System;
 using System.Collections.Generic;
+using System.IO;
 using System.Threading;
 using Avalonia;
 using LauncherGamePlugin;
@@ -18,6 +19,8 @@ namespace Launcher
         [STAThread]
         public static void Main(string[] args)
         {
+            AppDomain.CurrentDomain.UnhandledException += OnUnhandledException;
+            
             if (args.Length <= 2)
                 BuildAvaloniaApp().StartWithClassicDesktopLifetime(args);
             else
@@ -57,5 +60,15 @@ namespace Launcher
             => AppBuilder.Configure<App>()
                 .UsePlatformDetect()
                 .LogToTrace();
+        
+        private static void OnUnhandledException (object sender, UnhandledExceptionEventArgs e)
+        {
+            try
+            {
+                Exception ex = (Exception)e.ExceptionObject;
+                File.WriteAllText("crash.log", ex.ToString());
+            }
+            catch { }
+        }
     }
 }
