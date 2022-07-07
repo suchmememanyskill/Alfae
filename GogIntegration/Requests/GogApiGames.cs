@@ -14,10 +14,10 @@ public class GogApiGames
     [JsonProperty("products")]
     public List<GogApiProduct> Products { get; set; }
 
-    public static async Task<GogApiGames?> Get(GogApiAuth auth)
+    public static async Task<GogApiGames?> Get(GogApiAuth auth, int page = 1)
     {
         return await GogApiRequest.Get<GogApiGames>(auth,
-            "https://embed.gog.com/account/getFilteredProducts?mediaType=1");
+            $"https://embed.gog.com/account/getFilteredProducts?mediaType=1&page={page}");
     }
 }
 

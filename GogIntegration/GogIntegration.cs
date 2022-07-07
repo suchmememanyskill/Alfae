@@ -1,7 +1,10 @@
 ﻿using GogIntegration.Gui;
 using GogIntegration.Model;
 using GogIntegration.Requests;
+using LauncherGamePlugin;
 using LauncherGamePlugin.Commands;
+using LauncherGamePlugin.Enums;
+using LauncherGamePlugin.Forms;
 using LauncherGamePlugin.Interfaces;
 using Newtonsoft.Json;
 
@@ -78,7 +81,8 @@ public class GogIntegration : IGameSource
 
     public async Task ReloadGames()
     {
-        _games = new();
+        _games = new(Config.InstalledGames);
+        _games.ForEach(x => x.GogSource = this);
 
         if (!_successfulLogin)
             return;
@@ -88,13 +92,21 @@ public class GogIntegration : IGameSource
         if (auth == null)
             return;
 
-        GogApiGames? games = await GogApiGames.Get(auth);
+        int page = 0;
+        int totalPages = -1;
 
-        if (games == null)
-            return;
+        do
+        {
+            GogApiGames? games = await GogApiGames.Get(auth, page + 1);
 
-        // TODO: add all pages, not just the first one
-        _games = games.Products.Select(x => new GogGame(this, x)).ToList();
+            if (games == null)
+                return;
+
+            totalPages = games.TotalPages;
+            page = games.Page;
+            
+            _games.AddRange(games.Products.Where(x => _games.All(y => x.Id != y.Id)).Select(x => new GogGame(this, x)));
+        } while (page <= totalPages);
     }
 
     public async Task<List<IGame>> GetGames() => _games.Select(x => (IGame) x).ToList();
@@ -140,5 +152,65 @@ public class GogIntegration : IGameSource
         await ReloadGames();
         App.ReloadGames();
         return true;
+    }
+
+    public List<Command> GetGameCommands(IGame game)
+    {
+        GogGame? gogGame = game as GogGame;
+
+        if (gogGame == null)
+            throw new Exception("???");
+
+        List<Command> commands = new();
+
+        if (gogGame.ProgressStatus != null)
+        {
+            commands.Add(new("Stop", gogGame.DownloadStatus.Stop));
+            return commands;
+        }
+
+        if (gogGame.InstalledStatus == InstalledStatus.NotInstalled)
+        {
+            commands.Add(new("Install", () => Download(gogGame)));
+        }
+        else
+        {
+            commands.Add(new("Uninstall", () => App.Show2ButtonTextPrompt($"Are you sure you want to uninstall {gogGame.Name}?","Uninstall", "Back", x => Uninstall(gogGame), x => App.HideForm())));
+        }
+        
+        if (gogGame.Size == 0)
+            commands.Add(new("Get game size", () => gogGame.GetDlInfo()));
+        
+        // TODO: Unify all command names
+        commands.Add(new("View in browser", () => Utils.OpenUrl(gogGame.PageUrl)));
+
+        return commands;
+    }
+
+    public async void Download(GogGame game)
+    {
+        try
+        {
+            if (await game.Download())
+            {
+                Config.InstalledGames.Add(game);
+                Config.Save(ConfigFile);
+                App.ReloadGames();
+            }
+        }
+        catch (Exception e)
+        {
+            App.ShowDismissibleTextPrompt(e.Message);
+        }
+    }
+
+    public async void Uninstall(GogGame game)
+    {
+        App.ShowTextPrompt($"Uninstalling {game.Name}...");
+        await Task.Run(game.Uninstall);
+        Config.InstalledGames.Remove(game);
+        Config.Save(ConfigFile);
+        App.ReloadGames();
+        App.HideForm();
     }
 }
