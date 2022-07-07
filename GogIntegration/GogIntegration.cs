@@ -175,6 +175,7 @@ public class GogIntegration : IGameSource
         }
         else
         {
+            commands.Add(new("Launch", () => Play(gogGame)));
             commands.Add(new("Uninstall", () => App.Show2ButtonTextPrompt($"Are you sure you want to uninstall {gogGame.Name}?","Uninstall", "Back", x => Uninstall(gogGame), x => App.HideForm())));
         }
         
@@ -212,5 +213,17 @@ public class GogIntegration : IGameSource
         Config.Save(ConfigFile);
         App.ReloadGames();
         App.HideForm();
+    }
+
+    public void Play(GogGame game)
+    {
+        try
+        {
+            game.Play();
+        }
+        catch (Exception e)
+        {
+            App.ShowDismissibleTextPrompt(e.Message);
+        }
     }
 }

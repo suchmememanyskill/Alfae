@@ -3,6 +3,7 @@ using GogIntegration.Requests;
 using LauncherGamePlugin;
 using LauncherGamePlugin.Enums;
 using LauncherGamePlugin.Interfaces;
+using LauncherGamePlugin.Launcher;
 using Newtonsoft.Json;
 
 namespace GogIntegration;
@@ -68,4 +69,16 @@ public class GogDlTask
     
     [JsonProperty("type")]
     public string Type { get; set; }
+
+    [JsonProperty("arguments")] 
+    public List<string> Args { get; set; } = new();
+
+    public LaunchParams ToLaunchParams(GogGame game)
+    {
+        if (Type != "FileTask")
+            throw new Exception($"Unknown task type: {Type}");
+
+        LaunchParams launchParams = new(System.IO.Path.Join(game.InstallPath, Path), Args, game.InstallPath!, game, game.InstalledPlatform);
+        return launchParams;
+    }
 }

@@ -126,6 +126,18 @@ public class GogGame : IGame
         return ret;
     }
 
+    public void Play()
+    {
+        if (InstalledStatus == InstalledStatus.NotInstalled)
+            throw new Exception("Game is not installed");
+
+        GogDlTask? task = Tasks!.Find(x => x.IsPrimary);
+        if (task == null)
+            throw new Exception("Game does not have a primary task!");
+
+        GogSource.App.Launch(task.ToLaunchParams(this));
+    }
+
     public void Uninstall()
     {
         if (Directory.Exists(InstallPath!))
