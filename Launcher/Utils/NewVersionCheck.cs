@@ -17,7 +17,7 @@ public static class NewVersionCheck
         client.DefaultRequestHeaders.UserAgent.Add(new("suchmememanyskill_Launcher", Version));
         try
         {
-            HttpResponseMessage response = await client.GetAsync("https://api.github.com/repos/suchmememanyskill/Launcher/releases/latest");
+            HttpResponseMessage response = await client.GetAsync("https://api.github.com/repos/suchmememanyskill/Alfae/releases/latest");
             if (!response.IsSuccessStatusCode)
                 return null;
 
