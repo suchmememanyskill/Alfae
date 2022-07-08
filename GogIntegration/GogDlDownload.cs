@@ -10,6 +10,7 @@ namespace GogIntegration;
 
 public class GogDlDownload : ProgressStatus
 {
+    public static bool ActiveDownload { get; private set; } = false;
     public Terminal? Terminal { get; set; }
     public Action? OnCompletionOrCancel;
     public Platform DownloadedPlatform { get; private set; }
@@ -46,9 +47,11 @@ public class GogDlDownload : ProgressStatus
         Terminal = new(app);
         Terminal.OnNewErrLine += UpdateDownload;
         DownloadedPlatform = game.Platforms.GetIdealPlatform();
-        
+
+        ActiveDownload = true;
         await Terminal.ExecGog(
             $"download {game.Id} --platform {DownloadedPlatform.GetGogDlString()} --path=\"{InstallPath}\" --skip-dlcs --lang={game.DlInfo.UsedLanguage} --token {auth.AccessToken}");
+        ActiveDownload = false;
         
         InstallPath = Path.Join(InstallPath, game.DlInfo.FolderName);
         OnCompletionOrCancel?.Invoke();

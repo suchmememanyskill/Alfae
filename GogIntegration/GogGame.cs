@@ -98,6 +98,9 @@ public class GogGame : IGame
         if (DlInfo == null)
             throw new Exception("Failed to get download information for game");
 
+        if (GogDlDownload.ActiveDownload)
+            throw new Exception("You can only have one GOG download ongoing at a time");
+
         DownloadStatus = new();
         OnUpdate?.Invoke();
         await DownloadStatus.Download(GogSource.App, this, (await GogSource.GetAuth())!);
