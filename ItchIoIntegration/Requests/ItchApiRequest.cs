@@ -9,9 +9,7 @@ public static class ItchApiRequest
     {
         using HttpClient client = new();
         client.DefaultRequestHeaders.Add("Authorization", apiKey);
-        HttpResponseMessage response = await client.GetAsync(url);
-        if (!response.IsSuccessStatusCode)
-            return default;
+
 
         var jsonSettings = new JsonSerializerSettings
         {
@@ -21,10 +19,15 @@ public static class ItchApiRequest
                     args.ErrorContext.Handled = true;
             })
         };
-            
-        string text = await response.Content.ReadAsStringAsync();
+        
         try
         {
+            HttpResponseMessage response = await client.GetAsync(url);
+            if (!response.IsSuccessStatusCode)
+                return default;
+            
+            string text = await response.Content.ReadAsStringAsync();
+            
             var p = JsonConvert.DeserializeObject<T>(text, jsonSettings);
             return p;
         }

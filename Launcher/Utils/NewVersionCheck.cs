@@ -15,13 +15,13 @@ public static class NewVersionCheck
     {
         using HttpClient client = new();
         client.DefaultRequestHeaders.UserAgent.Add(new("suchmememanyskill_Launcher", Version));
-        HttpResponseMessage response = await client.GetAsync("https://api.github.com/repos/suchmememanyskill/Launcher/releases/latest");
-        if (!response.IsSuccessStatusCode)
-            return null;
-
-        string text = await response.Content.ReadAsStringAsync();
         try
         {
+            HttpResponseMessage response = await client.GetAsync("https://api.github.com/repos/suchmememanyskill/Launcher/releases/latest");
+            if (!response.IsSuccessStatusCode)
+                return null;
+
+            string text = await response.Content.ReadAsStringAsync();
             GithubResponse? p = JsonConvert.DeserializeObject<GithubResponse>(text);
             
             return p.TagName;

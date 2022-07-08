@@ -9,14 +9,16 @@ public static class GogApiRequest
         using HttpClient client = new();
         client.DefaultRequestHeaders.Add("Authorization", $"Bearer {auth.AccessToken}");
         client.DefaultRequestHeaders.Add("User-Agent", "GOGGalaxyClient/2.0.45.61 (GOG Galaxy)");
-        HttpResponseMessage response = await client.GetAsync(url);
-        
-        if (!response.IsSuccessStatusCode)
-            return default;
 
-        string text = await response.Content.ReadAsStringAsync();
         try
         {
+            HttpResponseMessage response = await client.GetAsync(url);
+        
+            if (!response.IsSuccessStatusCode)
+                return default;
+
+            string text = await response.Content.ReadAsStringAsync();
+            
             var p = JsonConvert.DeserializeObject<T>(text);
             return p;
         }
