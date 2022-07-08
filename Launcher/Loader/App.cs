@@ -228,6 +228,8 @@ public class App : IApp
         
         if (Games.Count <= 0)
             this.ShowDismissibleTextPrompt("Welcome to Alfae!\nTo get started, add some plugins and configure them in the top right under the 'plugins' tab");
+        
+        MainView.ApplySearch();
     }
 
     public List<GameViewSmall> GameViews { get; private set; } = new();

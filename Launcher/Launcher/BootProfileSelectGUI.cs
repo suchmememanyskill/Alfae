@@ -17,7 +17,7 @@ public class BootProfileSelectGUI
         _game = game;
     }
     
-    public void ShwoGUI()
+    public void ShowGUI()
     {
         string? currentConfig = _app.Launcher.GetGameConfiguration(_game);
         currentConfig ??= "Default";
@@ -35,6 +35,7 @@ public class BootProfileSelectGUI
         _app.ShowForm(new(new()
         {
             Form.TextBox($"Boot profile for {_game.Name}", FormAlignment.Center),
+            Form.TextBox($"Estimated platform: {_game.EstimatedGamePlatform}"),
             Form.Dropdown("Boot Profile:", configs, currentConfig),
             Form.Button("Back", x => _app.HideForm(), "Save", x =>
             {

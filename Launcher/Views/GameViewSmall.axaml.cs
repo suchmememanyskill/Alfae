@@ -168,7 +168,7 @@ public partial class GameViewSmall : UserControlExt<GameViewSmall>
 
         if (Menu.IsVisible && Game.InstalledStatus == InstalledStatus.Installed && Game.EstimatedGamePlatform != Platform.None)
         {
-            commands.Add(new("Set Boot Configuration", () => new BootProfileSelectGUI(Loader.App.GetInstance(), Game).ShwoGUI()));
+            commands.Add(new("Set Boot Configuration", () => new BootProfileSelectGUI(Loader.App.GetInstance(), Game).ShowGUI()));
         }
         
         // I love hacky fixes for shit that doesn't work in avalonia

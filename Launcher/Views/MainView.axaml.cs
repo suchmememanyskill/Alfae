@@ -34,19 +34,23 @@ public partial class MainView : UserControlExt<MainView>
         UpdateView();
         InstalledListBox.SelectionChanged += (_, _) => MonitorListBox(InstalledListBox);
         NotInstalledListBox.SelectionChanged += (_, _) => MonitorListBox(NotInstalledListBox);
-        SearchBox.KeyUp += (_, _) =>
+        SearchBox.KeyUp += (_, _) => ApplySearch();
+    }
+    
+    public void ApplySearch()
+    {
+        if (string.IsNullOrWhiteSpace(SearchBox.Text))
+            _app.GameViews.ForEach(x => x.SetVisibility(true));
+        else
         {
-            if (string.IsNullOrWhiteSpace(SearchBox.Text))
-                _app.GameViews.ForEach(x => x.SetVisibility(true));
-            else
-                _app.GameViews.ForEach(x =>
-                    x.SetVisibility(x.GameName.Contains(SearchBox.Text, StringComparison.OrdinalIgnoreCase) ||
-                                    x.Game.Source.ShortServiceName.Contains(SearchBox.Text,
-                                        StringComparison.OrdinalIgnoreCase)));
-
+            _app.GameViews.ForEach(x =>
+                x.SetVisibility(x.GameName.Contains(SearchBox.Text, StringComparison.OrdinalIgnoreCase) ||
+                                x.Game.Source.ShortServiceName.Contains(SearchBox.Text,
+                                    StringComparison.OrdinalIgnoreCase)));
+            
             if (SearchBox.Text.ToLower() == "tic-tac-toe")
                 new TicTacToe(_app).Show();
-        };
+        }
     }
 
     public void SetNewSelection(GameViewSmall gameViewSmall)
