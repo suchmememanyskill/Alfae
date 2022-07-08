@@ -29,7 +29,7 @@ public static class Utils
         if (RuntimeInformation.IsOSPlatform(OSPlatform.Windows))
             Process.Start("explorer.exe", "\"" + path.Replace("/", "\\") + "\""); // I love windows hacks
         else if (RuntimeInformation.IsOSPlatform(OSPlatform.Linux))
-            Process.Start("xdg-open", path);
+            Process.Start("xdg-open", $"\"{path}\"");
     }
 
     public static void OpenFolderWithHighlightedFile(string path)
