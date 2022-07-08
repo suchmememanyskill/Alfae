@@ -10,6 +10,7 @@ public enum FormEntryType
     FolderPicker, // Works the same as the TextInput, but with a browse button
     Dropdown, // Displays Name on the left side. Makes a dropdown out of DropdownOptions. Value is the current value of the dropdown. Can be set beforehand to set a default value
     ButtonList, // Displays a horizontal list of buttons. Uses ButtonList to give names and Actions to the buttons. Respects FormAlignment
+    Separator,
 }
 
 public enum FormAlignment

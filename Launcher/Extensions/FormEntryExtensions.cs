@@ -3,6 +3,7 @@ using Avalonia.Controls;
 using Launcher.Forms.FormTemplates;
 using LauncherGamePlugin.Forms;
 using TextBox = Launcher.Forms.FormTemplates.TextBox;
+using Separator = Launcher.Forms.FormTemplates.Separator;
 
 namespace Launcher.Extensions;
 
@@ -27,6 +28,8 @@ public static class FormEntryExtensions
                 return new ButtonList(formEntry);
             case FormEntryType.Dropdown:
                 return new Dropdown(formEntry);
+            case FormEntryType.Separator:
+                return new Separator(formEntry);
             default:
                 throw new NotImplementedException();
         }

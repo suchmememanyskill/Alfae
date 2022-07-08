@@ -78,6 +78,9 @@ public class Form
     
     public static FormEntry Button(string label1, Action<Form> action1, string label2, Action<Form> action2, string label3, Action<Form> action3, FormAlignment alignment = FormAlignment.Default)
         => ButtonList(new() {new(label1, action1), new(label2, action2), new(label3, action3)}, alignment);
+
+    public static FormEntry Separator(int height = 1)
+        => new(FormEntryType.Separator, value: height.ToString());
 }
 
 public static class FormExtensions

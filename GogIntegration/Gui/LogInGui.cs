@@ -17,12 +17,13 @@ public class LogInGui
     {
         List<FormEntry> entries = new()
         {
-            Form.TextBox("Log in into GOG", FormAlignment.Center, "Bold"),
-            Form.TextBox(
-                "Log in using the button below. After logging in, you'll be sent to a blank page. Copy the URL of this page into the textbox below"),
-            Form.ClickableLinkBox("Take me to the login page",
-                x => Utils.OpenUrl(
-                    "https://auth.gog.com/auth?client_id=46899977096215655&redirect_uri=https%3A%2F%2Fembed.gog.com%2Fon_login_success%3Forigin%3Dclient&response_type=code&layout=galaxy")),
+            Form.TextBox("Login to GOG", FormAlignment.Center, "Bold"),
+            Form.TextBox("Step 1", FormAlignment.Center),
+            Form.TextBox("Please log in on GOG using the button below", FormAlignment.Center),
+            Form.Button("Login on GOG", _ => Open()),
+            Form.Separator(),
+            Form.TextBox("Step 2", FormAlignment.Center),
+            Form.TextBox("After logging in, you'll be redirected to an empty page. Copy the URL of this page into the textbox below, then press Login"),
             Form.TextInput("Url:"),
             Form.Button("Back", x => _source.App.HideForm(), "Login", AttemptLogin)
         };
@@ -54,4 +55,7 @@ public class LogInGui
         
         _source.App.HideForm();
     }
+
+    private void Open() => Utils.OpenUrl(
+        "https://auth.gog.com/auth?client_id=46899977096215655&redirect_uri=https%3A%2F%2Fembed.gog.com%2Fon_login_success%3Forigin%3Dclient&response_type=code&layout=galaxy");
 }
