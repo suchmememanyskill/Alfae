@@ -56,7 +56,7 @@ public class BootProfileSelectGUI
                 ? _app.Launcher.WindowsDefaultProfile
                 : _app.Launcher.LinuxDefaultProfile;
 
-            if (_currentConfig != "Default")
+            if (_currentConfig != "Default" && _currentConfig != "")
             {
                 profile = _app.Launcher.Profiles.Find(x => x.Name == _currentConfig);
             }
