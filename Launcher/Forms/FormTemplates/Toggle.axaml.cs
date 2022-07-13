@@ -16,8 +16,16 @@ public partial class Toggle : UserControl
         ToggleSwitch.OffContent = entry.Name;
         ToggleSwitch.OnContent = entry.Name;
         ToggleSwitch.IsChecked = int.Parse(entry.Value) != 0;
-        ToggleSwitch.Checked += (_, _) => entry.Value = "1";
-        ToggleSwitch.Unchecked += (_, _) => entry.Value = "0";
+        ToggleSwitch.Checked += (_, _) =>
+        {
+            entry.Value = "1";
+            entry.InvokeOnChange();
+        };
+        ToggleSwitch.Unchecked += (_, _) =>
+        {
+            entry.Value = "0";
+            entry.InvokeOnChange();
+        };
         ToggleSwitch.HorizontalAlignment = entry.Alignment.ToAvaloniaAlignment();
     }
 }

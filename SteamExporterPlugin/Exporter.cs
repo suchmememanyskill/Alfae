@@ -16,12 +16,14 @@ public class Exporter : IGameSource
     public string Version => "v1.0.0";
     public string SlugServiceName => "steam-exporter";
     public string ShortServiceName => "Steam";
-    private IApp _app;
+    public IApp? App { get; private set; }
     private bool _initialised = false;
     private ProtonManager? _protonManager;
+    public Config Config { get; private set; } = new();
     public async Task Initialize(IApp app)
     {
-        _app = app;
+        App = app;
+        Config = await Config.Load(app);
         try
         {
             _initialised = InitialisePaths();
@@ -32,7 +34,7 @@ public class Exporter : IGameSource
             _initialised = false;
         }
     }
-    
+
     public async Task<List<IBootProfile>> GetBootProfiles()
     {
         if (_protonManager == null)
@@ -40,15 +42,9 @@ public class Exporter : IGameSource
 
         if (!_protonManager.CanUseProton)
             return new();
-        
-        string homeFolder = Environment.GetFolderPath(Environment.SpecialFolder.UserProfile);
-        string prefixFolder = Path.Join(homeFolder, ".proton_launcher");
 
-        if (!Directory.Exists(prefixFolder))
-            Directory.CreateDirectory(prefixFolder);
-        
         var protons = _protonManager.GetProtonPaths();
-        return protons.Select(x => (IBootProfile) new ProtonWrapper($"Proton {x.Key}", x.Value, prefixFolder)).ToList();
+        return protons.Select(x => (IBootProfile) new ProtonWrapper($"Proton {x.Key}", x.Value, this)).ToList();
     }
 
     public List<Command> GetGlobalCommands()
@@ -82,15 +78,15 @@ public class Exporter : IGameSource
         {
             _initialised = false;
         }
-        _app.ReloadGlobalCommands();
+        App.ReloadGlobalCommands();
     }
 
     public async void UpdateSteamGames()
     {
-        _app.ShowTextPrompt("Updating steam games...");
+        App.ShowTextPrompt("Updating steam games...");
         if (!Read())
         {
-            _app.ShowDismissibleTextPrompt($"Failure reading {vdfPath}.\nDo you have at least 1 non-steam game shortcut in steam?");
+            App.ShowDismissibleTextPrompt($"Failure reading {vdfPath}.\nDo you have at least 1 non-steam game shortcut in steam?");
             return;
         }
 
@@ -98,20 +94,20 @@ public class Exporter : IGameSource
 
         if (!Write())
         {
-            _app.ShowDismissibleTextPrompt($"Failure writing to {vdfPath}");
+            App.ShowDismissibleTextPrompt($"Failure writing to {vdfPath}");
             return;
         }
         
-        _app.ShowDismissibleTextPrompt($"Added {res.Item2} games to steam, and removed {res.Item1} games from steam");
+        App.ShowDismissibleTextPrompt($"Added {res.Item2} games to steam, and removed {res.Item1} games from steam");
     }
 
     public void RemoveSteamGames()
     {
-        _app.ShowTextPrompt("Removing steam games...");
+        App.ShowTextPrompt("Removing steam games...");
         
         if (!Read())
         {
-            _app.ShowDismissibleTextPrompt($"Failure reading {vdfPath}.\nDo you have at least 1 non-steam game shortcut in steam?");
+            App.ShowDismissibleTextPrompt($"Failure reading {vdfPath}.\nDo you have at least 1 non-steam game shortcut in steam?");
             return;
         }
 
@@ -119,11 +115,11 @@ public class Exporter : IGameSource
 
         if (!Write())
         {
-            _app.ShowDismissibleTextPrompt($"Failure writing to {vdfPath}");
+            App.ShowDismissibleTextPrompt($"Failure writing to {vdfPath}");
             return;
         }
         
-        _app.ShowDismissibleTextPrompt($"Removed {res} games from steam");
+        App.ShowDismissibleTextPrompt($"Removed {res} games from steam");
     }
     
     private string vdfPath = "";
@@ -167,7 +163,7 @@ public class Exporter : IGameSource
     
     public int RemoveAllGamesWithTag()
     {
-        List<string> uniqueServices = _app.GetAllSources().Select(x => x.ShortServiceName).ToList();
+        List<string> uniqueServices = App.GetAllSources().Select(x => x.ShortServiceName).ToList();
         
         int count = 0;
 
@@ -208,8 +204,8 @@ public class Exporter : IGameSource
     
     public async Task<Tuple<int, int>> Update()
     {
-        List<IGame> copy = _app.GetAllGames().Where(x => x.InstalledStatus == InstalledStatus.Installed).ToList();
-            List<string> uniqueServices = _app.GetAllSources().Select(x => x.ShortServiceName).ToList();
+        List<IGame> copy = App.GetAllGames().Where(x => x.InstalledStatus == InstalledStatus.Installed).ToList();
+            List<string> uniqueServices = App.GetAllSources().Select(x => x.ShortServiceName).ToList();
             List<int> unknownIndexes = new();
 
             int removedCount = 0;

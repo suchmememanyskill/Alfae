@@ -20,7 +20,11 @@ public partial class FilePicker : UserControl
         Label.Content = formEntry.Name;
         TextBox.Text = formEntry.Value;
         Button.Command = new LambdaCommand(x => Dispatcher.UIThread.Post(OnBrowse));
-        TextBox.KeyUp += (_, _) => formEntry.Value = TextBox.Text;
+        TextBox.KeyUp += (_, _) =>
+        {
+            formEntry.Value = TextBox.Text;
+            _formEntry.InvokeOnChange();
+        };
     }
 
     public async void OnBrowse()
@@ -40,6 +44,7 @@ public partial class FilePicker : UserControl
             {
                 _formEntry.Value = result;
                 TextBox.Text = result;
+                _formEntry.InvokeOnChange();
             }
         }
         else
@@ -50,6 +55,7 @@ public partial class FilePicker : UserControl
             {
                 _formEntry.Value = result;
                 TextBox.Text = result;
+                _formEntry.InvokeOnChange();
             }
         }
     }

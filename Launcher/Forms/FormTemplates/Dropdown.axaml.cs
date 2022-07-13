@@ -19,7 +19,11 @@ public partial class Dropdown : UserControl
         if (idx < 0)
             idx = 0;
         ComboBox.SelectedIndex = idx;
-        ComboBox.SelectionChanged += (_, _) => formEntry.Value = formEntry.DropdownOptions[ComboBox.SelectedIndex];
+        ComboBox.SelectionChanged += (_, _) =>
+        {
+            formEntry.Value = formEntry.DropdownOptions[ComboBox.SelectedIndex];
+            formEntry.InvokeOnChange();
+        };
         CycleButton.Command = new LambdaCommand(x =>
             ComboBox.SelectedIndex = (ComboBox.SelectedIndex + 1) % formEntry.DropdownOptions.Count);
     }

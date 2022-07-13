@@ -17,6 +17,10 @@ public partial class TextInput : UserControl
         _formEntry = formEntry;
         Label.Content = _formEntry.Name;
         TextBox.Text = _formEntry.Value;
-        TextBox.KeyUp += (_, _) => _formEntry.Value = TextBox.Text;
+        TextBox.KeyUp += (_, _) =>
+        {
+            _formEntry.Value = TextBox.Text;
+            _formEntry.InvokeOnChange();
+        };
     }
 }

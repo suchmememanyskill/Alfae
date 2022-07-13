@@ -32,7 +32,9 @@ public class FormEntry
     public List<ButtonEntry> ButtonList { get; set; }
     public Form ContainingForm { get; set; }
     public FormAlignment Alignment;
-
+    public event Action<FormEntry>? OnChange;
+    public void InvokeOnChange() => OnChange?.Invoke(this);
+    
     public FormEntry(FormEntryType type, string name = "", string value = "", List<string> dropdownOptions = null,
         List<ButtonEntry> buttonList = null, Action<FormEntry> linkClick = null, FormAlignment alignment = FormAlignment.Default)
     {
