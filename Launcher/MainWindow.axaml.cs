@@ -48,7 +48,7 @@ namespace Launcher
                                 File.WriteAllText(ignorePath, gitVersion);
                                 _app.HideForm();
                             },
-                            "Open webpage to new version", x => LauncherGamePlugin.Utils.OpenUrl("https://github.com/suchmememanyskill/Launcher/releases")
+                            "Open webpage to new version", x => LauncherGamePlugin.Utils.OpenUrl("https://github.com/suchmememanyskill/Alfae/releases")
                         )
                     });
                 }
