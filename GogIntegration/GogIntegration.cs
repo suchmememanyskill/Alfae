@@ -185,7 +185,7 @@ public class GogIntegration : IGameSource
 
         if (gogGame.InstalledStatus == InstalledStatus.NotInstalled)
         {
-            commands.Add(new("Install", () => Download(gogGame)));
+            commands.Add(new("Install", () => gogGame.Download()));
             
             if (gogGame.Size == 0)
                 commands.Add(new("Get game size", () => gogGame.GetDlInfo()));
@@ -203,21 +203,11 @@ public class GogIntegration : IGameSource
         return commands;
     }
 
-    public async void Download(GogGame game)
+    public void FinalizeDownload(GogGame game)
     {
-        try
-        {
-            if (await game.Download())
-            {
-                Config.InstalledGames.Add(game);
-                Config.Save(ConfigFile);
-                App.ReloadGames();
-            }
-        }
-        catch (Exception e)
-        {
-            App.ShowDismissibleTextPrompt(e.Message);
-        }
+        Config.InstalledGames.Add(game);
+        Config.Save(ConfigFile);
+        App.ReloadGames();
     }
 
     public async void Uninstall(GogGame game)

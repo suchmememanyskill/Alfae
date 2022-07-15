@@ -73,4 +73,25 @@ public class GogApiWorksOn
             return Platform.None;
         }
     }
+
+    public List<Platform> GetAvailablePlatforms()
+    {
+        List<Platform> platforms = new();
+        
+        if (PlatformExtensions.CurrentPlatform == Platform.Windows)
+        {
+            if (Windows)
+                platforms.Add(Platform.Windows);
+        }
+        else
+        {
+            if (Linux)
+                platforms.Add(Platform.Linux);
+
+            if (Windows)
+                platforms.Add(Platform.Windows);
+        }
+
+        return platforms;
+    }
 }

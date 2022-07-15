@@ -1,6 +1,8 @@
-﻿using GogIntegration.Requests;
+﻿using GogIntegration.Gui;
+using GogIntegration.Requests;
 using LauncherGamePlugin;
 using LauncherGamePlugin.Enums;
+using LauncherGamePlugin.Forms;
 using LauncherGamePlugin.Interfaces;
 using Newtonsoft.Json;
 
@@ -91,7 +93,19 @@ public class GogGame : IGame
         }
     }
 
-    public async Task<bool> Download()
+    public async void Download(Platform preferredPlatform = Platform.Unknown)
+    {
+        try
+        {
+            await _Download(preferredPlatform);
+        }
+        catch (Exception e)
+        {
+            GogSource.App.ShowDismissibleTextPrompt(e.Message);
+        }
+    }
+    
+    private async Task _Download(Platform preferredPlatform = Platform.Unknown)
     {
         if (GogDlDownload.ActiveDownload)
             throw new Exception("You can only have one GOG download ongoing at a time");
@@ -100,10 +114,25 @@ public class GogGame : IGame
 
         if (DlInfo == null)
             throw new Exception("Failed to get download information for game");
-        
+
+        if (preferredPlatform == Platform.Unknown)
+        {
+            var platforms = Platforms.GetAvailablePlatforms();
+            if (platforms.Count > 1)
+            {
+                new DownloadPickGui(this, GogSource.App).Show();
+                return;
+            }
+            
+            if (platforms.Count <= 0)
+                throw new Exception("No downloads found?");
+
+            preferredPlatform = platforms.First();
+        }
+
         DownloadStatus = new();
         OnUpdate?.Invoke();
-        await DownloadStatus.Download(GogSource.App, this, (await GogSource.GetAuth())!);
+        await DownloadStatus.Download(GogSource.App, this, (await GogSource.GetAuth())!, preferredPlatform);
         bool ret = !DownloadStatus.Terminal!.Killed;
 
         if (ret)
@@ -127,7 +156,9 @@ public class GogGame : IGame
         
         DownloadStatus = null;
         OnUpdate?.Invoke();
-        return ret;
+        
+        if (ret)
+            GogSource.FinalizeDownload(this);
     }
 
     public void Play()

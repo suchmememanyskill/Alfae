@@ -33,7 +33,7 @@ public class GogDlDownload : ProgressStatus
         InvokeOnUpdate();
     }
 
-    public async Task Download(IApp app, GogGame game, GogApiAuth auth)
+    public async Task Download(IApp app, GogGame game, GogApiAuth auth, Platform platform)
     {
         InstallPath = Path.Join(app.GameDir, "GOG");
         _game = game;
@@ -46,7 +46,10 @@ public class GogDlDownload : ProgressStatus
         
         Terminal = new(app);
         Terminal.OnNewErrLine += UpdateDownload;
-        DownloadedPlatform = game.Platforms.GetIdealPlatform();
+        DownloadedPlatform = platform;
+
+        if (!game.Platforms.GetAvailablePlatforms().Contains(platform))
+            throw new Exception("Given platform is unavailable!");
 
         ActiveDownload = true;
         await Terminal.ExecGog(
