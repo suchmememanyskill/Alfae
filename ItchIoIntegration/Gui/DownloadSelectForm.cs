@@ -1,6 +1,7 @@
 ﻿using ItchIoIntegration.Requests;
 using ItchIoIntegration.Service;
 using LauncherGamePlugin;
+using LauncherGamePlugin.Extensions;
 using LauncherGamePlugin.Forms;
 using LauncherGamePlugin.Interfaces;
 
@@ -71,6 +72,8 @@ public class DownloadSelectForm
             text += $"{upload.DisplayName} ({upload.Filename})";
         else
             text += upload.Filename;
+
+        text += $" | Size: {upload.Size.ReadableSize()}";
         
         return text;
     }
