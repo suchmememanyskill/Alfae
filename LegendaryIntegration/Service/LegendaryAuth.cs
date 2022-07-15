@@ -17,7 +17,7 @@ public class LegendaryAuth
         Terminal t = new Terminal(LegendaryGameSource.Source.App);
         LegendaryInstalled = true;        
 
-        if (Utils.HasNetwork())
+        if (await Utils.HasNetworkAsync())
         {
             if (!(await t.ExecLegendary("status --json")))
             {

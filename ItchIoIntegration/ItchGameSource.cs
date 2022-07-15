@@ -18,6 +18,7 @@ public class ItchGameSource : IGameSource
     public string ShortServiceName => "Itch.io";
 
     private Config _config;
+    private bool _offline = false;
     public IApp App { get; private set; }
 
     public ItchApiProfile? Profile { get; private set; }
@@ -47,15 +48,17 @@ public class ItchGameSource : IGameSource
         _config.InstalledGames.ForEach(x => x.ItchSource = this);
         _games.AddRange(_config.InstalledGames);
         Profile = null;
+
         if (string.IsNullOrWhiteSpace(_config.ApiKey))
         {
             Log("Api key is empty!", LogType.Warn);
             return;
         }
-
-        if (!Utils.HasNetwork())
+        
+        if (!await Utils.HasNetworkAsync())
         {
             Log("Cannot seem to connect online?");
+            _offline = true;
             return;
         }
         
@@ -111,6 +114,14 @@ public class ItchGameSource : IGameSource
 
     public List<Command> GetGlobalCommands()
     {
+        if (_offline)
+        {
+            return new()
+            {
+                new("Offline...")
+            };
+        }
+        
         if (Profile == null)
         {
             return new()

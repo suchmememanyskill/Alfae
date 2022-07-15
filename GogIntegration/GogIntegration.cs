@@ -35,6 +35,7 @@ public class GogIntegration : IGameSource
     
     private string ConfigFile => Path.Join(App.ConfigDir, "gog.json");
     private List<GogGame> _games = new();
+    private bool _offline = false;
 
     public async Task Initialize(IApp app)
     {
@@ -47,7 +48,11 @@ public class GogIntegration : IGameSource
             Config = JsonConvert.DeserializeObject<Config>(text)!;
         }
 
-        await AttemptLogin();
+        _offline = !await Utils.HasNetworkAsync();
+
+        if (!_offline)
+            await AttemptLogin();
+        
         await ReloadGames();
     }
 
@@ -122,6 +127,14 @@ public class GogIntegration : IGameSource
 
     public List<Command> GetGlobalCommands()
     {
+        if (_offline)
+        {
+            return new()
+            {
+                new("Offline...")
+            };
+        }
+        
         List<Command> commands = new();
         
         if (_successfulLogin)

@@ -66,17 +66,16 @@ public static class Utils
         else
             return Path.Join(AppContext.BaseDirectory, AppDomain.CurrentDomain.FriendlyName);
     }
+
+    public static bool HasNetwork() => HasNetworkAsync().GetAwaiter().GetResult();
     
-    public static bool HasNetwork()
+    public static async Task<bool> HasNetworkAsync()
     {
         try
         {
-            using (var client = new HttpClient())
-            {
-                client.GetAsync(new Uri("http://www.google.com")).GetAwaiter().GetResult()
-                    .EnsureSuccessStatusCode();
-            }
-
+            using var client = new HttpClient();
+            (await client.GetAsync(new Uri("http://www.google.com")))
+                .EnsureSuccessStatusCode();
             return true;
         }
         catch
