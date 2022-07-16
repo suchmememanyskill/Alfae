@@ -96,6 +96,16 @@ public class ItchGame : IGame
             }
         }
         
+        foreach (var itchApiLaunchTarget in archive.Targets)
+        {
+            if (itchApiLaunchTarget.GetPlatform() == Platform.Linux && PlatformExtensions.CurrentPlatform == Platform.Linux)
+            {
+                string targetPath = Path.Join(InstallPath, itchApiLaunchTarget.Path);
+                Terminal t = new(ItchSource.App);
+                await t.Exec("chmod", $"u+x \"{targetPath}\"");
+            }
+        }
+
         InstallPath = path;
         PreferredTarget = -1;
         Targets = archive.Targets;
