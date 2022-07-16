@@ -9,7 +9,7 @@ public class LaunchParams
     public event Action<ExecLaunch>? OnGameLaunch;
     public event Action<ExecLaunch>? OnGameExit;
     */
-    public string Executable { get; }
+    public string Executable { get; set; }
     public Dictionary<string, string> EnvironmentOverrides { get; } = new();
     public string WorkingDirectory { get; }
     public Platform Platform { get; }

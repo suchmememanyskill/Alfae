@@ -18,6 +18,16 @@ public class BottlesWrapper : IBootProfile
     
     public void Launch(LaunchParams launchParams)
     {
+        // Hack to execute .cmd files in bottles
+        if (launchParams.Executable.EndsWith(".cmd"))
+        {
+            string newPath = launchParams.Executable[..^4] + ".bat";
+            if (!File.Exists(newPath))
+                File.Copy(launchParams.Executable, newPath);
+
+            launchParams.Executable = newPath;
+        }
+        
         List<string> args = new()
         {
             "run",
