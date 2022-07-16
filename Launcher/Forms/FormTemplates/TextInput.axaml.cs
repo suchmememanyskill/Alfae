@@ -17,10 +17,15 @@ public partial class TextInput : UserControl
         _formEntry = formEntry;
         Label.Content = _formEntry.Name;
         TextBox.Text = _formEntry.Value;
-        TextBox.KeyUp += (_, _) =>
-        {
-            _formEntry.Value = TextBox.Text;
-            _formEntry.InvokeOnChange();
-        };
+        TextBox.PropertyChanged += (_, _) => Update();
+    }
+
+    private void Update()
+    {
+        if (_formEntry.Value == TextBox.Text) 
+            return;
+        
+        _formEntry.Value = TextBox.Text;
+        _formEntry.InvokeOnChange();
     }
 }
