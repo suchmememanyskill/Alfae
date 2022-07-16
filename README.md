@@ -1,5 +1,10 @@
 # Alfae: A Launcher For Almost Everything
 
+[![CI Build](https://github.com/suchmememanyskill/Alfae/actions/workflows/build.yml/badge.svg)](https://github.com/suchmememanyskill/Alfae/actions)
+[![Downloads](https://img.shields.io/github/downloads/suchmememanyskill/Alfae/total)](https://github.com/suchmememanyskill/Alfae/releases)
+[![Version](https://img.shields.io/github/v/release/suchmememanyskill/Alfae)](https://github.com/suchmememanyskill/Alfae/releases)
+[![Donations](https://img.shields.io/badge/Support%20on-Ko--Fi-red)](https://ko-fi.com/suchmememanyskill)
+
 This launcher supports both linux and windows. Windows games on linux are configured trough 'Boot Profiles'
 
 Bundled plugins:
