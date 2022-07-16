@@ -1,4 +1,4 @@
-name: .NET Linux
+name: Alfae CI
 
 on:
   push:
