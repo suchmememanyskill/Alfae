@@ -100,7 +100,7 @@ public class ItchGame : IGame
         {
             if (itchApiLaunchTarget.GetPlatform() == Platform.Linux && PlatformExtensions.CurrentPlatform == Platform.Linux)
             {
-                string targetPath = Path.Join(InstallPath, itchApiLaunchTarget.Path);
+                string targetPath = Path.Join(path, itchApiLaunchTarget.Path);
                 Terminal t = new(ItchSource.App);
                 await t.Exec("chmod", $"u+x \"{targetPath}\"");
             }
