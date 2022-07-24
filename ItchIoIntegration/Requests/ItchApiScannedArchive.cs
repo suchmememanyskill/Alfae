@@ -6,8 +6,8 @@ namespace ItchIoIntegration.Requests;
 
 public class ItchApiScannedArchive
 {
-    [JsonProperty("launch_targets")]
-    public List<ItchApiLaunchTarget>? Targets { get; set; }
+    [JsonProperty("launch_targets")] 
+    public List<ItchApiLaunchTarget> Targets { get; set; } = new();
 
     public async static Task<ItchApiScannedArchive?> Get(ItchApiProfile profile, ItchGame game, ItchApiUpload upload)
     {

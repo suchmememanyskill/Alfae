@@ -4,6 +4,12 @@ namespace ItchIoIntegration.Requests;
 
 public static class ItchApiRequest
 {
+    private static readonly List<string> SkipErrors = new()
+    {
+        "launch_targets",
+        "traits"
+    };
+    
     public static Task<T?> ItchRequest<T>(ItchApiProfile profile, string url) => ItchRequest<T>(profile.ApiKey, url);
     public static async Task<T?> ItchRequest<T>(string apiKey, string url)
     {
@@ -15,7 +21,7 @@ public static class ItchApiRequest
         {
             Error = ((sender, args) =>
             {
-                if ("traits".Equals(args.ErrorContext.Member))
+                if (SkipErrors.Contains(args.ErrorContext.Member))
                     args.ErrorContext.Handled = true;
             })
         };

@@ -18,7 +18,7 @@ public class GameOptionsGui
 
         List<string> options = _game.Targets.Select(x => $"{x.Path} | {x.Flavour}").ToList();
 
-        string currentChoice =  options[choice];
+        string currentChoice =  options.Count > 0 ? options[choice] : "";
 
         List<FormEntry> entries = new()
         {

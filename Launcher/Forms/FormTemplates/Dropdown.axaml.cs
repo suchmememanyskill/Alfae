@@ -25,6 +25,9 @@ public partial class Dropdown : UserControl
             formEntry.InvokeOnChange();
         };
         CycleButton.Command = new LambdaCommand(x =>
-            ComboBox.SelectedIndex = (ComboBox.SelectedIndex + 1) % formEntry.DropdownOptions.Count);
+        {
+            if (formEntry.DropdownOptions.Count > 0)
+                ComboBox.SelectedIndex = (ComboBox.SelectedIndex + 1) % formEntry.DropdownOptions.Count;
+        });
     }
 }
