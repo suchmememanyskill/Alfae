@@ -66,6 +66,18 @@ public class Config
 
         return GameConfigs[serviceName][internalName];
     }
+    
+    public GameConfig? GetGameConfigOptional(IGame game) => GetGameConfigOptional(game.InternalName, game.Source.ShortServiceName);
+    public GameConfig? GetGameConfigOptional(string internalName, string serviceName)
+    {
+        if (!GameConfigs.ContainsKey(serviceName))
+            return null;
+
+        if (!GameConfigs[serviceName].ContainsKey(internalName))
+            return null;
+
+        return GameConfigs[serviceName][internalName];
+    }
 }
 
 public class GameConfig
@@ -97,6 +109,7 @@ public class GameSession
     public DateTime StartTime { get; set; } = DateTime.MaxValue;
     public DateTime EndTime { get; set; } = DateTime.MinValue;
     public TimeSpan TimeSpent { get; set; } = new();
+    public void CalcTimeSpent() => TimeSpent = EndTime - StartTime;
 }
 
 [Obsolete("This is only used to upgrade from legacy versions")]

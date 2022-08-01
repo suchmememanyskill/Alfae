@@ -7,6 +7,7 @@ using Avalonia.Layout;
 using Avalonia.Media;
 using Avalonia.Media.Imaging;
 using Avalonia.Threading;
+using Launcher.Configuration;
 using Launcher.Extensions;
 using Launcher.Launcher;
 using Launcher.Utils;
@@ -41,14 +42,16 @@ public partial class GameViewSmall : UserControlExt<GameViewSmall>
     private bool _isSelected = false;
     private bool _eventSpamPrevention = false;
     private bool _downloadedImage = false;
+    private Loader.App _app;
 
     public GameViewSmall()
     {
         InitializeComponent();
     }
 
-    public GameViewSmall(IGame game) : this()
+    public GameViewSmall(IGame game, Loader.App app) : this()
     {
+        _app = app;
         Game = game;
         SetControls();
         OnUpdate();
@@ -169,8 +172,19 @@ public partial class GameViewSmall : UserControlExt<GameViewSmall>
         if (Menu.IsVisible && Game.InstalledStatus == InstalledStatus.Installed && Game.EstimatedGamePlatform != Platform.None)
         {
             commands.Add(new("Set Boot Configuration", () => new BootProfileSelectGUI(Loader.App.GetInstance(), Game).ShowGUI()));
+
+            GameConfig? config = _app.Config.GetGameConfigOptional(Game);
+            if (config != null)
+            {
+                GameSession total = config.GetTotalTime();
+                if (total.TimeSpent.TotalSeconds > 0)
+                {
+                    string time = total.TimeSpent.ToString(@"hh\:mm");
+                    commands.Add(new($"Played for {time}"));
+                }
+            }
         }
-        
+
         // I love hacky fixes for shit that doesn't work in avalonia
         commands.ForEach(x =>
         {

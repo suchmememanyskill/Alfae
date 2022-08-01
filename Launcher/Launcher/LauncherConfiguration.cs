@@ -149,10 +149,15 @@ public class LauncherConfiguration
 
         _app.Logger.Log($"Launching {launchParams.Executable} using {profile.Name}");
 
+        GameSession session = new();
+
         profile.OnGameLaunch += x =>
         {
             _app.Logger.Log($"Launched {x.Game.Name}");
             x.InvokeOnGameLaunch();
+            
+            session.StartTime = DateTime.Now;
+
             x.Game.IsRunning = true;
             x.Game.InvokeOnUpdate();
         };
@@ -161,6 +166,12 @@ public class LauncherConfiguration
         {
             _app.Logger.Log($"{x.Game.Name} closed");
             x.InvokeOnGameClose();
+            
+            session.EndTime = DateTime.Now;
+            session.CalcTimeSpent();
+            _app.Config.GetGameConfig(x.Game).Sessions.Add(session);
+            _app.Config.Save(_app);
+            
             x.Game.IsRunning = false;
             x.Game.InvokeOnUpdate();
         };

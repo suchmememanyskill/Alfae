@@ -211,14 +211,14 @@ public class App : IApp
 
         if (anyInstalledGames)
         {
-            _installedGameViews = InstalledGames.Select(x => new GameViewSmall(x)).ToList();
+            _installedGameViews = InstalledGames.Select(x => new GameViewSmall(x, this)).ToList();
             MainView.InstalledListBox.Items = _installedGameViews;
             GameViews.AddRange(_installedGameViews);
         }
 
         if (anyNotInstalledGames)
         {
-            _notInstalledGameViews = NotInstalledGames.Select(x => new GameViewSmall(x)).ToList();
+            _notInstalledGameViews = NotInstalledGames.Select(x => new GameViewSmall(x, this)).ToList();
             MainView.NotInstalledListBox.Items = _notInstalledGameViews;
             GameViews.AddRange(_notInstalledGameViews);
         }
