@@ -21,7 +21,8 @@ public class ItchGame : IGame
     public int PreferredTarget { get; set; } = -1;
     public string CommandlineArgs { get; set; } = "";
     public Uri? GameUrl { get; set; }
-
+    
+    [JsonIgnore] public bool IsRunning { get; set; }
     [JsonIgnore] public ItchGameDownload? Download { get; private set; }
     [JsonIgnore] public InstalledStatus InstalledStatus { get; private set; }
     [JsonIgnore] public Platform EstimatedGamePlatform => EstimateGamePlatform();

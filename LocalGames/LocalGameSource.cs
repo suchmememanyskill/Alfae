@@ -161,7 +161,7 @@ public class LocalGameSource : IGameSource
 
         return new()
         {
-            new Command("Launch", () =>
+            new Command(game.IsRunning ? "Running" : "Launch", () =>
             {
                 Log($"Starting {localGame.Name}");
                 _app.Launch(localGame.ToExecLaunch());

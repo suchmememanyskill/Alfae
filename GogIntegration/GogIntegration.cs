@@ -194,7 +194,7 @@ public class GogIntegration : IGameSource
         }
         else
         {
-            commands.Add(new("Launch", () => Play(gogGame)));
+            commands.Add(new(game.IsRunning ? "Running" : "Launch", () => Play(gogGame)));
             commands.Add(new("Config/Info", () => new ConfigurationGui(this, gogGame).Show()));
             commands.Add(new("View in browser", () => Utils.OpenUrl(gogGame.PageUrl)));
             commands.Add(new("Uninstall", () => App.Show2ButtonTextPrompt($"Are you sure you want to uninstall {gogGame.Name}?","Uninstall", "Back", x => Uninstall(gogGame), x => App.HideForm())));

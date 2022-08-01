@@ -206,12 +206,16 @@ public class LauncherConfiguration
         {
             _app.Logger.Log($"Launched {x.Game.Name}");
             x.InvokeOnGameLaunch();
+            x.Game.IsRunning = true;
+            x.Game.InvokeOnUpdate();
         };
         
         profile.OnGameClose += x =>
         {
             _app.Logger.Log($"{x.Game.Name} closed");
             x.InvokeOnGameClose();
+            x.Game.IsRunning = false;
+            x.Game.InvokeOnUpdate();
         };
 
         profile.Launch(launchParams);

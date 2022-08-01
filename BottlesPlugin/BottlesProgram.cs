@@ -16,7 +16,9 @@ public class BottlesProgram : IGame
     public InstalledStatus InstalledStatus { get; } = InstalledStatus.Installed;
     public Platform EstimatedGamePlatform => Platform.None;
     public ProgressStatus? ProgressStatus { get; } = null;
+    public bool IsRunning { get; set; }
     public event Action? OnUpdate;
+    
     private string _bottleName;
     
     public BottlesProgram(string name, string bottleName, Bottles bottles)
@@ -36,4 +38,6 @@ public class BottlesProgram : IGame
         
         app.Launch(launchParams);
     }
+
+    public void InvokeOnUpdate() => OnUpdate?.Invoke();
 }

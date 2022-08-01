@@ -67,7 +67,7 @@ public class LegendaryGameSource : IGameSource
                 commands.Add(new("Update", () => Download(legendaryGame)));
             }
             
-            commands.Add(new("Launch", () => Launch(legendaryGame, false)));
+            commands.Add(new(game.IsRunning ? "Running" : "Launch", () => Launch(legendaryGame, false)));
             commands.Add(new("Config/Info", () => App.ShowForm(legendaryGame.ToForm()!)));
             commands.Add(new("View in browser", legendaryGame.ShowInBrowser));
             commands.Add(new("Uninstall", () =>

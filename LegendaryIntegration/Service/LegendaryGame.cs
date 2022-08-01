@@ -35,6 +35,7 @@ public class LegendaryGame : IGame
     public string InstallPath { get => InstalledData.InstallPath; }
     public bool IsInstalled { get => InstalledData != null; }
     public bool HasCloudSave { get { if (Metadata != null && Metadata.Metadata != null && Metadata.Metadata.CustomAttributes != null) return Metadata.Metadata.CustomAttributes.ContainsKey("CloudSaveFolder"); return false; } }
+    [JsonIgnore] public bool IsRunning { get; set; }
     
     public InstalledStatus InstalledStatus => IsInstalled ? InstalledStatus.Installed : InstalledStatus.NotInstalled;
     public Platform EstimatedGamePlatform => Platform.Windows;

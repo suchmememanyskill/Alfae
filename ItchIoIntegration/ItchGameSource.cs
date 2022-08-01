@@ -154,7 +154,7 @@ public class ItchGameSource : IGameSource
         
         if (itchGame.InstalledStatus == InstalledStatus.Installed)
         {
-            commands.Add(new("Launch", itchGame.Play));
+            commands.Add(new(game.IsRunning ? "Running" : "Launch", itchGame.Play));
             commands.Add(new("Config/Info", () => new GameOptionsGui(itchGame).ShowGui()));
             
             if (itchGame.GameUrl != null)

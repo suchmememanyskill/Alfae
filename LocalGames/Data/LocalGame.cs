@@ -14,6 +14,7 @@ public class LocalGame : IGame
     public string? CoverImagePath { get; set; } = "";
     public string? BackgroundImagePath { get; set; } = "";
     public string? LaunchArgs { get; set; } = "";
+    [JsonIgnore] public bool IsRunning { get; set; }
 
     public async Task<byte[]?> CoverImage()
     {

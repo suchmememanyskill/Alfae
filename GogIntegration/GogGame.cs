@@ -40,6 +40,8 @@ public class GogGame : IGame
     public GogIntegration GogSource { get; set; }
     [JsonIgnore]
     public GogDlDownload? DownloadStatus { get; private set; }
+    [JsonIgnore] 
+    public bool IsRunning { get; set; }
     public event Action? OnUpdate;
 
     public GogGame()
@@ -89,7 +91,7 @@ public class GogGame : IGame
         if (DlInfo != null)
         {
             Size = DlInfo.DiskSize;
-            OnUpdate?.Invoke();
+            InvokeOnUpdate();
         }
     }
 
@@ -131,7 +133,7 @@ public class GogGame : IGame
         }
 
         DownloadStatus = new();
-        OnUpdate?.Invoke();
+        InvokeOnUpdate();
         await DownloadStatus.Download(GogSource.App, this, (await GogSource.GetAuth())!, preferredPlatform);
         bool ret = !DownloadStatus.Terminal!.Killed;
 
@@ -147,7 +149,7 @@ public class GogGame : IGame
             {
                 InstallPath = null;
                 InstalledPlatform = Platform.None;
-                OnUpdate?.Invoke();
+                InvokeOnUpdate();
                 throw new Exception("Could not import downloaded game");
             }
             
@@ -155,7 +157,7 @@ public class GogGame : IGame
         }
         
         DownloadStatus = null;
-        OnUpdate?.Invoke();
+        InvokeOnUpdate();
         
         if (ret)
             GogSource.FinalizeDownload(this);
@@ -180,8 +182,9 @@ public class GogGame : IGame
         InstallPath = null;
         InstalledPlatform = Platform.None;
         Tasks = null;
-        OnUpdate?.Invoke();
+        InvokeOnUpdate();
     }
 
     public async Task<byte[]?> BackgroundImage() => null;
+    public void InvokeOnUpdate() => OnUpdate?.Invoke();
 }

@@ -122,7 +122,7 @@ public class Bottles : IGameSource
 
         return new()
         {
-            new("Launch", () => program.Launch(_app))
+            new(game.IsRunning ? "Running" : "Launch", () => program.Launch(_app))
         };
     }
 }
