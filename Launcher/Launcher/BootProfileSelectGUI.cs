@@ -1,5 +1,6 @@
 ﻿using System.Collections.Generic;
 using System.Linq;
+using Launcher.Configuration;
 using LauncherGamePlugin.Enums;
 using LauncherGamePlugin.Forms;
 using LauncherGamePlugin.Interfaces;
@@ -17,9 +18,12 @@ public class BootProfileSelectGUI
     {
         _app = app;
         _game = game;
-        
-        _currentConfig = _app.Launcher.GetGameConfiguration(_game);
-        _currentConfig ??= "Default";
+
+        GameConfig config = _app.Config.GetGameConfig(_game);
+        _currentConfig = config.BootProfile;
+ 
+        if (_currentConfig is "" or null)
+            _currentConfig = "Default";
     }
     
     public void ShowGUI()
@@ -72,8 +76,9 @@ public class BootProfileSelectGUI
             string config = _currentConfig;
             if (config == "Default")
                 config = "";
-                    
-            _app.Launcher.SetGameConfiguration(_game, config);
+
+            _app.Config.GetGameConfig(_game).BootProfile = config;
+            _app.Config.Save(_app);
             _app.HideForm();
         }));
             

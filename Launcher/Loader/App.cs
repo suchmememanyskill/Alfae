@@ -5,6 +5,7 @@ using System.Linq;
 using System.Threading.Tasks;
 using Avalonia;
 using Avalonia.Threading;
+using Launcher.Configuration;
 using Launcher.Forms;
 using Launcher.Launcher;
 using Launcher.Utils;
@@ -41,24 +42,22 @@ public class App : IApp
     {
         get
         {
-            if (!Directory.Exists(_gameDir))
-                Directory.CreateDirectory(_gameDir);
+            if (!Directory.Exists(Config.DownloadLocation))
+                Directory.CreateDirectory(Config.DownloadLocation);
 
-            return _gameDir;
+            return Config.DownloadLocation;
         }
         set
         {
             if (!Directory.Exists(value))
                 throw new Exception("Not a valid directory");
             
-            _gameDir = value;
-            File.WriteAllText(Path.Join(ConfigDir, "dlloc.txt"), _gameDir);
+            Config.DownloadLocation = value;
+            Config.Save(this);
         }
     }
 
     public bool HeadlessMode { get; set; } = false;
-    
-    private string _gameDir;
 
     public Logger Logger { get; } = new();
 
@@ -67,6 +66,7 @@ public class App : IApp
     public MainView MainView { get; set; }
     public List<IGame> Games { get; set; }
     public LauncherConfiguration Launcher { get; private set; }
+    public Config Config { get; set; }
 
     public List<IGame> InstalledGames =>
         Games.Where(x => x.InstalledStatus == InstalledStatus.Installed).ToList();
@@ -110,7 +110,6 @@ public class App : IApp
         
         GameSources = tasks.Select(x => x.Result).ToList();
         
-        Launcher.Load();
         await Launcher.GetProfiles();
         _initialised = true;
     }
@@ -240,11 +239,7 @@ public class App : IApp
 
     private App()
     {
-        _gameDir = Path.Join(Environment.GetFolderPath(Environment.SpecialFolder.UserProfile), "Games");
-
-        if (File.Exists(Path.Join(ConfigDir, "dlloc.txt")))
-            _gameDir = File.ReadAllText(Path.Join(ConfigDir, "dlloc.txt"));
-
+        Config = Config.Load(this);
         Launcher = new(this);
         Logger.Log($"Launcher {Version}");
     }

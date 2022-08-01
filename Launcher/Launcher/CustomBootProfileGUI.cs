@@ -34,7 +34,7 @@ public class CustomBootProfileGUI
             new(FormEntryType.TextInput, "Executable:", _profile.Executable),
             new(FormEntryType.TextInput, "Args:", _profile.Args),
             new (FormEntryType.TextBox, "Template replaces:\n- {EXEC}: Gets replaced with the executable\n- {ARGS}: Gets replaced with the arguments passed to the executable\n- {WORKDIR}: Gets replaced with the working directory of the executable"),
-            new(FormEntryType.TextInput, "Enviroment:", _profile.EnviromentVariables),
+            new(FormEntryType.TextInput, "Environment:", _profile.EnviromentVariables),
             new(FormEntryType.Dropdown, "Target Executable:",
                 _profile.CompatibleExecutable == Platform.Windows ? "Windows" : "Linux",
                 dropdownOptions: new() {"Windows", "Linux"}),
@@ -57,7 +57,7 @@ public class CustomBootProfileGUI
         _profile.Name = form.GetValue("Name:")!;
         _profile.Executable = form.GetValue("Executable:")!;
         _profile.Args = form.GetValue("Args:")!;
-        _profile.EnviromentVariables = form.GetValue("Enviroment:")!;
+        _profile.EnviromentVariables = form.GetValue("Environment:")!;
         _profile.CompatibleExecutable =
             form.GetValue("Target Executable:") == "Windows" ? Platform.Windows : Platform.Linux;
         _profile.EscapeReplaceables = form.GetValue("Escape special characters (Linux only)") == "1";
@@ -67,7 +67,7 @@ public class CustomBootProfileGUI
         if (string.IsNullOrWhiteSpace(_profile.Name))
             warn = "Please enter a name";
 
-        if (!edit && _app.Launcher.CustomProfiles.Any(x => x.Name == _profile.Name))
+        if (!edit && _app.Config.CustomProfiles.Any(x => x.Name == _profile.Name))
             warn = "You already have a profile with this name";
 
         if (warn == "" && string.IsNullOrWhiteSpace(_profile.Executable))
@@ -84,7 +84,7 @@ public class CustomBootProfileGUI
             _app.Launcher.AddCustomProfile(_profile);
         }
 
-        _app.Launcher.Save();
+        _app.Config.Save(_app);
         _app.ReloadBootProfiles();
     }
 }

@@ -42,6 +42,7 @@ public class CustomBootProfile : IBootProfile
             : new NativeLinuxProfile();
 
         profile.OnGameLaunch += _ => OnGameLaunch?.Invoke(launchParams);
+        profile.OnGameClose += _ => OnGameClose?.Invoke(launchParams);
         profile.Launch(convertedLaunchParams);
     }
 

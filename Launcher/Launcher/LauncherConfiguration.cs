@@ -3,6 +3,7 @@ using System.Collections.Generic;
 using System.IO;
 using System.Linq;
 using System.Threading.Tasks;
+using Launcher.Configuration;
 using LauncherGamePlugin.Commands;
 using LauncherGamePlugin.Enums;
 using LauncherGamePlugin.Interfaces;
@@ -14,19 +15,11 @@ namespace Launcher.Launcher;
 // TODO: Add time played
 public class LauncherConfiguration
 {
-    public Dictionary<string, Dictionary<string, string>> GameConfiguration { get; set; } = new();
-    public List<LocalBootProfile> CustomProfiles { get; set; } = new();
-    public List<string> UserDefault { get; set; } = new() {"", ""};
+    public List<IBootProfile> Profiles { get; private set; } = new();
+    public IBootProfile? WindowsDefaultProfile { get; private set; }
+    public IBootProfile? LinuxDefaultProfile { get; private set; }
 
-    [JsonIgnore] public List<IBootProfile> Profiles { get; private set; } = new();
-    [JsonIgnore] public IBootProfile? WindowsDefaultProfile { get; private set; }
-    [JsonIgnore] public IBootProfile? LinuxDefaultProfile { get; private set; }
-
-    [JsonIgnore] private Loader.App _app;
-
-    public LauncherConfiguration()
-    {
-    }
+    private Loader.App _app;
 
     public LauncherConfiguration(Loader.App app)
     {
@@ -46,12 +39,12 @@ public class LauncherConfiguration
             Profiles.AddRange(await appGameSource.GetBootProfiles());
         }
         
-        Profiles.AddRange(CustomProfiles);
+        Profiles.AddRange(_app.Config.CustomProfiles);
 
         Profiles.RemoveAll(x => x.CompatiblePlatform != PlatformExtensions.CurrentPlatform);
 
-        string windowsDefault = UserDefault[0];
-        string linuxDefault = UserDefault[1];
+        string windowsDefault = _app.Config.WindowsDefaultProfile;
+        string linuxDefault = _app.Config.LinuxDefaultProfile;
 
         IBootProfile? windowsDefaultProfile = Profiles.Find(x => x.Name == windowsDefault && x.CompatibleExecutable == Platform.Windows);
         IBootProfile? linuxDefaultProfile = Profiles.Find(x => x.Name == linuxDefault && x.CompatibleExecutable == Platform.Linux);
@@ -95,27 +88,10 @@ public class LauncherConfiguration
         return commands;
     }
 
-    public void Save()
-    {
-        string path = Path.Join(_app.ConfigDir, "custom_boot_profiles.json");
-        File.WriteAllText(path, JsonConvert.SerializeObject(this));
-    }
-
-    public void Load()
-    {
-        string path = Path.Join(_app.ConfigDir, "custom_boot_profiles.json");
-        if (File.Exists(path))
-        {
-            LauncherConfiguration config = JsonConvert.DeserializeObject<LauncherConfiguration>(File.ReadAllText(path));
-            GameConfiguration = config!.GameConfiguration;
-            CustomProfiles = config.CustomProfiles;
-            UserDefault = config.UserDefault;
-        }
-    }
-
     public void Delete(LocalBootProfile profile)
     {
-        CustomProfiles.Remove(profile);
+        _app.Config.CustomProfiles.Remove(profile);
+        _app.Config.Save(_app);
         Profiles.Remove(profile);
 
         if (profile == LinuxDefaultProfile)
@@ -124,7 +100,6 @@ public class LauncherConfiguration
         if (profile == WindowsDefaultProfile)
             WindowsDefaultProfile = new NativeWindowsProfile();
         
-        Save();
         _app.ReloadBootProfiles();
     }
 
@@ -133,58 +108,30 @@ public class LauncherConfiguration
         if (profile.CompatibleExecutable == Platform.Windows)
         {
             WindowsDefaultProfile = profile;
-            UserDefault[0] = profile.Name;
+            _app.Config.WindowsDefaultProfile = profile.Name;
         }
         else
         {
             LinuxDefaultProfile = profile;
-            UserDefault[1] = profile.Name;
+            _app.Config.LinuxDefaultProfile = profile.Name;
         }
         
-        Save();
+        _app.Config.Save(_app);
         _app.ReloadBootProfiles();
     }
 
     public void AddCustomProfile(LocalBootProfile profile)
     {
-        CustomProfiles.Add(profile);
+        _app.Config.CustomProfiles.Add(profile);
         Profiles.Add(profile);
-    }
-
-    public string? GetGameConfiguration(IGame game)
-    {
-        if (GameConfiguration.TryGetValue(game.Source.ShortServiceName, out Dictionary<string, string> value))
-        {
-            if (value.ContainsKey(game.InternalName))
-                return value[game.InternalName];
-        }
-
-        return null;
-    }
-
-    public void SetGameConfiguration(IGame game, string value)
-    {
-        if (!GameConfiguration.ContainsKey(game.Source.ShortServiceName))
-            GameConfiguration.Add(game.Source.ShortServiceName, new());
-        
-        GameConfiguration[game.Source.ShortServiceName][game.InternalName] = value;
-        Save();
     }
 
     public void Launch(LaunchParams launchParams)
     {
         _app.Logger.Log($"Got request to launch {launchParams.Executable}");
         
-        string? preferredProfile = GetGameConfiguration(launchParams.Game);
-        preferredProfile ??= "";
-
-        if (GameConfiguration.TryGetValue(launchParams.Game.Source.ShortServiceName, out Dictionary<string, string> value))
-        {
-            if (value.ContainsKey(launchParams.Game.InternalName))
-                preferredProfile = value[launchParams.Game.InternalName];
-        }
-
-        IBootProfile? profile = Profiles.Find(x => x.Name == preferredProfile);
+        GameConfig gameConfig = _app.Config.GetGameConfig(launchParams.Game);
+        IBootProfile? profile = Profiles.Find(x => x.Name == gameConfig.BootProfile);
 
         if (launchParams.ForceBootProfile != null)
             profile = launchParams.ForceBootProfile;

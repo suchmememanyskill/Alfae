@@ -28,14 +28,7 @@ namespace Launcher
             string? gitVersion = await NewVersionCheck.GetGitVersion();
             if (gitVersion != null && gitVersion != NewVersionCheck.Version)
             {
-                string ignorePath = Path.Combine(_app.ConfigDir, "ignorever.txt");
-
-                string ignoreVersion = "";
-                if (File.Exists(ignorePath))
-                {
-                    ignoreVersion = await File.ReadAllTextAsync(ignorePath);
-                }
-
+                string ignoreVersion = _app.Config.IgnoreVersion;
                 if (ignoreVersion != gitVersion)
                 {
                     _app.ShowForm(new List<FormEntry>()
@@ -45,7 +38,8 @@ namespace Launcher
                             "Back", x => _app.HideForm(),
                             "Ignore this update", x =>
                             {
-                                File.WriteAllText(ignorePath, gitVersion);
+                                _app.Config.IgnoreVersion = gitVersion;
+                                _app.Config.Save(_app);
                                 _app.HideForm();
                             },
                             "Open webpage to new version", x => LauncherGamePlugin.Utils.OpenUrl("https://github.com/suchmememanyskill/Alfae/releases")
