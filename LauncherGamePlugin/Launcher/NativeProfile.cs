@@ -23,9 +23,21 @@ public abstract class NativeProfile : IBootProfile
             args.ListArguments.ForEach(x => p.StartInfo.ArgumentList.Add(x));
         else
             p.StartInfo.Arguments = args.Arguments;
-
+        
         p.Start();
+        OnGameLaunch?.Invoke(args);
+        OnGameLaunch = null;
+        Thread t = new(() =>
+        {
+            p.WaitForExit();
+            OnGameClose?.Invoke(args);
+            OnGameClose = null;
+        });
+        t.Start();
     }
+
+    public event Action<LaunchParams>? OnGameLaunch;
+    public event Action<LaunchParams>? OnGameClose;
 }
 
 public class NativeWindowsProfile : NativeProfile

@@ -47,6 +47,13 @@ public class BottlesWrapper : IBootProfile
         }
 
         LaunchParams newParams = new("flatpak", args, launchParams.WorkingDirectory, launchParams.Game);
-        new NativeLinuxProfile().Launch(newParams);
+        
+        IBootProfile profile = new NativeLinuxProfile();
+        profile.OnGameLaunch += _ => OnGameLaunch?.Invoke(launchParams);
+        profile.OnGameClose += _ => OnGameClose?.Invoke(launchParams);
+        profile.Launch(newParams);
     }
+
+    public event Action<LaunchParams>? OnGameLaunch;
+    public event Action<LaunchParams>? OnGameClose;
 }

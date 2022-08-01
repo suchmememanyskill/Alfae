@@ -42,8 +42,11 @@ public class ProtonWrapper : IBootProfile
         
         wrapper.EnvironmentOverrides.Add("STEAM_COMPAT_DATA_PATH", prefixFolder);
         wrapper.EnvironmentOverrides.Add("STEAM_COMPAT_CLIENT_INSTALL_PATH", Path.Join(Environment.GetFolderPath(Environment.SpecialFolder.UserProfile), ".steam", "steam"));
-        
-        new NativeLinuxProfile().Launch(wrapper);
+
+        IBootProfile profile = new NativeLinuxProfile();
+        profile.OnGameLaunch += _ => OnGameLaunch?.Invoke(launchParams);
+        profile.OnGameClose += _ => OnGameClose?.Invoke(launchParams);
+        profile.Launch(wrapper);
     }
 
     private string _dirPath;
@@ -68,4 +71,7 @@ public class ProtonWrapper : IBootProfile
 
         return new() {entry};
     }
+
+    public event Action<LaunchParams>? OnGameLaunch;
+    public event Action<LaunchParams>? OnGameClose;
 }

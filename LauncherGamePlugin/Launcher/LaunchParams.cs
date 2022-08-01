@@ -5,10 +5,9 @@ namespace LauncherGamePlugin.Launcher;
 
 public class LaunchParams
 {
-    /* TODO: Implement
-    public event Action<ExecLaunch>? OnGameLaunch;
-    public event Action<ExecLaunch>? OnGameExit;
-    */
+    public event Action<LaunchParams>? OnGameLaunch;
+    public event Action<LaunchParams>? OnGameClose;
+    
     public string Executable { get; set; }
     public Dictionary<string, string> EnvironmentOverrides { get; } = new();
     public string WorkingDirectory { get; }
@@ -51,6 +50,9 @@ public class LaunchParams
     public LaunchParams(string executable, List<string> arguments, string workingDirectory, IGame game)
         : this(executable, arguments, workingDirectory, game, GetExecTypeFromFileName(executable))
     { }
+
+    public void InvokeOnGameLaunch() => OnGameLaunch?.Invoke(this);
+    public void InvokeOnGameClose() => OnGameClose?.Invoke(this);
 
     public static Platform GetExecTypeFromFileName(string filename) =>
         filename.EndsWith(".exe") ? Platform.Windows : Platform.Linux;

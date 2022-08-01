@@ -13,4 +13,6 @@ public interface IBootProfile
     public List<Command> CustomCommands() => new();
     public void Launch(LaunchParams launchParams);
     public List<FormEntry> GameOptions(IGame game) => new();
+    public event Action<LaunchParams> OnGameLaunch;
+    public event Action<LaunchParams> OnGameClose;
 }

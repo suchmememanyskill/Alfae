@@ -201,6 +201,19 @@ public class LauncherConfiguration
             throw new Exception("Found no profile to launch given executable");
 
         _app.Logger.Log($"Launching {launchParams.Executable} using {profile.Name}");
+
+        profile.OnGameLaunch += x =>
+        {
+            _app.Logger.Log($"Launched {x.Game.Name}");
+            x.InvokeOnGameLaunch();
+        };
+        
+        profile.OnGameClose += x =>
+        {
+            _app.Logger.Log($"{x.Game.Name} closed");
+            x.InvokeOnGameClose();
+        };
+
         profile.Launch(launchParams);
     }
 }

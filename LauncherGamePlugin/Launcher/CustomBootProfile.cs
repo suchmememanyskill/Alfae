@@ -36,12 +36,17 @@ public class CustomBootProfile : IBootProfile
             string[] split = x.Split("=");
             convertedLaunchParams.EnvironmentOverrides[split[0]] = split[1];
         }
-        
-        if (PlatformExtensions.CurrentPlatform == Platform.Windows)
-            new NativeWindowsProfile().Launch(convertedLaunchParams);
-        else
-            new NativeLinuxProfile().Launch(convertedLaunchParams);
+
+        IBootProfile profile = (PlatformExtensions.CurrentPlatform == Platform.Windows)
+            ? new NativeWindowsProfile()
+            : new NativeLinuxProfile();
+
+        profile.OnGameLaunch += _ => OnGameLaunch?.Invoke(launchParams);
+        profile.Launch(convertedLaunchParams);
     }
+
+    public event Action<LaunchParams>? OnGameLaunch;
+    public event Action<LaunchParams>? OnGameClose;
 
     public virtual List<Command> CustomCommands() => new();
 
