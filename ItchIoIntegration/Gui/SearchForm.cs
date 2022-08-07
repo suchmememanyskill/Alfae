@@ -53,7 +53,7 @@ public class SearchForm
         
         foreach (var itchApiGame in games)
         {
-            entries.Add(Form.TextBox(""));
+            entries.Add(Form.Separator());
             string text = itchApiGame.Title;
             
             if (!string.IsNullOrWhiteSpace(itchApiGame.ShortText))
