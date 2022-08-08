@@ -69,7 +69,7 @@ public class ProtonWrapper : IBootProfile
             _exporter.Config.Save(_exporter.App!);
         };
 
-        FormEntry runInPrefix = Form.Button("Run in prefix", _ =>
+        FormEntry runInPrefix = Form.Button("Run executable in prefix", _ =>
         {
             new RunInPrefixGui(this, game).Show(_exporter.App!);
         }, alignment: FormAlignment.Left);
