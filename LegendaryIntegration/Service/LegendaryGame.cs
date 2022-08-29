@@ -248,6 +248,29 @@ public class LegendaryGame : IGame
         return null;
     }
 
+    public async Task Import(string path)
+    {
+        if (Parser.Auth.OfflineLogin)
+            throw new Exception("You need to be online to import a game");
+        
+        Terminal t = new(LegendaryGameSource.Source.App);
+        await t.ExecLegendary($"import {InternalName} \"{path}\"");
+
+        if (!t.StdErr.Last().EndsWith("has been imported."))
+            throw new Exception("Failed to import game");
+    }
+
+    public async Task Repair()
+    {
+        if (Parser.Auth.OfflineLogin)
+            throw new Exception("You need to be online to repair a game");
+        
+        Terminal t = new(LegendaryGameSource.Source.App);
+        await t.ExecLegendary($"repair {InternalName} -y");
+        
+        // TODO: there is no error checking here
+    }
+
     public async Task Uninstall()
     {
         if (!IsInstalled)

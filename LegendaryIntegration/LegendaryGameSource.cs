@@ -4,6 +4,7 @@ using LauncherGamePlugin.Forms;
 using LauncherGamePlugin.Interfaces;
 using LauncherGamePlugin.Launcher;
 using LegendaryIntegration.Extensions;
+using LegendaryIntegration.Gui;
 using LegendaryIntegration.Service;
 
 namespace LegendaryIntegration;
@@ -56,6 +57,7 @@ public class LegendaryGameSource : IGameSource
         {
             commands.Add(new("Install", () => Download(legendaryGame)));
             commands.Add(new("Show in browser", legendaryGame.ShowInBrowser));
+            commands.Add(new("Import", () => new ImportFileSelect(legendaryGame).Show(App)));
             
             if (legendaryGame.Size == 0)
                 commands.Add(new("Get game install size", () => GetOfflineGameSize(legendaryGame)));
