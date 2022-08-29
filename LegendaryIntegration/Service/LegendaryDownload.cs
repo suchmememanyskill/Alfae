@@ -58,7 +58,7 @@ public class LegendaryDownload : ProgressStatus
     {
         Game.Parser.PauseAllDownloads();
         OnPauseOrContinue?.Invoke(this);
-        await _terminal.ExecLegendary($"-y install {Game.InternalName} --game-folder \"{_path}\"");
+        await _terminal.ExecLegendary($"-y install {Game.InternalName} --skip-sdl --game-folder \"{_path}\"");
         if (!_terminal.Killed)
             OnCompletionOrCancel?.Invoke(this);
     }
