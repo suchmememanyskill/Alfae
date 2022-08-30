@@ -72,6 +72,7 @@ public class LegendaryGameSource : IGameSource
             commands.Add(new(game.IsRunning ? "Running" : "Launch", () => Launch(legendaryGame, false)));
             commands.Add(new("Config/Info", () => App.ShowForm(legendaryGame.ToForm()!)));
             commands.Add(new("View in browser", legendaryGame.ShowInBrowser));
+            commands.Add(new("Verify", () => new ImportFileSelect(legendaryGame).Run(App)));
             commands.Add(new("Uninstall", () =>
             {
                 App.Show2ButtonTextPrompt($"Are you sure you want to uninstall {legendaryGame.Name}?", "Uninstall", "Back",

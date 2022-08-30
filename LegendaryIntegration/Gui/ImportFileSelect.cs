@@ -39,12 +39,15 @@ public class ImportFileSelect
         app.ShowForm(entries);
     }
 
-    private async void Run(IApp app, string path)
+    public async void Run(IApp app, string? path = null)
     {
         try
         {
-            app.ShowTextPrompt($"Importing {_game.Name}...");
-            await _game.Import(path);
+            if (path != null)
+            {
+                app.ShowTextPrompt($"Importing {_game.Name}...");
+                await _game.Import(path);
+            }
             app.ShowTextPrompt($"Verifying {_game.Name}...");
             await _game.Repair();
             LegendaryGameSource.Source.ReloadGames();
