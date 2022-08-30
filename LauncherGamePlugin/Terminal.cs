@@ -18,7 +18,12 @@ public class Terminal
     private Process proc;
     private IApp _app;
 
-    public Terminal(IApp app) => _app = app;
+    public Terminal(IApp app)
+    {
+        _app = app;
+        OnNewLine += (terminal, s) => Log($"[{proc?.Id}] [StdOut] {s}");
+        OnNewErrLine += (terminal, s) => Log($"[{proc?.Id}] [StdErr] {s}");
+    }
 
     public async Task<bool> Exec(string fileName, string args)
     {
