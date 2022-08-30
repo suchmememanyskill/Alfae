@@ -1,4 +1,5 @@
-﻿using LauncherGamePlugin.Enums;
+﻿using LauncherGamePlugin;
+using LauncherGamePlugin.Enums;
 using LauncherGamePlugin.Forms;
 using LauncherGamePlugin.Interfaces;
 using LauncherGamePlugin.Launcher;
@@ -23,22 +24,8 @@ public class ProtonWrapper : IBootProfile
 
         LaunchParams wrapper = new(Path.Join(_dirPath, "proton"), args, launchParams.WorkingDirectory,
             launchParams.Game, Platform.Linux);
-        
-        string homeFolder = Environment.GetFolderPath(Environment.SpecialFolder.UserProfile);
 
-        string prefixBaseFolder = Path.Join(homeFolder, ".proton_alfae");
-
-        if (!Directory.Exists(prefixBaseFolder))
-            Directory.CreateDirectory(prefixBaseFolder);
-        
-        // To keep compatibility with Alfae <= v1.1.0
-        if (Directory.Exists(Path.Join(homeFolder, ".proton_launcher")) && !Directory.Exists(Path.Join(prefixBaseFolder, "default")))
-            Directory.Move(Path.Join(homeFolder, ".proton_launcher"), Path.Join(prefixBaseFolder, "default"));
-        
-        string prefixFolder = Path.Join(prefixBaseFolder, (config.SeparateProtonPath) ? $"{launchParams.Game.Source.SlugServiceName}.{launchParams.Game.InternalName}" : "default");
-        
-        if (!Directory.Exists(prefixFolder))
-            Directory.CreateDirectory(prefixFolder);
+        string prefixFolder = GetPrefixFolder(config, launchParams.Game);
         
         wrapper.EnvironmentOverrides.Add("STEAM_COMPAT_DATA_PATH", prefixFolder);
         wrapper.EnvironmentOverrides.Add("STEAM_COMPAT_CLIENT_INSTALL_PATH", Path.Join(Environment.GetFolderPath(Environment.SpecialFolder.UserProfile), ".steam", "steam"));
@@ -69,14 +56,34 @@ public class ProtonWrapper : IBootProfile
             _exporter.Config.Save(_exporter.App!);
         };
 
-        FormEntry runInPrefix = Form.Button("Run executable in prefix", _ =>
-        {
-            new RunInPrefixGui(this, game).Show(_exporter.App!);
-        }, alignment: FormAlignment.Left);
+        FormEntry runInPrefix = Form.Button(
+            "Run executable in prefix", _ => new RunInPrefixGui(this, game).Show(_exporter.App!),
+            "Open prefix folder", _ => Utils.OpenFolder(GetPrefixFolder(config, game))
+            , alignment: FormAlignment.Left);
 
         return new() {entry, runInPrefix};
     }
 
     public event Action<LaunchParams>? OnGameLaunch;
     public event Action<LaunchParams>? OnGameClose;
+
+    private string GetPrefixFolder(GameConfig config, IGame game)
+    {
+        string homeFolder = Environment.GetFolderPath(Environment.SpecialFolder.UserProfile);
+        string prefixBaseFolder = Path.Join(homeFolder, ".proton_alfae");
+
+        if (!Directory.Exists(prefixBaseFolder))
+            Directory.CreateDirectory(prefixBaseFolder);
+        
+        // To keep compatibility with Alfae <= v1.1.0
+        if (Directory.Exists(Path.Join(homeFolder, ".proton_launcher")) && !Directory.Exists(Path.Join(prefixBaseFolder, "default")))
+            Directory.Move(Path.Join(homeFolder, ".proton_launcher"), Path.Join(prefixBaseFolder, "default"));
+        
+        string prefixFolder = Path.Join(prefixBaseFolder, (config.SeparateProtonPath) ? $"{game.Source.SlugServiceName}.{game.InternalName}" : "default");
+        
+        if (!Directory.Exists(prefixFolder))
+            Directory.CreateDirectory(prefixFolder);
+
+        return prefixFolder;
+    }
 }
