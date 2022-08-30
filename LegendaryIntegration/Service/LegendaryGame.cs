@@ -179,14 +179,14 @@ public class LegendaryGame : IGame
         return localInfo;
     }
 
-    public async Task StartDownload()
+    public async Task StartDownload(bool repair = false)
     {
         await GetInfo();
         
         try
         {
-            ReattachDownload(new(this));
-            Parser.AddDownload(Download);
+            ReattachDownload(new(this, repair));
+            Parser.AddDownload(Download!);
         }
         catch
         {
@@ -258,17 +258,17 @@ public class LegendaryGame : IGame
 
         if (!t.StdErr.Last().EndsWith("has been imported."))
             throw new Exception("Failed to import game");
+        
+        await Repair();
+        LegendaryGameSource.Source.App.ReloadGames(); // Invalid state, reloading all
     }
 
     public async Task Repair()
     {
         if (Parser.Auth.OfflineLogin)
             throw new Exception("You need to be online to repair a game");
-        
-        Terminal t = new(LegendaryGameSource.Source.App);
-        await t.ExecLegendary($"repair {InternalName} -y");
-        
-        // TODO: there is no error checking here
+
+        await StartDownload(true);
     }
 
     public async Task Uninstall()

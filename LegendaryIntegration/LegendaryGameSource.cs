@@ -72,7 +72,7 @@ public class LegendaryGameSource : IGameSource
             commands.Add(new(game.IsRunning ? "Running" : "Launch", () => Launch(legendaryGame, false)));
             commands.Add(new("Config/Info", () => App.ShowForm(legendaryGame.ToForm()!)));
             commands.Add(new("View in browser", legendaryGame.ShowInBrowser));
-            commands.Add(new("Verify", () => new ImportFileSelect(legendaryGame).Run(App)));
+            commands.Add(new("Verify", () => Repair(legendaryGame)));
             commands.Add(new("Uninstall", () =>
             {
                 App.Show2ButtonTextPrompt($"Are you sure you want to uninstall {legendaryGame.Name}?", "Uninstall", "Back",
@@ -201,6 +201,11 @@ public class LegendaryGameSource : IGameSource
     {
         await game.StartDownload();
         game.Download!.OnCompletionOrCancel += _ => App.ReloadGames();
+    }
+
+    public async void Repair(LegendaryGame game)
+    {
+        await game.Repair();
     }
 
     public async void Login(Form form)
