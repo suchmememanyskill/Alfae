@@ -53,18 +53,40 @@ public class LegendaryAuth
         return false;
     }
 
-    public async Task<bool> Authenticate(string sid)
+    public async Task Authenticate(string authCode)
     {
         Terminal t = new Terminal(LegendaryGameSource.Source.App);
         LegendaryInstalled = true;
 
-        if (!await t.ExecLegendary($"auth --sid {sid}"))
+        if (!await t.ExecLegendary($"auth --code {authCode}"))
         {
             LegendaryInstalled = false;
-            return false;
+            throw new Exception("Legendary is not installed");
         }
 
-        return t.ExitCode == 0;
+        if (t.ExitCode != 0)
+            throw new Exception("Auth command failed");
+    }
+
+    public async Task AuthenticateUsingWebview()
+    {
+        Terminal t = new Terminal(LegendaryGameSource.Source.App);
+        LegendaryInstalled = true;
+        
+        if (!await t.ExecLegendary($"auth"))
+        {
+            LegendaryInstalled = false;
+            throw new Exception("Legendary is not installed");
+        }
+
+        if (t.ExitCode != 0)
+            throw new Exception("Auth command failed");
+
+        if (t.StdErr.Contains("[WebViewHelper] ERROR: Login aborted by user."))
+            throw new Exception("Login aborted by user");
+
+        if (!t.StdErr.Last().StartsWith("[cli] INFO: Successfully logged in as"))
+            throw new Exception("Login failed");
     }
 
     public async Task<bool> Logout()

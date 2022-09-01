@@ -14,7 +14,7 @@ namespace LegendaryIntegration;
 public class LegendaryGameSource : IGameSource
 {
     public string ServiceName => "Epic Games Integration";
-    public string Version => "v1.1.0";
+    public string Version => "v1.1.1";
     public string SlugServiceName => "epic-games";
     public string ShortServiceName => "EpicGames";
     public LegendaryAuth? auth;
@@ -208,22 +208,23 @@ public class LegendaryGameSource : IGameSource
         await game.Repair();
     }
 
-    public async void Login(Form form)
+    public async void Login(string? authCode = null)
     {
-        string? SID = form.GetValue("SID:");
         App.ShowTextPrompt("Logging in...");
 
-        if (string.IsNullOrWhiteSpace(SID))
-        {
-            LoginForm("SID field was left blank");
-            return;
-        }
-
         auth = new();
-        if (!await auth.Authenticate(SID))
+
+        try
         {
-            LoginForm("Legendary is seemingly not installed");
+            if (authCode != null)
+                await auth.Authenticate(authCode);
+            else
+                await auth.AuthenticateUsingWebview();
+        }
+        catch (Exception e)
+        {
             auth = null;
+            LoginForm(e.Message);
             return;
         }
 
@@ -238,28 +239,7 @@ public class LegendaryGameSource : IGameSource
         App.HideForm();
     }
 
-    private void LoginForm(string warningMessage = "")
-    {
-        List<FormEntry> entries = new()
-        {
-            new FormEntry(FormEntryType.TextBox, "Log into Epic Games", "Bold", alignment: FormAlignment.Center),
-            new FormEntry(FormEntryType.TextBox, "Click the link, log in, and copy the SID value into the field below"),
-            new FormEntry(FormEntryType.ClickableLinkBox,
-                "https://www.epicgames.com/id/login?redirectUrl=https://www.epicgames.com/id/api/redirect", linkClick: entry => Utils.OpenUrl(entry.Name)),
-            new FormEntry(FormEntryType.TextInput, "SID:"),
-            Form.Button("Back", _ => App.HideForm(),
-                "Login", x =>
-                {
-                    App.HideForm();
-                    Login(x);
-                })
-        };
-        
-        if (warningMessage != "")
-            entries.Add(new FormEntry(FormEntryType.TextBox, warningMessage, "Bold"));
-        
-        App.ShowForm(new(entries));
-    }
+    private void LoginForm(string warningMessage = "") => new LoginForm(this).Show(warningMessage);
 
     public async Task Logout()
     {
