@@ -77,7 +77,7 @@ public partial class MainView : UserControlExt<MainView>
             NotInstalledListBox.SelectedItem = gameViewSmall;
         }
         
-        gameViewSmall.UpdateCoverImage(true);
+        gameViewSmall.UpdateCoverImage();
     }
     
 

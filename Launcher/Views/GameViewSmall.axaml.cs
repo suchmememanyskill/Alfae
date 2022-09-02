@@ -56,8 +56,7 @@ public partial class GameViewSmall : UserControlExt<GameViewSmall>
         SetControls();
         OnUpdate();
         game.OnUpdate += OnUpdateWrapper;
-        //EffectiveViewportChanged += EffectiveViewportChangedReact;
-        Dispatcher.UIThread.Post(() => UpdateCoverImage(), DispatcherPriority.Background);
+        EffectiveViewportChanged += EffectiveViewportChangedReact;
     }
 
     public void Selected()
@@ -84,7 +83,6 @@ public partial class GameViewSmall : UserControlExt<GameViewSmall>
         
         UpdateView();
         _downloadedImage = false;
-        UpdateCoverImage();
 
         if (HasProgress)
         {
@@ -94,20 +92,14 @@ public partial class GameViewSmall : UserControlExt<GameViewSmall>
             OnProgressUpdate();
         }
     }
-
-    // TODO: Fix
-    public void UpdateCoverImage(bool force = false)
+    
+    public void UpdateCoverImage()
     {
         if (_downloadedImage)
             return;
 
-        force = true;
-        
-        if (force || (!TransformedBounds?.Clip.IsEmpty ?? false) || Game.InstalledStatus == InstalledStatus.Installed) // Is the element visible
-        {
-            _downloadedImage = true;
-            Dispatcher.UIThread.Post(GetCoverImage, DispatcherPriority.Background);
-        }
+        _downloadedImage = true;
+        Dispatcher.UIThread.Post(GetCoverImage, DispatcherPriority.Background);
     }
 
     private void OnProgressUpdateWrapper() => Dispatcher.UIThread.Post(OnProgressUpdate);
@@ -215,9 +207,14 @@ public partial class GameViewSmall : UserControlExt<GameViewSmall>
     public void SetVisibility(bool visible)
     {
         IsVisible = visible;
-        if (visible)
-            UpdateCoverImage();
     }
-    
-    private void EffectiveViewportChangedReact(object? obj, EffectiveViewportChangedEventArgs args) => UpdateCoverImage();
+
+    private void EffectiveViewportChangedReact(object? obj, EffectiveViewportChangedEventArgs args)
+    {
+        if (args.EffectiveViewport.IsEmpty)
+            return;
+        
+        EffectiveViewportChanged -= EffectiveViewportChangedReact;
+        UpdateCoverImage();
+    }
 }
