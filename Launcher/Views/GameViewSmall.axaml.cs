@@ -187,8 +187,7 @@ public partial class GameViewSmall : UserControlExt<GameViewSmall>
                 }
             }
         }
-
-        // I love hacky fixes for shit that doesn't work in avalonia
+        
         commands.ForEach(x =>
         {
             if (x.Type == CommandType.Function)
@@ -196,10 +195,7 @@ public partial class GameViewSmall : UserControlExt<GameViewSmall>
                 Action originalAction = x.Action;
                 x.Action = () =>
                 {
-                    if (!_eventSpamPrevention)
-                        originalAction?.Invoke();
-
-                    _eventSpamPrevention = !_eventSpamPrevention;
+                    originalAction?.Invoke();
                     Menu.Close();
                 };
             }

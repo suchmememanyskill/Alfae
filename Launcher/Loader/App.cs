@@ -130,7 +130,16 @@ public class App : IApp
 
     private void ShowForm2(Form form)
     {
-        MainView.Overlay.Children.Clear();
+        foreach (var x in MainView.Overlay.Children)
+        {
+            if (x is FormOverlay overlay)
+            {
+                overlay.SetNewForm(form);
+                MainView.Overlay.IsVisible = true;
+                return;
+            }
+        }
+        
         MainView.Overlay.Children.Add(new FormOverlay(form));
         MainView.Overlay.IsVisible = true;
     }

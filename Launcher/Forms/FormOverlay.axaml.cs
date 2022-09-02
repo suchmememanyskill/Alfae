@@ -16,13 +16,17 @@ public partial class FormOverlay : UserControl
         InitializeComponent();
     }
 
-    public FormOverlay(Form form) : this()
+    public FormOverlay(Form form) : this() => SetNewForm(form);
+    public void SetNewForm(Form form)
     {
         _form = form;
+        StackPanel.Children.Clear();
         form.FormEntries.ForEach(x => StackPanel.Children.Add(x.ToTemplatedControl()));
-        
+
         if (form.Background != null)
             Dispatcher.UIThread.Post(SetBackground);
+        else
+            Image.Source = null;
     }
 
     private async void SetBackground()
