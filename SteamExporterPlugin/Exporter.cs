@@ -169,7 +169,7 @@ public class Exporter : IGameSource
 
         for (int i = 0; i < ShortcutRoot!.GetSize(); i++)
         {
-            if (uniqueServices.Any(x => ShortcutRoot.GetEntry(i).AppName.Contains($"({x})")))
+            if (uniqueServices.Any(x => ShortcutRoot.GetEntry(i).AppName?.Contains($"({x})") ?? false))
             {
                 ShortcutEntry entry = ShortcutRoot.GetEntry(i);
                 string path = Path.Combine(gridPath, $"{entry.AppId}.jpg");
@@ -214,7 +214,7 @@ public class Exporter : IGameSource
             for (int i = 0; i < ShortcutRoot!.GetSize(); i++)
             {
                 ShortcutEntry entry = ShortcutRoot.GetEntry(i);
-                if (uniqueServices.Any(x => entry.AppName.Contains($"({x})")))
+                if (uniqueServices.Any(x => entry.AppName?.Contains($"({x})") ?? false))
                 {
                     int idx = entry.AppName.LastIndexOf("(");
 
