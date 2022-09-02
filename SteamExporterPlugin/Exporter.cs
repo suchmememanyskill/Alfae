@@ -62,7 +62,7 @@ public class Exporter : IGameSource
         {
             return new()
             {
-                new("Add games to steam", UpdateSteamGames),
+                new("Sync games to steam", UpdateSteamGames),
                 new("Remove steam games", RemoveSteamGames)
             };
         }
