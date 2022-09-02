@@ -12,7 +12,6 @@ using Newtonsoft.Json;
 
 namespace Launcher.Launcher;
 
-// TODO: Add time played
 public class LauncherConfiguration
 {
     public List<IBootProfile> Profiles { get; private set; } = new();

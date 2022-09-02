@@ -4,6 +4,7 @@ using System.IO;
 using System.Reflection;
 using System.Runtime.CompilerServices;
 using Avalonia.Controls;
+using Avalonia.Markup.Xaml;
 using Avalonia.Threading;
 using Launcher.Utils;
 
@@ -12,7 +13,13 @@ namespace Launcher.Extensions
     public abstract class UserControlExt<T> : UserControl
     {
         private List<BindingAttribute> bindings = new();
-        
+
+        public void Init()
+        {
+            AvaloniaXamlLoader.Load(this);
+            SetControls();
+        }
+
         public void SetControls()
         {
             bindings = new();

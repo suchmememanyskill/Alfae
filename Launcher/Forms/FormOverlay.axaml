@@ -7,8 +7,8 @@
     <Panel>
         <Panel Background="#80000000" />
         <Image Name="Image" Stretch="UniformToFill" Margin="100" />
-        <Border CornerRadius="5" Background="#222222" Margin="20" Width="600" HorizontalAlignment="Center" VerticalAlignment="Center">
-            <ScrollViewer Padding="10">
+        <Border CornerRadius="5" Background="#222222" Width="600" HorizontalAlignment="Center" VerticalAlignment="Center">
+            <ScrollViewer Margin="15">
                 <StackPanel Name="StackPanel" Spacing="10" VerticalAlignment="Center" />
             </ScrollViewer>
         </Border>

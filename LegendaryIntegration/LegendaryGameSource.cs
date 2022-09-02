@@ -10,7 +10,6 @@ using LegendaryIntegration.Service;
 namespace LegendaryIntegration;
 
 // TODO: Add save sync
-// TODO: Add importing games
 public class LegendaryGameSource : IGameSource
 {
     public string ServiceName => "Epic Games Integration";

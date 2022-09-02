@@ -56,7 +56,7 @@ public partial class GameViewSmall : UserControlExt<GameViewSmall>
         SetControls();
         OnUpdate();
         game.OnUpdate += OnUpdateWrapper;
-        EffectiveViewportChanged += EffectiveViewportChangedReact;
+        //EffectiveViewportChanged += EffectiveViewportChangedReact;
         Dispatcher.UIThread.Post(() => UpdateCoverImage(), DispatcherPriority.Background);
     }
 
@@ -95,10 +95,13 @@ public partial class GameViewSmall : UserControlExt<GameViewSmall>
         }
     }
 
+    // TODO: Fix
     public void UpdateCoverImage(bool force = false)
     {
         if (_downloadedImage)
             return;
+
+        force = true;
         
         if (force || (!TransformedBounds?.Clip.IsEmpty ?? false) || Game.InstalledStatus == InstalledStatus.Installed) // Is the element visible
         {
