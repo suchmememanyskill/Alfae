@@ -72,7 +72,6 @@ public class LocalGameSource : IGameSource
             new FormEntry(FormEntryType.TextInput, "CLI Arguments:", args),
             Form.Button("Cancel", _ => _app.HideForm(), addOrEdit, entry =>
             {
-                _app.HideForm();
                 new Thread(() => AddGame(entry)).Start();
             })
         };
