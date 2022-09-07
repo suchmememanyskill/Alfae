@@ -4,6 +4,6 @@
              xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006"
              mc:Ignorable="d" d:DesignWidth="800" d:DesignHeight="40"
              x:Class="Launcher.Forms.FormTemplates.TextBox">
-    <TextBlock TextWrapping="WrapWithOverflow" Margin="5" Name="TextBlock">Hello this is
-    a test message</TextBlock>
+    <TextBlock TextWrapping="WrapWithOverflow" Margin="5" Name="TextBlock" Text="Hello this is
+    a test message"></TextBlock>
 </UserControl>

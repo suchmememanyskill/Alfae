@@ -1,4 +1,5 @@
 ﻿using System.Diagnostics;
+using LauncherGamePlugin.Interfaces;
 
 namespace LauncherGamePlugin;
 
@@ -11,11 +12,17 @@ public enum LogType
 
 public class Logger
 {
-    private readonly string LOGPATH = "./app.log";
+    private string LOGPATH = "./app.log";
     private List<string> _logs = new();
 
-    public Logger()
+    public Logger(IApp app)
     {
+        try
+        {
+            LOGPATH = Path.Join(app.ConfigDir, "app.log");
+        }
+        catch { }
+        
         AppDomain.CurrentDomain.ProcessExit += (sender, args) =>
         {
             try

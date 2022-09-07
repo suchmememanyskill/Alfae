@@ -59,7 +59,7 @@ public class App : IApp
 
     public bool HeadlessMode { get; set; } = false;
 
-    public Logger Logger { get; } = new();
+    public Logger Logger { get; }
 
     public List<IGameSource> GameSources { get; private set; } = new();
     public MainWindow MainWindow { get; set; }
@@ -75,9 +75,12 @@ public class App : IApp
 
     private bool _initialised = false;
 
+    public event Action<IGameSource> OnPluginInitialised; 
+
     private async Task<IGameSource> InitialiseService(IGameSource source)
     {
         await source.Initialize(this);
+        OnPluginInitialised?.Invoke(source);
         return source;
     }
     
@@ -249,8 +252,10 @@ public class App : IApp
     private App()
     {
         Config = Config.Load(this);
+        Logger = new(this);
         Launcher = new(this);
         Logger.Log($"Launcher {Version}");
+        OnPluginInitialised += x => Logger.Log($"[Plugin loaded] {x.ServiceName}");
     }
 
     private static App? _instance;

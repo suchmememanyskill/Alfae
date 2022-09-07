@@ -2,7 +2,8 @@
              xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
              xmlns:d="http://schemas.microsoft.com/expression/blend/2008"
              xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006"
+             xmlns:forms="clr-namespace:Launcher.Forms"
              mc:Ignorable="d" d:DesignWidth="800" d:DesignHeight="450"
              x:Class="Launcher.Views.LoadingScreen">
-    <Label HorizontalAlignment="Center" VerticalAlignment="Center" FontSize="50">Loading...</Label>
+    <forms:FormOverlay Name="Overlay" />
 </UserControl>

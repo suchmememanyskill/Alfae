@@ -74,8 +74,16 @@ namespace Launcher
         {
             try
             {
+                string path = "crash.log";
                 Exception ex = (Exception)e.ExceptionObject;
-                File.WriteAllText("crash.log", ex.ToString());
+                try
+                {
+                    var app = Loader.App.GetInstance();
+                    path = Path.Join(app.ConfigDir, "crash.log");
+                }
+                catch { }
+
+                File.WriteAllText(path, ex.ToString());
             }
             catch { }
         }
