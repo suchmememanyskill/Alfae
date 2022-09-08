@@ -59,27 +59,8 @@ public class GogGame : IGame
         Platforms = product.Platforms;
     }
     
-    public async Task<byte[]?> CoverImage()
-    {
-        string cachePath = Path.Join(GogIntegration.IMAGECACHEDIR, CoverUrl.Split("/").Last());
-
-        if (File.Exists(cachePath))
-            return await File.ReadAllBytesAsync(cachePath);
-
-        using HttpClient client = new();
-        try
-        {
-            HttpResponseMessage response = await client.GetAsync(CoverUrl);
-            response.EnsureSuccessStatusCode();
-            byte[] bytes = await response.Content.ReadAsByteArrayAsync();
-            await File.WriteAllBytesAsync(cachePath, bytes);
-            return bytes;
-        }
-        catch
-        {
-            return null;
-        }
-    }
+    public Task<byte[]?> CoverImage() =>
+        Storage.Cache(CoverUrl?.Split("/").Last() ?? "", () => Storage.ImageDownload(CoverUrl));
 
     public async Task GetDlInfo()
     {

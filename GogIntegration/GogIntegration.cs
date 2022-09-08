@@ -18,36 +18,17 @@ public class GogIntegration : IGameSource
     public string ShortServiceName => "GOG";
 
     public IApp App { get; private set; }
-    public Config Config { get; private set; } = new();
+    public Config Config => _storage.Data;
+    public Storage<Config> _storage;
     public GogApiUserData? UserData { get; private set; }
     private bool _successfulLogin = false;
-    
-    public static string IMAGECACHEDIR
-    {
-        get
-        {
-            string path = Path.Join(Path.GetTempPath(), "GOGPluginImageCache");
-            if (!Directory.Exists(path))
-                Directory.CreateDirectory(path);
-            return path;
-        }
-    }
-    
-    private string ConfigFile => Path.Join(App.ConfigDir, "gog.json");
     private List<GogGame> _games = new();
     private bool _offline = false;
 
     public async Task Initialize(IApp app)
     {
         App = app;
-        string configPath = ConfigFile;
-
-        if (File.Exists(configPath))
-        {
-            string text = await File.ReadAllTextAsync(configPath);
-            Config = JsonConvert.DeserializeObject<Config>(text)!;
-        }
-
+        _storage = new(app, "gog.json");
         _offline = !await Utils.HasNetworkAsync();
 
         if (!_offline)
@@ -75,7 +56,7 @@ public class GogIntegration : IGameSource
         if (Config.Auth.NeedsRefresh())
         {
             Config.Auth = await Config.Auth.Refresh();
-            Config.Save(ConfigFile);
+            SaveConfig();
 
             if (Config.Auth == null)
                 return null;
@@ -119,7 +100,7 @@ public class GogIntegration : IGameSource
     public async void Logout()
     {
         Config.Auth = null;
-        Config.Save(ConfigFile);
+        SaveConfig();
         await AttemptLogin();
         await ReloadGames();
         App.ReloadGames();
@@ -157,7 +138,7 @@ public class GogIntegration : IGameSource
     public async Task<bool> Login(GogApiAuth auth)
     {
         Config.Auth = auth;
-        Config.Save(ConfigFile);
+        SaveConfig();
         await AttemptLogin();
 
         if (!_successfulLogin)
@@ -206,7 +187,7 @@ public class GogIntegration : IGameSource
     public void FinalizeDownload(GogGame game)
     {
         Config.InstalledGames.Add(game);
-        Config.Save(ConfigFile);
+        SaveConfig();
         App.ReloadGames();
     }
 
@@ -215,7 +196,7 @@ public class GogIntegration : IGameSource
         App.ShowTextPrompt($"Uninstalling {game.Name}...");
         await Task.Run(game.Uninstall);
         Config.InstalledGames.Remove(game);
-        Config.Save(ConfigFile);
+        SaveConfig();
         App.ReloadGames();
         App.HideForm();
     }
@@ -240,5 +221,5 @@ public class GogIntegration : IGameSource
         }
     }
 
-    public void SaveConfig() => Config.Save(ConfigFile);
+    public void SaveConfig() => _storage.Save();
 }

@@ -68,53 +68,25 @@ public class LegendaryGame : IGame
     private long _localSize = 0;
     private LegendaryInfoResponse? localInfo = null;
 
-    private static string IMAGECACHEDIR
-    {
-        get
-        {
-            string path = Path.Join(Path.GetTempPath(), "LegendaryPluginImageCache");
-            if (!Directory.Exists(path))
-                Directory.CreateDirectory(path);
-            return path;
-        }
-    }
-
-    public bool HasCoverImage => GetGameImage("DieselGameBoxTall") != null;
-    public async Task<byte[]?> CoverImage()
+    public async Task<byte[]?> GenerateCover()
     {
         MetaImage? banner = GetGameImage("DieselGameBoxTall");
         MetaImage? logo = GetGameImage("DieselGameBoxLogo");
         
         if (banner == null)
             return null;
-        
-        string cachePath = Path.Join(IMAGECACHEDIR, banner.FileName);
-
-        if (File.Exists(cachePath))
-            return await File.ReadAllBytesAsync(cachePath);
 
         if (logo == null)
-        {
-            byte[]? bytes = await banner.GetImageAsync();
-            if (bytes == null)
-                return null;
+            return await Storage.ImageDownload(banner.Url);
 
-            await File.WriteAllBytesAsync(cachePath, bytes);
-            return bytes;
-        }
+        byte[]? rawBanner = await Storage.ImageDownload(banner.Url);
+        byte[]? rawLogo = await Storage.ImageDownload(logo.Url);
 
-        byte[]? rawBanner = await banner.GetImageAsync();
-
-        if (rawBanner == null)
+        if (rawBanner == null || rawLogo == null)
             return null;
         
         Image<Rgba32> bannerImg = await Task.Run(() => Image.Load<Rgba32>(rawBanner));
-
-        byte[]? rawLogo = await logo.GetImageAsync();
-
-        if (rawLogo == null)
-            return null;
-
+        
         Image<Rgba32> logoImg = await Task.Run(() => Image.Load<Rgba32>(rawLogo));
         Image<Rgba32> output = new Image<Rgba32>(bannerImg.Width, bannerImg.Height);
 
@@ -134,30 +106,14 @@ public class LegendaryGame : IGame
 
         bannerImg.Dispose();
         logoImg.Dispose();
-        await output.SaveAsync(cachePath, new JpegEncoder());
-        return await File.ReadAllBytesAsync(cachePath);
+
+        using var ms = new MemoryStream();
+        await output.SaveAsync(ms, new JpegEncoder());
+        return ms.ToArray();
     }
-
-    public bool HasBackgroundImage => GetGameImage("DieselGameBox") != null;
-    public async Task<byte[]?> BackgroundImage()
-    {
-        MetaImage? background = GetGameImage("DieselGameBox");
-
-        if (background == null)
-            return null;
-        
-        string cachePath = Path.Join(IMAGECACHEDIR, background.FileName);
-        
-        if (File.Exists(cachePath))
-            return await File.ReadAllBytesAsync(cachePath);
-
-        byte[]? bytes = await background.GetImageAsync();
-        if (bytes == null)
-            return null;
-
-        await File.WriteAllBytesAsync(cachePath, bytes);
-        return bytes;
-    }
+    
+    public Task<byte[]?> CoverImage() => Storage.Cache(GetGameImage("DieselGameBoxTall")?.FileName ?? "", GenerateCover);
+    public Task<byte[]?> BackgroundImage() => Storage.Cache(GetGameImage("DieselGameBox")?.FileName ?? "", () => Storage.ImageDownload(GetGameImage("DieselGameBox")?.Url ?? null));
 
     public async Task<LegendaryInfoResponse?> GetInfo()
     {

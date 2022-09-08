@@ -39,7 +39,7 @@ public class LegendaryGameSource : IGameSource
         if (auth == null)
             return new();
 
-        manager ??= new(auth);
+        manager ??= new(auth, App);
 
         return (await manager.GetGames()).Select(x => (IGame) x).ToList();
     }

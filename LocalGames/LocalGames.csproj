@@ -13,8 +13,4 @@
           <ExcludeAssets>runtime</ExcludeAssets>
       </ProjectReference>
     </ItemGroup>
-
-    <ItemGroup>
-      <PackageReference Include="Newtonsoft.Json" Version="13.0.2-beta1" />
-    </ItemGroup>
 </Project>

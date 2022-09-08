@@ -17,39 +17,29 @@ public class ItchGameSource : IGameSource
     public string SlugServiceName => "itch-io";
     public string ShortServiceName => "Itch.io";
 
-    private Config _config;
+    private Config Config => _storage.Data;
+    private Storage<Config> _storage;
     private bool _offline = false;
     public IApp App { get; private set; }
 
     public ItchApiProfile? Profile { get; private set; }
     private List<ItchGame> _games = new();
-    
-    public static string IMAGECACHEDIR
-    {
-        get
-        {
-            string path = Path.Join(Path.GetTempPath(), "ItchIoPluginImageCache");
-            if (!Directory.Exists(path))
-                Directory.CreateDirectory(path);
-            return path;
-        }
-    }
-    
+
     public async Task Initialize(IApp app)
     {
         App = app;
-        _config = Config.Load(app);
+        _storage = new(app, "itch.json");
         await Load();
     }
 
     public async Task Load()
     {
         _games = new();
-        _config.InstalledGames.ForEach(x => x.ItchSource = this);
-        _games.AddRange(_config.InstalledGames);
+        Config.InstalledGames.ForEach(x => x.ItchSource = this);
+        _games.AddRange(Config.InstalledGames);
         Profile = null;
 
-        if (string.IsNullOrWhiteSpace(_config.ApiKey))
+        if (string.IsNullOrWhiteSpace(Config.ApiKey))
         {
             Log("Api key is empty!", LogType.Warn);
             return;
@@ -62,7 +52,7 @@ public class ItchGameSource : IGameSource
             return;
         }
         
-        Profile = await ItchApiProfile.Get(_config.ApiKey);
+        Profile = await ItchApiProfile.Get(Config.ApiKey);
         if (Profile == null)
         {
             Log("Api key is invalid!", LogType.Error);
@@ -86,7 +76,7 @@ public class ItchGameSource : IGameSource
                 .Select(x => new ItchGame(x, this)));
         }
 
-        _games.RemoveAll(x => _config.InstalledGames.Any(y => x.Id == y.Id && x.InstalledStatus == InstalledStatus.NotInstalled));
+        _games.RemoveAll(x => Config.InstalledGames.Any(y => x.Id == y.Id && x.InstalledStatus == InstalledStatus.NotInstalled));
     }
 
     public async void LoadWithGui()
@@ -99,8 +89,8 @@ public class ItchGameSource : IGameSource
 
     public async void SetNewApiKey(string key)
     {
-        _config.ApiKey = key;
-        _config.Save(App);
+        Config.ApiKey = key;
+        SaveConfig();
         LoadWithGui();
     }
 
@@ -181,8 +171,8 @@ public class ItchGameSource : IGameSource
 
     public void AddToInstalled(ItchGame game)
     {
-        _config.InstalledGames.Add(game);
-        _config.Save(App);
+        Config.InstalledGames.Add(game);
+        SaveConfig();
         App.ReloadGames();
     }
 
@@ -196,11 +186,11 @@ public class ItchGameSource : IGameSource
     {
         App.ShowTextPrompt($"Uninstalling {game.Name}...");
         await game.UninstallGame();
-        _config.InstalledGames.Remove(game);
-        _config.Save(App);
+        Config.InstalledGames.Remove(game);
+        SaveConfig();
         App.ReloadGames();
         App.HideForm();
     }
 
-    public void SaveConfig() => _config.Save(App);
+    public void SaveConfig() => _storage.Save();
 }

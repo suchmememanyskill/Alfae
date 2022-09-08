@@ -19,12 +19,13 @@ public class Bottles : IGameSource
     private List<BottlesWrapper> _wrappers = new();
     private List<BottlesProgram> _games = new();
     private IApp _app;
-    private Config _config = new();
-    
+    private Config Config => _storage.Data;
+    private Storage<Config> _storage;
+
     public async Task Initialize(IApp app)
     {
         _app = app;
-        LoadConfig();
+        _storage = new(app, "bottles.json");
         await LoadBottles();
     }
 
@@ -60,7 +61,7 @@ public class Bottles : IGameSource
         {
             BottlesWrapper wrapper = new($"Bottle: {value.Name}", key);
             _wrappers.Add(wrapper);
-            if (_config.ImportPrograms)
+            if (Config.ImportPrograms)
             {
                 List<BottlesProgram> programs =
                     value.Programs.Select(x => new BottlesProgram(x.Value.Name, key, this)).ToList();
@@ -69,18 +70,7 @@ public class Bottles : IGameSource
         }
     }
 
-    public void LoadConfig()
-    {
-        string path = Path.Join(_app.ConfigDir, "bottles.json");
-        if (File.Exists(path))
-            _config = JsonConvert.DeserializeObject<Config>(File.ReadAllText(path))!;
-    }
-
-    public void SaveConfig()
-    {
-        string path = Path.Join(_app.ConfigDir, "bottles.json");
-        File.WriteAllText(path, JsonConvert.SerializeObject(_config));
-    }
+    public void SaveConfig() => _storage.Save();
 
     public async void Reload()
     {
@@ -92,7 +82,7 @@ public class Bottles : IGameSource
 
     public void SetOrUnsetImportGames()
     {
-        _config.ImportPrograms = !_config.ImportPrograms;
+        Config.ImportPrograms = !Config.ImportPrograms;
         SaveConfig();
         Reload();
     }
@@ -108,7 +98,7 @@ public class Bottles : IGameSource
         if (PlatformExtensions.CurrentPlatform != Platform.Windows)
         {
             commands.Add(new("Reload", Reload));
-            commands.Add(new(_config.ImportPrograms ? "Press to not import programs" : "Press to import programs", SetOrUnsetImportGames));
+            commands.Add(new(Config.ImportPrograms ? "Press to not import programs" : "Press to import programs", SetOrUnsetImportGames));
         }
 
         return commands;

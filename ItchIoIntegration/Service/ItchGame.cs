@@ -154,31 +154,9 @@ public class ItchGame : IGame
         LaunchParams args = new(path, CommandlineArgs, Path.GetDirectoryName(path), this, target.GetPlatform());
         ItchSource.App.Launch(args);
     }
-    
-    public async Task<byte[]?> CoverImage()
-    {
-        if (CoverUri == null)
-            return null;
-        
-        string cachePath = Path.Join(ItchGameSource.IMAGECACHEDIR, CoverUri.AbsoluteUri.Split("/").Last());
 
-        if (File.Exists(cachePath))
-            return await File.ReadAllBytesAsync(cachePath);
-
-        using HttpClient client = new();
-        try
-        {
-            HttpResponseMessage response = await client.GetAsync(CoverUri);
-            response.EnsureSuccessStatusCode();
-            byte[] bytes = await response.Content.ReadAsByteArrayAsync();
-            await File.WriteAllBytesAsync(cachePath, bytes);
-            return bytes;
-        }
-        catch
-        {
-            return null;
-        }
-    }
+    public Task<byte[]?> CoverImage() =>
+        Storage.Cache(CoverUri?.AbsoluteUri.Split("/").Last() ?? "", () => Storage.ImageDownload(CoverUri));
 
     public async Task<byte[]?> BackgroundImage() => null;
     public void InvokeOnUpdate() => OnUpdate?.Invoke();
