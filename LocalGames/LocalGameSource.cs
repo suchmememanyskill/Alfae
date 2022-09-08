@@ -16,29 +16,18 @@ public class LocalGameSource : IGameSource
     public string SlugServiceName => "local-games";
 
     private IApp _app;
-    private List<LocalGame> _games = new();
-    private string _configPath;
-    
+    private List<LocalGame> Games => _storage.Data;
+    private Storage<List<LocalGame>> _storage;
+
     public async Task Initialize(IApp app)
     {
         _app = app;
-
-        _configPath = Path.Join(_app.ConfigDir, "localgames.json");
-        if (File.Exists(_configPath))
-        {
-            string json = await File.ReadAllTextAsync(_configPath);
-            _games = JsonConvert.DeserializeObject<List<LocalGame>>(json);
-        }
-        
+        _storage = new(app, "localgames.json");
         Log("Hello World!");
     }
 
-    public async Task Save()
-    {
-        string json = JsonConvert.SerializeObject(_games);
-        await File.WriteAllTextAsync(_configPath, json);
-    }
-    
+    public async Task Save() => _storage.Save();
+
     public void AddGameForm(string possibleWarn = "", string gameName = "", string execPath = "", string coverImage = "", string backgroundImage = "", string args = "", LocalGame? game = null)
     {
         string addOrEdit = game == null ? "Add" : "Edit";
@@ -137,7 +126,7 @@ public class LocalGameSource : IGameSource
         
         if (form.Game == null)
         {
-            _games.Add(localGame);
+            Games.Add(localGame);
             Log($"Added game {gameName}");
         }
 
@@ -150,8 +139,8 @@ public class LocalGameSource : IGameSource
 
     public async Task<List<IGame>> GetGames()
     {
-        _games.ForEach(x => x.Source = this);
-        return _games.Select(x => (IGame)x).ToList();
+        Games.ForEach(x => x.Source = this);
+        return Games.Select(x => (IGame)x).ToList();
     }
 
     public List<Command> GetGameCommands(IGame game)
@@ -175,7 +164,7 @@ public class LocalGameSource : IGameSource
 
     public List<Command> GetGlobalCommands() => new()
     {
-        new Command($"Loaded {_games.Count} games"),
+        new Command($"Loaded {Games.Count} games"),
         new Command(),
         new Command("Add a game", () => AddGameForm())
     };
@@ -183,9 +172,8 @@ public class LocalGameSource : IGameSource
     public async void Remove(LocalGame localGame)
     {
         _app.ShowTextPrompt($"Removing {localGame.Name}...");
-        _games.Remove(localGame);
+        Games.Remove(localGame);
         _app.ReloadGames();
-        _app.HideForm();
         await Save();
         _app.HideForm();
     }
