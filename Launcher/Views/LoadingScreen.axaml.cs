@@ -12,7 +12,7 @@ public partial class LoadingScreen : UserControl
         InitializeComponent();
         var app = Loader.App.GetInstance();
         AddText("Initialising...");
-        app.OnPluginInitialised += source => AddText($"Initialised plugin {source.ServiceName}");
+        app.OnPluginInitialised += (g, t) => AddText($"Initialised plugin {g.ServiceName} in {(((float)t) / 1000):0.0}s");
     }
 
     public void AddText(string text)

@@ -1,5 +1,6 @@
 ﻿using System;
 using System.Collections.Generic;
+using System.Diagnostics;
 using System.IO;
 using System.Linq;
 using System.Threading.Tasks;
@@ -75,12 +76,15 @@ public class App : IApp
 
     private bool _initialised = false;
 
-    public event Action<IGameSource> OnPluginInitialised; 
+    public event Action<IGameSource, long> OnPluginInitialised; 
 
     private async Task<IGameSource> InitialiseService(IGameSource source)
     {
+        Stopwatch stopwatch = new();
+        stopwatch.Start();
         await source.Initialize(this);
-        OnPluginInitialised?.Invoke(source);
+        stopwatch.Stop();
+        OnPluginInitialised?.Invoke(source, stopwatch.ElapsedMilliseconds);
         return source;
     }
     
@@ -255,7 +259,7 @@ public class App : IApp
         Logger = new(this);
         Launcher = new(this);
         Logger.Log($"Launcher {Version}");
-        OnPluginInitialised += x => Logger.Log($"[Plugin loaded] {x.ServiceName}");
+        OnPluginInitialised += (g, t) => Logger.Log($"[Plugin loaded] {g.ServiceName} in {t} ms");
     }
 
     private static App? _instance;
