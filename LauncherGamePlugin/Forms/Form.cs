@@ -100,4 +100,35 @@ public static class FormExtensions
     public static void ShowTextPrompt(this IApp app, string text) => app.ShowForm(Form.CreateTextPrompt(text));
 
     public static void ShowForm(this IApp app, List<FormEntry> entries) => app.ShowForm(new(entries));
+
+    public static void ShowFilePicker(this IApp app, string header, string variableName, string actionName, Action<string> onSubmit, string? path = null, bool pickFolder = false, string errMessage = "")
+    {
+        List<FormEntry> entries = new()
+        {
+            Form.TextBox(header, fontWeight: "Bold"),
+            (pickFolder) ? Form.FolderPicker(variableName, path ?? "") : Form.FilePicker(variableName, path ?? ""),
+            Form.Button("Back", _ => app.HideForm(),
+                actionName, x =>
+                {
+                    string newPath = x.GetValue(variableName)!;
+                    if (!(pickFolder ? Directory.Exists(newPath) : File.Exists(newPath)))
+                    {
+                        app.ShowFilePicker(header, variableName, actionName, onSubmit, newPath, pickFolder, "Path does not exist!");
+                        return;
+                    }
+
+                    app.HideForm();
+                    onSubmit(newPath);
+                })
+        };
+        
+        if (errMessage != "")
+            entries.Add(Form.TextBox(errMessage, FormAlignment.Center));
+        
+        app.ShowForm(entries);
+    }
+
+    public static void ShowFolderPicker(this IApp app, string header, string variableName, string actionName,
+        Action<string> onSubmit, string? path = null)
+        => app.ShowFilePicker(header, variableName, actionName, onSubmit, path, true);
 }

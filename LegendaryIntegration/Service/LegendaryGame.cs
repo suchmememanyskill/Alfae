@@ -135,13 +135,13 @@ public class LegendaryGame : IGame
         return localInfo;
     }
 
-    public async Task StartDownload(bool repair = false)
+    public async Task StartDownload(LegendaryStatusType type = LegendaryStatusType.Download, string? path = null)
     {
         await GetInfo();
         
         try
         {
-            ReattachDownload(new(this, repair));
+            ReattachDownload(new(this, type, path));
             Parser.AddDownload(Download!);
         }
         catch
@@ -224,7 +224,13 @@ public class LegendaryGame : IGame
         if (Parser.Auth.OfflineLogin)
             throw new Exception("You need to be online to repair a game");
 
-        await StartDownload(true);
+        await StartDownload(LegendaryStatusType.Repair);
+    }
+
+    public async Task Move(string dstDir)
+    {
+        await StartDownload(LegendaryStatusType.Move, dstDir);
+        Download!.OnCompletionOrCancel += _ => LegendaryGameSource.Source.App.ReloadGames();
     }
 
     public async Task Uninstall()

@@ -13,31 +13,8 @@ public class ImportFileSelect
         _game = game;
     }
 
-    public void Show(IApp app, string errMessage = "")
-    {
-        List<FormEntry> entries = new()
-        {
-            Form.TextBox($"Import game '{_game.Name}'", fontWeight: "Bold"),
-            Form.FolderPicker("Game Path"),
-            Form.Button("Back", _ => app.HideForm(),
-                "Import", x =>
-                {
-                    string path = x.GetValue("Game Path")!;
-                    if (!Directory.Exists(path))
-                    {
-                        Show(app, "Invalid path!");
-                        return;
-                    }
-                    
-                    Run(app, path);
-                })
-        };
-        
-        if (errMessage != "")
-            entries.Add(Form.TextBox(errMessage, FormAlignment.Center));
-        
-        app.ShowForm(entries);
-    }
+    public void Show(IApp app)
+        => app.ShowFolderPicker($"Import game '{_game.Name}'", "Game Path", "Import", s => Run(app, s));
 
     private async void Run(IApp app, string path)
     {

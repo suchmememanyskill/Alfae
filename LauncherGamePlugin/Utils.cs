@@ -58,6 +58,91 @@ public static class Utils
         }
         return size;  
     }
+
+    public record DirRepresentation(Dictionary<string, FileInfo> Files, List<string> Folders);
+    public static DirRepresentation GetDirRepresentation(string src) => GetDirRepresentation(new DirectoryInfo(src));
+
+    public static DirRepresentation GetDirRepresentation(DirectoryInfo info)
+    {
+        Dictionary<string, FileInfo> files = new();
+        List<string> folders = new();
+        folders.Add(info.FullName);
+        
+        foreach (DirectoryInfo di in info.GetDirectories())
+        {
+            folders.Add(di.FullName);
+            
+            DirRepresentation subRepresentation = GetDirRepresentation(di);
+            
+            foreach (var file in subRepresentation.Files)
+                files.Add(file.Key, file.Value);
+            
+            folders.AddRange(subRepresentation.Folders);
+        }
+
+        foreach (var file in info.GetFiles())
+            files.Add(file.FullName, file);
+
+        return new DirRepresentation(files, folders);
+    }
+
+    public static async Task MoveDirectoryAsync(string src, string dstDir, IProgress<float>? progress = null)
+    {
+        try
+        {
+            Directory.Move(src, Path.Join(dstDir, Path.GetFileName(src)));
+            progress?.Report(1);
+        }
+        catch (IOException e)
+        {
+            if (e.Message != "Source and destination path must have identical roots. Move will not work across volumes.")
+                throw;
+
+            await CopyDirectoryAsync(src, dstDir, progress);
+            Directory.Delete(src, true);
+        }
+    }
+
+    public static async Task CopyDirectoryAsync(string src, string dstDir, IProgress<float>? progress = null)
+    {
+        progress?.Report(0);
+        DirRepresentation representation = GetDirRepresentation(src);
+        
+        // Create folders
+        string srcRoot = Path.GetDirectoryName(src)!;
+        foreach (string srcPath in representation.Folders)
+        {
+            string relPath = Path.GetRelativePath(srcRoot, srcPath);
+            string path = Path.Join(dstDir, relPath);
+            Directory.CreateDirectory(path);
+        }
+
+        long totalSize = 0;
+        long currentSize = 0;
+
+        // Calculate total size
+        foreach (var file in representation.Files)
+            totalSize += file.Value.Length;
+
+        // Copy files
+        foreach (var file in representation.Files)
+        {
+            string relPath = Path.GetRelativePath(srcRoot, file.Key);
+            string path = Path.Join(dstDir, relPath);
+            await CopyFileAsync(file.Key, path);
+            currentSize += file.Value.Length;
+            progress?.Report((float)currentSize/totalSize);
+        }
+        
+        progress?.Report(1);
+    }
+
+    public static async Task CopyFileAsync(string srcPath, string dstPath)
+    {
+        using Stream src = File.Open(srcPath, FileMode.Open);
+        using Stream dst = File.Create(dstPath);
+        await src.CopyToAsync(dst);
+    }
     
     public static string GetExecutablePath()
     {

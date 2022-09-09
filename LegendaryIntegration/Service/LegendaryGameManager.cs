@@ -81,10 +81,9 @@ public class LegendaryGameManager
 
     public void AddDownload(LegendaryDownload download)
     {
-        _downloads.ForEach(x => x.Pause());
         _downloads.Add(download);
-        download.Start();
         download.OnCompletionOrCancel += RemoveDownload;
+        download.Start();
     }
 
     public void RemoveDownload(LegendaryDownload download)

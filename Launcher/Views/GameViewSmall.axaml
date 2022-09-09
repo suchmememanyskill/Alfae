@@ -15,8 +15,8 @@
             </StackPanel>
             <StackPanel Name="TopPanel" DockPanel.Dock="Top">
                 <ProgressBar Height="25" Name="ProgressBar" CornerRadius="0" />
-                <Label Name="TopLabel1" HorizontalAlignment="Center">Label1</Label>
-                <Label Name="TopLabel2" HorizontalAlignment="Center">Label2</Label>
+                <Label Name="TopLabel1" HorizontalAlignment="Center" />
+                <Label Name="TopLabel2" HorizontalAlignment="Center" />
             </StackPanel>
             <StackPanel HorizontalAlignment="Center" VerticalAlignment="Center" Spacing="10" Name="ButtonPanel">
                 <Button FontSize="20" Width="150" Name="PrimaryButton" Classes="darker">
