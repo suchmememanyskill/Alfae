@@ -13,7 +13,7 @@ namespace GogIntegration;
 public class GogIntegration : IGameSource
 {
     public string ServiceName => "GOG Integration";
-    public string Version => "v1.1.1";
+    public string Version => "v1.1.2";
     public string SlugServiceName => "gog-integration";
     public string ShortServiceName => "GOG";
 
