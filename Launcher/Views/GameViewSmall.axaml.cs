@@ -166,7 +166,7 @@ public partial class GameViewSmall : UserControlExt<GameViewSmall>
 
         if (Menu.IsVisible && Game.InstalledStatus == InstalledStatus.Installed && Game.EstimatedGamePlatform != Platform.None)
         {
-            commands.Add(new("Set Boot Configuration", () => new BootProfileSelectGUI(Loader.App.GetInstance(), Game).ShowGUI()));
+            commands.Add(new("Set Boot Profile", () => new BootProfileSelectGUI(Loader.App.GetInstance(), Game).ShowGUI()));
 
             GameConfig? config = _app.Config.GetGameConfigOptional(Game);
             if (config != null)
