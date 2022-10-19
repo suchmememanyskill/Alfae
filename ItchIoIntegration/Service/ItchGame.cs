@@ -132,6 +132,12 @@ public class ItchGame : IGame
     {
         if (PreferredTarget < 0 && Targets.Count == 1)
             PreferredTarget = 0;
+        
+        if (Targets.Count > 1 && Targets.Count(x => !ItchSource.IgnoredExecutables.Any(y => x.Path.Contains(y))) == 1)
+        {
+            ItchApiLaunchTarget target = Targets.Find(x => !ItchSource.IgnoredExecutables.Any(y => x.Path.Contains(y)))!;
+            PreferredTarget = Targets.IndexOf(target);
+        }
 
         if (PreferredTarget < 0 || PreferredTarget >= Targets.Count)
             return null;

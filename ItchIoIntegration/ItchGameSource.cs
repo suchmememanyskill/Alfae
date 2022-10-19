@@ -24,11 +24,20 @@ public class ItchGameSource : IGameSource
 
     public ItchApiProfile? Profile { get; private set; }
     private List<ItchGame> _games = new();
+    public List<string> IgnoredExecutables { get; private set; } = new()
+    {
+        "UnityCrashHandler32.exe",
+        "UnityCrashHandler64.exe",
+    };
 
     public async Task Initialize(IApp app)
     {
         App = app;
         _storage = new(app, "itch.json");
+        
+        if (File.Exists(Path.Join(App.ConfigDir, "itch_ignore_execs.txt")))
+            IgnoredExecutables.AddRange((await File.ReadAllLinesAsync(Path.Join(App.ConfigDir, "itch_ignore_execs.txt"))).Select(x => x.Trim()).Where(x => !string.IsNullOrEmpty(x)));
+        
         await Load();
     }
 
