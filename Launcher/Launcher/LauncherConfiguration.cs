@@ -35,7 +35,7 @@ public class LauncherConfiguration
         
         foreach (var appGameSource in _app.GameSources)
         {
-            Profiles.AddRange(await appGameSource.GetBootProfiles());
+            Profiles.AddRange(await _app.Middleware.GetBootProfiles(appGameSource));
         }
         
         Profiles.AddRange(_app.Config.CustomProfiles);

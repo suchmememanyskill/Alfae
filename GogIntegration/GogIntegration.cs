@@ -25,7 +25,7 @@ public class GogIntegration : IGameSource
     private List<GogGame> _games = new();
     private bool _offline = false;
 
-    public async Task Initialize(IApp app)
+    public async Task<InitResult?> Initialize(IApp app)
     {
         App = app;
         _storage = new(app, "gog.json");
@@ -35,6 +35,7 @@ public class GogIntegration : IGameSource
             await AttemptLogin();
         
         await ReloadGames();
+        return null;
     }
 
     public async Task AttemptLogin()

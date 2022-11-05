@@ -140,7 +140,7 @@ public partial class GameViewSmall : UserControlExt<GameViewSmall>
     
     private void SetMenu()
     {
-        List<Command> commands = Game.GetCommands();
+        List<Command> commands = _app.Middleware.GetGameCommands(Game, Game.Source);
         List<Command> functions = commands.Where(x => x.Type == CommandType.Function).ToList();
 
         PrimaryButton.IsVisible = false;

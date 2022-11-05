@@ -21,7 +21,7 @@ public class LegendaryGameSource : IGameSource
     public static LegendaryGameSource Source { get; private set; }
     public IApp App { get; private set; }
 
-    public async Task Initialize(IApp app)
+    public async Task<InitResult?> Initialize(IApp app)
     {
         App = app;
         Source = this;
@@ -30,6 +30,8 @@ public class LegendaryGameSource : IGameSource
 
         if (!await auth.AttemptLogin())
             auth = null;
+
+        return null;
     }
 
     public async Task<List<IBootProfile>> GetBootProfiles() => new();

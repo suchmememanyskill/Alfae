@@ -20,7 +20,7 @@ public class Exporter : IGameSource
     private bool _initialised = false;
     private ProtonManager? _protonManager;
     public Config Config { get; private set; } = new();
-    public async Task Initialize(IApp app)
+    public async Task<InitResult?> Initialize(IApp app)
     {
         App = app;
         Config = await Config.Load(app);
@@ -33,6 +33,8 @@ public class Exporter : IGameSource
         {
             _initialised = false;
         }
+
+        return null;
     }
 
     public async Task<List<IBootProfile>> GetBootProfiles()

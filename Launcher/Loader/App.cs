@@ -9,6 +9,7 @@ using Avalonia.Threading;
 using Launcher.Configuration;
 using Launcher.Forms;
 using Launcher.Launcher;
+using Launcher.Middleware;
 using Launcher.Utils;
 using Launcher.Views;
 using LauncherGamePlugin;
@@ -68,7 +69,7 @@ public class App : IApp
     public List<IGame> Games { get; set; }
     public LauncherConfiguration Launcher { get; private set; }
     public Config Config { get; set; }
-
+    public ServiceMiddlewareManager Middleware { get; set; }
     public List<IGame> InstalledGames =>
         Games.Where(x => x.InstalledStatus == InstalledStatus.Installed).ToList();
 
@@ -82,7 +83,11 @@ public class App : IApp
     {
         Stopwatch stopwatch = new();
         stopwatch.Start();
-        await source.Initialize(this);
+        var result = await source.Initialize(this);
+        
+        if (result != null)
+            Middleware.Middlewares.AddRange(result.Middlewares);
+        
         stopwatch.Stop();
         OnPluginInitialised?.Invoke(source, stopwatch.ElapsedMilliseconds);
         return source;
@@ -204,7 +209,7 @@ public class App : IApp
         List<IGame> games = new();
         GameViews.Clear();
         List<Task<List<IGame>>> tasks = new();
-        GameSources.ForEach(x => tasks.Add(x.GetGames()));
+        GameSources.ForEach(x => tasks.Add(Middleware.GetGames(x)));
         await Task.WhenAll(tasks);
         tasks.ForEach(x => games.AddRange(x.Result));
         return games;
@@ -255,6 +260,7 @@ public class App : IApp
 
     private App()
     {
+        Middleware = new();
         Config = Config.Load(this);
         Logger = new(this);
         Launcher = new(this);

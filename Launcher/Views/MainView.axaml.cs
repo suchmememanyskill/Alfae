@@ -96,7 +96,7 @@ public partial class MainView : UserControlExt<MainView>
 
         List<TemplatedControl> controls = app.GameSources.Select(x =>
         {
-            List<Command> pluginCommands = x.GetGlobalCommands();
+            List<Command> pluginCommands = app.Middleware.GetGlobalCommands(x);
 
             if (pluginCommands.Count > 0)
                 return new Command($"{x.ServiceName} - {x.Version}", pluginCommands);

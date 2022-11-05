@@ -19,11 +19,12 @@ public class LocalGameSource : IGameSource
     private List<LocalGame> Games => _storage.Data;
     private Storage<List<LocalGame>> _storage;
 
-    public async Task Initialize(IApp app)
+    public async Task<InitResult?> Initialize(IApp app)
     {
         _app = app;
         _storage = new(app, "localgames.json");
         Log("Hello World!");
+        return null;
     }
 
     public async Task Save() => _storage.Save();

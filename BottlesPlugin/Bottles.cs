@@ -22,11 +22,12 @@ public class Bottles : IGameSource
     private Config Config => _storage.Data;
     private Storage<Config> _storage;
 
-    public async Task Initialize(IApp app)
+    public async Task<InitResult?> Initialize(IApp app)
     {
         _app = app;
         _storage = new(app, "bottles.json");
         await LoadBottles();
+        return null;
     }
 
     public async Task LoadBottles()

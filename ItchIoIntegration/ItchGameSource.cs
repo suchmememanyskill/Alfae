@@ -30,7 +30,7 @@ public class ItchGameSource : IGameSource
         "UnityCrashHandler64.exe",
     };
 
-    public async Task Initialize(IApp app)
+    public async Task<InitResult?> Initialize(IApp app)
     {
         App = app;
         _storage = new(app, "itch.json");
@@ -39,6 +39,7 @@ public class ItchGameSource : IGameSource
             IgnoredExecutables.AddRange((await File.ReadAllLinesAsync(Path.Join(App.ConfigDir, "itch_ignore_execs.txt"))).Select(x => x.Trim()).Where(x => !string.IsNullOrEmpty(x)));
         
         await Load();
+        return null;
     }
 
     public async Task Load()

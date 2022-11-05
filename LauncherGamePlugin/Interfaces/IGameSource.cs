@@ -10,7 +10,7 @@ public interface IGameSource
     string SlugServiceName { get; }
     string ShortServiceName { get; }
 
-    public Task Initialize(IApp app);
+    public Task<InitResult?> Initialize(IApp app);
     public async Task<List<IBootProfile>> GetBootProfiles() => new();
     public async Task<List<IGame>> GetGames() => new();
     public List<Command> GetGameCommands(IGame game) => new();
