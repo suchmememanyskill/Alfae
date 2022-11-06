@@ -65,7 +65,7 @@ public class Bottles : IGameSource
             if (Config.ImportPrograms)
             {
                 List<BottlesProgram> programs =
-                    value.Programs.Select(x => new BottlesProgram(x.Value.Name, key, this)).ToList();
+                    value.Programs.Where(x => !x.Value.Removed).Select(x => new BottlesProgram(x.Value.Name, key, this)).ToList();
                 _games.AddRange(programs);
             }
         }
