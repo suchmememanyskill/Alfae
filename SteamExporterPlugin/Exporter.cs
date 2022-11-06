@@ -261,7 +261,7 @@ public class Exporter : IGameSource
         string pPath = Path.Combine(gridPath, $"{entry.AppId}p.jpg");
         string heroPath = Path.Combine(gridPath, $"{entry.AppId}_hero.jpg");
         
-        byte[]? cover = await game.CoverImage();
+        byte[]? cover = (game.HasCoverImage) ? await game.CoverImage() : null;
         if (cover != null)
             await File.WriteAllBytesAsync(path, cover);
 
@@ -273,7 +273,7 @@ public class Exporter : IGameSource
             File.Copy(path, pPath);
         }
         
-        byte[]? background = await game.BackgroundImage();
+        byte[]? background = (game.HasBackgroundImage) ? await game.BackgroundImage() : null;
         if (background != null)
             await File.WriteAllBytesAsync(heroPath, background);
     }

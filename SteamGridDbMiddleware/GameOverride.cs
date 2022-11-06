@@ -52,6 +52,8 @@ public class GameOverride : IGame
         }
     }
 
+    public bool HasCoverImage => _instance.Storage.Data.HasCover(_game) || _game.HasCoverImage;
+    public bool HasBackgroundImage => _instance.Storage.Data.HasBackground(_game) || _game.HasBackgroundImage;
     public InstalledStatus InstalledStatus => _game.InstalledStatus;
     public Platform EstimatedGamePlatform => _game.EstimatedGamePlatform;
     public ProgressStatus? ProgressStatus => _game.ProgressStatus;

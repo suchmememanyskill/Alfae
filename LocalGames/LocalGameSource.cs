@@ -73,7 +73,6 @@ public class LocalGameSource : IGameSource
         if (game != null)
         {
             form.Game = game;
-            form.Background = game.BackgroundImage;
         }
         _app.ShowForm(form);
     }

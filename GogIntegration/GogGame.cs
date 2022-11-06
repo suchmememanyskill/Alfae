@@ -42,6 +42,8 @@ public class GogGame : IGame
     public GogDlDownload? DownloadStatus { get; private set; }
     [JsonIgnore] 
     public bool IsRunning { get; set; }
+    [JsonIgnore]
+    public bool HasCoverImage => true;
     public event Action? OnUpdate;
 
     public GogGame()

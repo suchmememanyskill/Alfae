@@ -131,7 +131,7 @@ public partial class GameViewSmall : UserControlExt<GameViewSmall>
     {
         try
         {
-            byte[]? img = await Game.CoverImage();
+            byte[]? img = (Game.HasCoverImage) ? await Game.CoverImage() : null;
 
             if (img == null)
                 throw new InvalidDataException();

@@ -18,7 +18,7 @@ public class LocalGame : IGame
 
     public async Task<byte[]?> CoverImage()
     {
-        if (string.IsNullOrWhiteSpace(CoverImagePath) || !File.Exists(CoverImagePath))
+        if (!HasCoverImage)
             return null;
 
         return await File.ReadAllBytesAsync(CoverImagePath);
@@ -37,6 +37,8 @@ public class LocalGame : IGame
     [JsonIgnore] public ProgressStatus? ProgressStatus { get; set; }
     [JsonIgnore] public string InstalledPath => Path.GetDirectoryName(ExecPath);
     [JsonIgnore] public IGameSource Source { get; set; }
+    [JsonIgnore] public bool HasCoverImage => !string.IsNullOrWhiteSpace(CoverImagePath) && File.Exists(CoverImagePath);
+    [JsonIgnore] public bool HasBackgroundImage => !string.IsNullOrWhiteSpace(BackgroundImagePath) && File.Exists(BackgroundImagePath);
     
     public event Action? OnUpdate;
     public void InvokeOnUpdate() => OnUpdate?.Invoke();

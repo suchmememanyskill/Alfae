@@ -115,6 +115,9 @@ public class LegendaryGame : IGame
     public Task<byte[]?> CoverImage() => Storage.Cache(GetGameImage("DieselGameBoxTall")?.FileName ?? "", GenerateCover);
     public Task<byte[]?> BackgroundImage() => Storage.Cache(GetGameImage("DieselGameBox")?.FileName ?? "", () => Storage.ImageDownload(GetGameImage("DieselGameBox")?.Url ?? null));
 
+    public bool HasCoverImage => true;
+    public bool HasBackgroundImage => GetGameImage("DieselGameBox")?.Url != null;
+    
     public async Task<LegendaryInfoResponse?> GetInfo()
     {
         if (localInfo != null)

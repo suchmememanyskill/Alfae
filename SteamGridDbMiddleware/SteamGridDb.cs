@@ -1,5 +1,8 @@
-﻿using LauncherGamePlugin;
+﻿using craftersmine.SteamGridDBNet;
+using LauncherGamePlugin;
 using LauncherGamePlugin.Commands;
+using LauncherGamePlugin.Enums;
+using LauncherGamePlugin.Forms;
 using LauncherGamePlugin.Interfaces;
 using SteamGridDbMiddleware.Gui;
 using SteamGridDbMiddleware.Model;
@@ -69,9 +72,77 @@ public class SteamGridDb : IGameSource
             {
                 new("Logged in"),
                 new(),
-                new("Log out", Logout)
+                new("Log out", Logout),
+                new("Set images on installed games with missing images", SetFirstImageOnInstalledMissingImages),
             };
         }
+    }
+
+    public async void SetFirstImageOnInstalledMissingImages()
+    {
+        App.ShowTextPrompt("Looking up images for installed games with missing content...");
+        int coverCount = 0;
+        int backgroundCount = 0;
+        List<IGame> games = App.GetAllGames().Where(x => x.InstalledStatus == InstalledStatus.Installed).ToList();
+        foreach (var game in games)
+        {
+            if (!game.HasCoverImage || !game.HasBackgroundImage)
+            {
+                var gridGames = await Api.SearchForGamesAsync(game.Name);
+                if (gridGames.Length <= 0)
+                    continue;
+                
+                var grid = gridGames.First();
+                
+                if (!game.HasCoverImage)
+                {
+                    List<SteamGridDbGrid> covers = new();
+                    
+                    covers = (await Api.GetGridsForGameAsync(grid, dimensions: SteamGridDbDimensions.W600H900, types: SteamGridDbTypes.Static))?.ToList() ?? new();
+                    
+                    if (covers.Count > 0)
+                    {
+                        var cover = covers.First();
+                        Override? x = Storage.Data.GetCover(game);
+                        x ??= new(game.Name, game.Source.ServiceName, "", "");
+
+                        x.Url = cover.FullImageUrl;
+                        x.Id = cover.Id.ToString();
+
+                        if (!Storage.Data.Covers.Contains(x))
+                            Storage.Data.Covers.Add(x);
+
+                        coverCount++;
+                    }
+                }
+
+                if (!game.HasBackgroundImage)
+                {
+                    List<SteamGridDbHero> heroes = new();
+                    heroes = (await Api.GetHeroesForGameAsync(grid,
+                        dimensions: SteamGridDbDimensions.W1920H620 | SteamGridDbDimensions.W3840H1240, types: SteamGridDbTypes.Static))?.ToList() ?? new();
+
+                    if (heroes.Count > 0)
+                    {
+                        var hero = heroes.First();
+                        Override? x = Storage.Data.GetCover(game);
+                        x ??= new(game.Name, game.Source.ServiceName, "", "");
+
+                        x.Url = hero.FullImageUrl;
+                        x.Id = hero.Id.ToString();
+
+                        if (!Storage.Data.Backgrounds.Contains(x))
+                            Storage.Data.Backgrounds.Add(x);
+
+                        backgroundCount++;
+                    }
+                }
+            }
+        }
+        
+        Storage.Save();
+        App.ReloadGames();
+        App.ShowDismissibleTextPrompt($"Set {coverCount} Covers and {backgroundCount} Backgrounds");
     }
 
     private async void Logout()

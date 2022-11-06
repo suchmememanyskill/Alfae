@@ -28,7 +28,7 @@ public class OnCoverEdit
         {
             var game = games.First();
             gameName = game.Name;
-            covers = (await Instance.Api.GetGridsForGameAsync(game, dimensions: SteamGridDbDimensions.W600H900))?.ToList() ?? new();
+            covers = (await Instance.Api.GetGridsForGameAsync(game, dimensions: SteamGridDbDimensions.W600H900, types: SteamGridDbTypes.Static))?.ToList() ?? new();
         }
 
         List<FormEntry> images = new();

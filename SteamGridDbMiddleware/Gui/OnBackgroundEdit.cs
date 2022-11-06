@@ -29,7 +29,7 @@ public class OnBackgroundEdit
             var game = games.First();
             gameName = game.Name;
             covers = (await Instance.Api.GetHeroesForGameAsync(game,
-                dimensions: SteamGridDbDimensions.W1920H620 | SteamGridDbDimensions.W3840H1240))?.ToList() ?? new();
+                dimensions: SteamGridDbDimensions.W1920H620 | SteamGridDbDimensions.W3840H1240, types: SteamGridDbTypes.Static))?.ToList() ?? new();
         }
 
         List<FormEntry> entries = new();

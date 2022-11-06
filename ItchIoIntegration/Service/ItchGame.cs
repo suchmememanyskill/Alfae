@@ -28,8 +28,8 @@ public class ItchGame : IGame
     [JsonIgnore] public Platform EstimatedGamePlatform => EstimateGamePlatform();
     [JsonIgnore] public IGameSource Source => ItchSource;
     [JsonIgnore] public ProgressStatus? ProgressStatus => Download;
-
     [JsonIgnore] public ItchGameSource ItchSource { get; set; }
+    [JsonIgnore] public bool HasCoverImage => true;
     public event Action? OnUpdate;
 
     public ItchGame()
