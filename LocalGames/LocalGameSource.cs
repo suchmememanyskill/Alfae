@@ -4,6 +4,7 @@ using LauncherGamePlugin.Extensions;
 using LauncherGamePlugin.Forms;
 using LauncherGamePlugin.Interfaces;
 using LocalGames.Data;
+using LocalGames.Gui;
 using Newtonsoft.Json;
 
 namespace LocalGames;
@@ -16,166 +17,128 @@ public class LocalGameSource : IGameSource
     public string SlugServiceName => "local-games";
 
     private IApp _app;
-    private List<LocalGame> Games => _storage.Data;
-    private Storage<List<LocalGame>> _storage;
+    public List<LocalGame> Games => _storage.Data.LocalGames;
+    public List<GenerationRules> Rules => _storage.Data.GenerationRules;
+    private Storage<Store> _storage;
 
     public async Task<InitResult?> Initialize(IApp app)
     {
         _app = app;
-        _storage = new(app, "localgames.json");
+        _storage = new(app, "localgames_v2.json");
+        
+        Storage<List<LocalGame>> legacy = new(app, "localgames.json");
+
+        if (File.Exists(legacy.Path))
+        {
+            _storage.Data.LocalGames = legacy.Data;
+            _storage.Save();
+            File.Delete(legacy.Path);
+        }
+
         Log("Hello World!");
         return null;
     }
 
-    public async Task Save() => _storage.Save();
-
-    public void AddGameForm(string possibleWarn = "", string gameName = "", string execPath = "", string coverImage = "", string backgroundImage = "", string args = "", LocalGame? game = null)
-    {
-        string addOrEdit = game == null ? "Add" : "Edit";
-
-        if (game != null)
-        {
-            if (gameName == "")
-                gameName = game.Name;
-
-            if (execPath == "")
-                execPath = game.ExecPath;
-
-            if (coverImage == "")
-                coverImage = game.CoverImagePath;
-
-            if (backgroundImage == "")
-                backgroundImage = game.BackgroundImagePath;
-
-            if (args == "")
-                args = game.LaunchArgs;
-        }
-
-        List<FormEntry> entries = new()
-        {
-            new FormEntry(FormEntryType.TextBox, $"{addOrEdit} a local game", "Bold"),
-            new FormEntry(FormEntryType.TextInput, "Game name:", gameName),
-            new FormEntry(FormEntryType.FilePicker, "Game executable:", execPath),
-            new FormEntry(FormEntryType.TextBox, "\nOptional", "Bold"),
-            new FormEntry(FormEntryType.FilePicker, "Cover Image:", coverImage),
-            new FormEntry(FormEntryType.FilePicker, "Background Image:", backgroundImage),
-            new FormEntry(FormEntryType.TextInput, "CLI Arguments:", args),
-            Form.Button("Cancel", _ => _app.HideForm(), addOrEdit, entry =>
-            {
-                new Thread(() => AddGame(entry)).Start();
-            })
-        };
-        
-        if (possibleWarn != "")
-            entries.Add(new(FormEntryType.TextBox, possibleWarn, "Bold"));
-        
-        Form form = new(entries);
-        if (game != null)
-        {
-            form.Game = game;
-        }
-        _app.ShowForm(form);
-    }
-
-    public void AddGame(Form form)
-    {
-        string? gameName = form.GetValue("Game name:");
-        string? execPath = form.GetValue("Game executable:");
-        string? coverImage = form.GetValue("Cover Image:");
-        string? backgroundImage = form.GetValue("Background Image:");
-        string? args = form.GetValue("CLI Arguments:");
-        string errMessage = "";
-        
-        if (string.IsNullOrWhiteSpace(gameName))
-            errMessage = "Please fill in the game name";
-
-        if (string.IsNullOrWhiteSpace(execPath) && errMessage == "")
-            errMessage = "Please fill in the executable path";
-
-        if (!File.Exists(execPath) && errMessage == "")
-            errMessage = "Executable path does not exist!";
-
-        if (errMessage == "" && coverImage != "" && !File.Exists(coverImage))
-            errMessage = "Cover image path does not exist!";
-
-        if (errMessage == "" && coverImage != "" && !File.Exists(backgroundImage))
-            errMessage = "Background image path does not exist!";
-
-        if (errMessage != "")
-        {
-            AddGameForm(errMessage, gameName, execPath,coverImage, backgroundImage, args, form.Game as LocalGame);
-            return;
-        }
-        
-        Log($"Calculating game {gameName} size at path {execPath}");
-        _app.ShowTextPrompt($"Processing {gameName}...");
-        LocalGame localGame;
-        
-        if (form.Game == null)
-            localGame = new LocalGame();
-        else
-            localGame = (form.Game as LocalGame)!;
-
-        localGame.Name = gameName;
-        localGame.ExecPath = execPath;
-        localGame.Size = Utils.DirSize(new DirectoryInfo(localGame.InstalledPath));
-        localGame.CoverImagePath = coverImage;
-        localGame.BackgroundImagePath = backgroundImage;
-        localGame.LaunchArgs = args;
-        Log($"{gameName}'s size is {localGame.ReadableSize()}");
-        
-        if (form.Game == null)
-        {
-            Games.Add(localGame);
-            Log($"Added game {gameName}");
-        }
-
-        _app.ReloadGames();
-        Save();
-        _app.HideForm();
-    }
+    public void Save() => _storage.Save();
 
     public void Log(string message, LogType type = LogType.Info) => _app.Logger.Log(message, type, "LocalGames");
 
     public async Task<List<IGame>> GetGames()
     {
         Games.ForEach(x => x.Source = this);
-        return Games.Select(x => (IGame)x).ToList();
+
+        List<GeneratedGame> generatedGames = new();
+
+        foreach (var generationRules in Rules)
+        {
+            if (!Directory.Exists(generationRules.Path))
+                continue;
+            
+            LocalGame? local = Games.Find(x => x.Name == generationRules.LocalGameName);
+            if (local == null)
+                continue;
+
+            foreach (var enumerateFile in Directory.EnumerateFiles(generationRules.Path))
+            {
+                if (generationRules.Extensions.Any(x => enumerateFile.EndsWith(x)))
+                {
+                    GeneratedGame game = new(local, this,
+                        generationRules.AdditionalCliArgs.Replace("{EXEC}", $"\"{enumerateFile}\""), enumerateFile);
+                    generatedGames.Add(game);
+                }
+            }
+        }
+
+        List<IGame> games = Games.Select(x => (IGame)x).ToList();
+        games.AddRange(generatedGames.Select(x => (IGame)x));
+
+        return games;
     }
 
     public List<Command> GetGameCommands(IGame game)
     {
-        LocalGame localGame = game as LocalGame;
-
-        return new()
+        if (game is LocalGame localGame)
         {
-            new Command(game.IsRunning ? "Running" : "Launch", () =>
+            return new()
             {
-                Log($"Starting {localGame.Name}");
-                _app.Launch(localGame.ToExecLaunch());
-            }),
-            new Command("Edit", () => AddGameForm(game: localGame)),
-            new Command("Remove From Launcher", () =>
+                new Command(game.IsRunning ? "Running" : "Launch", () =>
+                {
+                    Log($"Starting local game {localGame.Name}");
+                    _app.Launch(localGame.ToExecLaunch());
+                }),
+                new Command("Edit", () => new AddOrEditGameGui(_app, this).ShowGui(game: localGame)),
+                new Command("Remove From Launcher", () =>
+                {
+                    _app.Show2ButtonTextPrompt($"Are you sure you want to remove '{localGame.Name}' from the launcher?", "Remove", "Back", x => Remove(localGame), x => _app.HideForm());
+                }),
+            };
+        }
+
+        if (game is GeneratedGame generatedGame)
+        {
+            return new()
             {
-                _app.Show2ButtonTextPrompt($"Are you sure you want to remove '{localGame.Name}' from the launcher?", "Remove", "Back", x => Remove(localGame), x => _app.HideForm());
-            }),
-        };
+                new Command(game.IsRunning ? "Running" : "Launch", () =>
+                {
+                    Log($"Starting generated game {generatedGame.Name}");
+                    _app.Launch(generatedGame.ToExecLaunch());
+                }),
+            };
+        }
+
+        throw new NotImplementedException();
     }
 
-    public List<Command> GetGlobalCommands() => new()
+    public List<Command> GetGlobalCommands()
     {
-        new Command($"Loaded {Games.Count} games"),
-        new Command(),
-        new Command("Add a game", () => AddGameForm())
-    };
+        List<Command> commands = new()
+        {
+            new Command($"Loaded {Games.Count} games"),
+            new Command(),
+            new Command("Add a game", () => new AddOrEditGameGui(_app, this).ShowGui()),
+            new Command("Reload", () => _app.ReloadGames()),
+            Games.Count <= 0
+                ? new Command("Add a generation rule")
+                : new Command("Add a generation rule", () => new AddOrEditGenerationRules(_app, this).ShowGui())
+            
+        };
 
-    public async void Remove(LocalGame localGame)
+        List<Command> edits = Rules
+            .Select(x => new Command($"Edit {x.Name}", () => new AddOrEditGenerationRules(_app, this).ShowGui(rules: x)))
+            .ToList();
+
+        if (edits.Count >= 0)
+            commands.Add(new Command("Edit generation rule", edits));
+        
+        return commands;
+    }
+
+    public void Remove(LocalGame localGame)
     {
         _app.ShowTextPrompt($"Removing {localGame.Name}...");
         Games.Remove(localGame);
         _app.ReloadGames();
-        await Save();
+        Save();
         _app.HideForm();
     }
-    
 }

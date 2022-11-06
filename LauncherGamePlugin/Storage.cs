@@ -56,12 +56,12 @@ public static class Storage
 public class Storage<T> where T : new()
 {
     public T Data { get; set; }
-    private string _path;
+    public string Path { get; private set; }
     private IApp _app;
 
     public Storage(IApp app, string fileName)
     {
-        _path = Path.Join(app.ConfigDir, fileName);
+        Path = System.IO.Path.Join(app.ConfigDir, fileName);
         _app = app;
         Data = new();
         Load();
@@ -69,14 +69,14 @@ public class Storage<T> where T : new()
 
     private void Load()
     {
-        if (!File.Exists(_path))
+        if (!File.Exists(Path))
             return;
 
-        Data = JsonConvert.DeserializeObject<T>(File.ReadAllText(_path))!;
+        Data = JsonConvert.DeserializeObject<T>(File.ReadAllText(Path))!;
     }
 
     public void Save()
     {
-        File.WriteAllText(_path, JsonConvert.SerializeObject(Data));
+        File.WriteAllText(Path, JsonConvert.SerializeObject(Data));
     }
 }
