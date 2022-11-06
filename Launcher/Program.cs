@@ -42,7 +42,7 @@ namespace Launcher
                 return;
             }
 
-            List<Command> commands = target.GetCommands();
+            List<Command> commands = target.Original.GetCommands();
             Command? command = commands.Find(x => x.Text == args[2]);
 
             if (command == null)
