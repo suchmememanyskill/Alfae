@@ -18,11 +18,14 @@ public partial class ButtonList : UserControl
     {
         _formEntry = formEntry;
 
-        foreach (var (key, value) in _formEntry.ButtonList)
+        foreach (var x in _formEntry.ButtonList)
         {
-            Button b = new Button();
-            b.Content = key;
-            b.Command = new LambdaCommand(x => value.Invoke(_formEntry.ContainingForm));
+            Button b = new();
+            b.Content = x.Name;
+            if (x.Action == null)
+                b.IsEnabled = false;
+            else
+                b.Command = new LambdaCommand(_ => x.Action.Invoke(_formEntry.ContainingForm));
             StackPanel.Children.Add(b);
         }
 

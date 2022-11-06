@@ -21,6 +21,8 @@ Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "ItchIoIntegration", "ItchIo
 EndProject
 Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "GogIntegration", "GogIntegration\GogIntegration.csproj", "{DA24633B-3842-4E68-BEC9-95D30EEEAD6E}"
 EndProject
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "SteamGridDbMiddleware", "SteamGridDbMiddleware\SteamGridDbMiddleware.csproj", "{49F85A0E-BFC2-4885-A5B4-A8C203D1CCBD}"
+EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution
 		Debug|Any CPU = Debug|Any CPU
@@ -63,6 +65,10 @@ Global
 		{DA24633B-3842-4E68-BEC9-95D30EEEAD6E}.Debug|Any CPU.Build.0 = Debug|Any CPU
 		{DA24633B-3842-4E68-BEC9-95D30EEEAD6E}.Release|Any CPU.ActiveCfg = Release|Any CPU
 		{DA24633B-3842-4E68-BEC9-95D30EEEAD6E}.Release|Any CPU.Build.0 = Release|Any CPU
+		{49F85A0E-BFC2-4885-A5B4-A8C203D1CCBD}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{49F85A0E-BFC2-4885-A5B4-A8C203D1CCBD}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{49F85A0E-BFC2-4885-A5B4-A8C203D1CCBD}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{49F85A0E-BFC2-4885-A5B4-A8C203D1CCBD}.Release|Any CPU.Build.0 = Release|Any CPU
 	EndGlobalSection
 	GlobalSection(SolutionProperties) = preSolution
 		HideSolutionNode = FALSE

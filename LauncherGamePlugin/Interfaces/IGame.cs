@@ -4,6 +4,7 @@ namespace LauncherGamePlugin.Interfaces;
 
 public interface IGame
 {
+    public IGame Original => this;
     public string Name { get; }
     public bool IsRunning { get; set; }
     public string InternalName => Name;

@@ -30,6 +30,8 @@ public static class FormEntryExtensions
                 return new Dropdown(formEntry);
             case FormEntryType.Separator:
                 return new Separator(formEntry);
+            case FormEntryType.Image:
+                return new ImageView(formEntry);
             default:
                 throw new NotImplementedException();
         }

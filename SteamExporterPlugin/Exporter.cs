@@ -228,6 +228,7 @@ public class Exporter : IGameSource
                     {
                         copy.Remove(game);
                         UpdateExe(entry, game);
+                        await SetImage(entry, game);
                     }
                     else // Game that doesn't seem to be in the list. lets remove it
                     {
@@ -246,30 +247,34 @@ public class Exporter : IGameSource
                 entry.AppId = ShortcutEntry.GenerateSteamGridAppId(entry.AppName, entry.Exe);
                 entry.AddTag("UniversalLauncher");
 
-                string path = Path.Combine(gridPath, $"{entry.AppId}.jpg");
-                string pPath = Path.Combine(gridPath, $"{entry.AppId}p.jpg");
-                string heroPath = Path.Combine(gridPath, $"{entry.AppId}_hero.jpg");
-
-                if (!File.Exists(path))
-                {
-                    byte[]? cover = await game.CoverImage();
-                    if (cover != null)
-                        await File.WriteAllBytesAsync(path, cover);
-                }
-
-                if (File.Exists(path) && !File.Exists(pPath))
-                    File.Copy(path, pPath);
-                
-                if (!File.Exists(heroPath))
-                {
-                    byte[]? background = await game.BackgroundImage();
-                    if (background != null)
-                        await File.WriteAllBytesAsync(heroPath, background);
-                }
+                await SetImage(entry, game);
 
                 addedCount++;
             }
 
             return new Tuple<int, int>(removedCount, addedCount);
+    }
+
+    private async Task SetImage(ShortcutEntry entry, IGame game)
+    {
+        string path = Path.Combine(gridPath, $"{entry.AppId}.jpg");
+        string pPath = Path.Combine(gridPath, $"{entry.AppId}p.jpg");
+        string heroPath = Path.Combine(gridPath, $"{entry.AppId}_hero.jpg");
+        
+        byte[]? cover = await game.CoverImage();
+        if (cover != null)
+            await File.WriteAllBytesAsync(path, cover);
+
+        if (File.Exists(path))
+        {
+            if (File.Exists(pPath))
+                File.Delete(pPath);
+            
+            File.Copy(path, pPath);
         }
+        
+        byte[]? background = await game.BackgroundImage();
+        if (background != null)
+            await File.WriteAllBytesAsync(heroPath, background);
+    }
 }

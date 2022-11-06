@@ -11,6 +11,7 @@ public enum FormEntryType
     Dropdown, // Displays Name on the left side. Makes a dropdown out of DropdownOptions. Value is the current value of the dropdown. Can be set beforehand to set a default value
     ButtonList, // Displays a horizontal list of buttons. Uses ButtonList to give names and Actions to the buttons. Respects FormAlignment
     Separator,
+    Image,
 }
 
 public enum FormAlignment
@@ -21,7 +22,18 @@ public enum FormAlignment
     Default,
 }
 
-public record ButtonEntry(string Name, Action<Form> Action);
+public class ButtonEntry
+{
+    public string Name { get; set; }
+    public Action<Form> Action { get; set; }
+
+    public ButtonEntry(string name, Action<Form> action)
+    {
+        Name = name;
+        Action = action;
+    }
+}
+
 public class FormEntry
 {
     public string Name { get; set; }
@@ -31,12 +43,13 @@ public class FormEntry
     public List<string> DropdownOptions { get; set; }
     public List<ButtonEntry> ButtonList { get; set; }
     public Form ContainingForm { get; set; }
+    public Func<Task<byte[]?>> GetImage { get; set; }
     public FormAlignment Alignment;
     public event Action<FormEntry>? OnChange;
     public void InvokeOnChange() => OnChange?.Invoke(this);
     
     public FormEntry(FormEntryType type, string name = "", string value = "", List<string> dropdownOptions = null,
-        List<ButtonEntry> buttonList = null, Action<FormEntry> linkClick = null, FormAlignment alignment = FormAlignment.Default)
+        List<ButtonEntry> buttonList = null, Action<FormEntry> linkClick = null, Func<Task<byte[]?>> image = null, FormAlignment alignment = FormAlignment.Default)
     {
         Type = type;
         Name = name;
@@ -45,6 +58,7 @@ public class FormEntry
         ButtonList = buttonList;
         LinkClick = linkClick;
         Alignment = alignment;
+        GetImage = image;
 
         if (Type == FormEntryType.ButtonList && Alignment == FormAlignment.Default)
             Alignment = FormAlignment.Center;

@@ -5,8 +5,12 @@ namespace LauncherGamePlugin.Interfaces;
 
 public interface IServiceMiddleware
 {
-    Task<List<IBootProfile>> GetBootProfiles(IGameSource next);
-    Task<List<IGame>> GetGames(IGameSource next);
-    List<Command> GetGameCommands(IGame game, IGameSource next);
-    List<Command> GetGlobalCommands(IGameSource next);
+    Task<List<IBootProfile>> GetBootProfiles(IGameSource next)
+        => next.GetBootProfiles();
+    Task<List<IGame>> GetGames(IGameSource next)
+        => next.GetGames();
+    List<Command> GetGameCommands(IGame game, IGameSource next)
+        => next.GetGameCommands(game);
+    List<Command> GetGlobalCommands(IGameSource next)
+        => next.GetGlobalCommands();
 }
