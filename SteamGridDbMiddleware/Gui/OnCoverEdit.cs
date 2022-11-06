@@ -20,9 +20,16 @@ public class OnCoverEdit
     public async void ShowGui()
     {
         var games = await Instance.Api.SearchForGamesAsync(Game.Name);
-        var game = games.First();
 
-        var covers = await Instance.Api.GetGridsForGameAsync(game, dimensions: SteamGridDbDimensions.W600H900);
+        List<SteamGridDbGrid> covers = new();
+        string gameName = "???";
+
+        if (games.Length > 0)
+        {
+            var game = games.First();
+            gameName = game.Name;
+            covers = (await Instance.Api.GetGridsForGameAsync(game, dimensions: SteamGridDbDimensions.W600H900))?.ToList() ?? new();
+        }
 
         List<FormEntry> images = new();
         List<FormEntry> entries = new();
@@ -32,7 +39,7 @@ public class OnCoverEdit
             images.Add(Form.Image($"By {steamGridDbGrid.Author.Name}", () => Storage.ImageDownload(steamGridDbGrid.FullImageUrl), _ => SetCover(steamGridDbGrid.Id.ToString(), steamGridDbGrid.FullImageUrl), FormAlignment.Center));
         }
 
-        entries.Add(Form.TextBox($"Covers for {game.Name}", FormAlignment.Center, "Bold"));
+        entries.Add(Form.TextBox($"Covers for {gameName}", FormAlignment.Center, "Bold"));
         entries.Add(Form.Button("Back", _ => Instance.App.HideForm(), "Remove current background", _ => ClearCover()));
         
         if (!HasCover())

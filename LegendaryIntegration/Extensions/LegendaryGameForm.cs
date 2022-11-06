@@ -41,8 +41,7 @@ public static class LegendaryGameForm
                     LegendaryGameSource.Source.App.HideForm();
                 })
         });
-
-        f.Background = game.BackgroundImage;
+        
         f.Game = game;
         return f;
     }

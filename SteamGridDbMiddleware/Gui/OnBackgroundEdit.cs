@@ -20,14 +20,21 @@ public class OnBackgroundEdit
     public async void ShowGui()
     {
         var games = await Instance.Api.SearchForGamesAsync(Game.Name);
-        var game = games.First();
 
-        var covers = await Instance.Api.GetHeroesForGameAsync(game,
-            dimensions: SteamGridDbDimensions.W1920H620 | SteamGridDbDimensions.W3840H1240);
-        
+        List<SteamGridDbHero> covers = new();
+        string gameName = "???";
+
+        if (games.Length > 0)
+        {
+            var game = games.First();
+            gameName = game.Name;
+            covers = (await Instance.Api.GetHeroesForGameAsync(game,
+                dimensions: SteamGridDbDimensions.W1920H620 | SteamGridDbDimensions.W3840H1240))?.ToList() ?? new();
+        }
+
         List<FormEntry> entries = new();
 
-        entries.Add(Form.TextBox($"Backgrounds for {game.Name}", FormAlignment.Center, "Bold"));
+        entries.Add(Form.TextBox($"Backgrounds for {gameName}", FormAlignment.Center, "Bold"));
         entries.Add(Form.Button("Back", _ => Instance.App.HideForm(), "Remove current background", _ => ClearBackground()));
         
         if (!HasBackground())
