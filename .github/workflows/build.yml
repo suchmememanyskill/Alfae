@@ -50,6 +50,11 @@ jobs:
         cd SteamGridDbMiddleware
         dotnet publish -o ../Release/plugins/SteamGridDbMiddleware -p:Configuration=Release
 
+    - name: Build HideGames Middleware
+      run: |
+        cd HideGamesMiddleware
+        dotnet publish -o ../Release/plugins/HideGamesMiddleware -p:Configuration=Release
+
     - name: Build LegendaryIntegration plugin
       run: |
         cd LegendaryIntegration
@@ -117,6 +122,11 @@ jobs:
         run: |
           cd SteamGridDbMiddleware
           dotnet publish -o ../Release/plugins/SteamGridDbMiddleware -p:Configuration=Release
+
+      - name: Build HideGames Middleware
+        run: |
+          cd HideGamesMiddleware
+          dotnet publish -o ../Release/plugins/HideGamesMiddleware -p:Configuration=Release
 
       - name: Build LegendaryIntegration plugin
         run: |

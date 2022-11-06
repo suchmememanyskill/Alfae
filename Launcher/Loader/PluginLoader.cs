@@ -22,6 +22,7 @@ public static class PluginLoader
             items.Add(Path.GetFullPath(Path.Join(path, "..", "..", "..", "..", "..", "ItchIoIntegration", "bin", "Debug", "net6.0", "ItchIoIntegration.dll")));
             items.Add(Path.GetFullPath(Path.Join(path, "..", "..", "..", "..", "..", "GogIntegration", "bin", "Debug", "net6.0", "GogIntegration.dll")));
             items.Add(Path.GetFullPath(Path.Join(path, "..", "..", "..", "..", "..", "SteamGridDbMiddleware", "bin", "Debug", "net6.0", "SteamGridDbMiddleware.dll")));
+            items.Add(Path.GetFullPath(Path.Join(path, "..", "..", "..", "..", "..", "HideGamesMiddleware", "bin", "Debug", "net6.0", "HideGamesMiddleware.dll")));
         #endif
         
         if (!Directory.Exists(path))

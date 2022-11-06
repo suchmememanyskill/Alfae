@@ -191,10 +191,9 @@ public partial class GameViewSmall : UserControlExt<GameViewSmall>
     {
         List<Command> commands = _app.Middleware.GetGameCommands(Game.Original, Game.Source);
         
-        commands.Add(new Command());
-        
         if (Game.InstalledStatus == InstalledStatus.Installed && Game.EstimatedGamePlatform != Platform.None)
         {
+            commands.Add(new Command());
             commands.Add(new("Set Boot Profile", () => new BootProfileSelectGUI(Loader.App.GetInstance(), Game).ShowGUI()));
             
             GameConfig? config = _app.Config.GetGameConfigOptional(Game);
