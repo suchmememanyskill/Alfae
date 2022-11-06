@@ -1,8 +1,10 @@
 ﻿using System;
 using System.Collections.Generic;
+using System.IO;
 using System.Linq;
 using Avalonia.Controls;
 using Avalonia.Controls.Primitives;
+using Avalonia.Media.Imaging;
 using Launcher.Extensions;
 using Launcher.Forms;
 using LauncherGamePlugin.Commands;
@@ -78,6 +80,7 @@ public partial class MainView : UserControlExt<MainView>
         }
         
         gameViewSmall.UpdateCoverImage();
+        SetBgImage(_currentSelection);
     }
     
 
@@ -88,6 +91,18 @@ public partial class MainView : UserControlExt<MainView>
             return;
             
         SetNewSelection(gameViewSmall);
+    }
+
+    private async void SetBgImage(GameViewSmall game)
+    {
+        Background.Source = null;
+
+        byte[]? image = await game.Game.BackgroundImage();
+        if (image != null && _currentSelection == game)
+        {
+            MemoryStream stream = new(image);
+            Background.Source = new Bitmap(stream);
+        }
     }
 
     private List<TemplatedControl> GenerateMenuItems()

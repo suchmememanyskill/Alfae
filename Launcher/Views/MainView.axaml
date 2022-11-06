@@ -20,35 +20,40 @@
                     </Menu>
                 </StackPanel>
             </DockPanel>
-            <ScrollViewer Margin="10">
-                <StackPanel Name="MainContent" Spacing="10">
-                    <StackPanel Orientation="Horizontal" Spacing="10" HorizontalAlignment="Center" Name="InstalledLabel">
-                        <Border Background="Green" CornerRadius="10" Padding="5,1,5,1">
-                            <Label FontSize="18" VerticalAlignment="Center">Installed</Label>
-                        </Border>
+            
+            <Panel>
+                <Image Name="Background" Stretch="UniformToFill" />
+                <Rectangle Fill="#A000"></Rectangle>
+                <ScrollViewer Margin="10">
+                    <StackPanel Name="MainContent" Spacing="10">
+                        <StackPanel Orientation="Horizontal" Spacing="10" HorizontalAlignment="Center" Name="InstalledLabel">
+                            <Border Background="Green" CornerRadius="10" Padding="5,1,5,1">
+                                <Label FontSize="18" VerticalAlignment="Center">Installed</Label>
+                            </Border>
+                        </StackPanel>
+                        <ListBox HorizontalAlignment="Center" Name="InstalledListBox" Background="Transparent">
+                            <ListBox.ItemsPanel>
+                                <ItemsPanelTemplate>
+                                    <WrapPanel />
+                                </ItemsPanelTemplate>
+                            </ListBox.ItemsPanel>
+                        </ListBox>
+                        <StackPanel Orientation="Horizontal" Spacing="10" HorizontalAlignment="Center" Name="NotInstalledLabel">
+                            <Border Background="Blue" CornerRadius="10" Padding="5,1,5,1">
+                                <Label FontSize="18" VerticalAlignment="Center">Not Installed</Label>
+                            </Border>
+                            <Button FontSize="18" Name="DownloadLocationButton" >DownloadLocation</Button>
+                        </StackPanel>
+                        <ListBox HorizontalAlignment="Center" Name="NotInstalledListBox" Background="Transparent">
+                            <ListBox.ItemsPanel>
+                                <ItemsPanelTemplate>
+                                    <WrapPanel />
+                                </ItemsPanelTemplate>
+                            </ListBox.ItemsPanel>
+                        </ListBox>
                     </StackPanel>
-                    <ListBox HorizontalAlignment="Center" Name="InstalledListBox" Background="Transparent">
-                        <ListBox.ItemsPanel>
-                            <ItemsPanelTemplate>
-                                <WrapPanel />
-                            </ItemsPanelTemplate>
-                        </ListBox.ItemsPanel>
-                    </ListBox>
-                    <StackPanel Orientation="Horizontal" Spacing="10" HorizontalAlignment="Center" Name="NotInstalledLabel">
-                        <Border Background="Blue" CornerRadius="10" Padding="5,1,5,1">
-                            <Label FontSize="18" VerticalAlignment="Center">Not Installed</Label>
-                        </Border>
-                        <Button FontSize="18" Name="DownloadLocationButton" >DownloadLocation</Button>
-                    </StackPanel>
-                    <ListBox HorizontalAlignment="Center" Name="NotInstalledListBox" Background="Transparent">
-                        <ListBox.ItemsPanel>
-                            <ItemsPanelTemplate>
-                                <WrapPanel />
-                            </ItemsPanelTemplate>
-                        </ListBox.ItemsPanel>
-                    </ListBox>
-                </StackPanel>
-            </ScrollViewer>
+                </ScrollViewer>
+            </Panel>
         </DockPanel>
         <Panel Name="Overlay" IsVisible="False" />
     </Panel>
