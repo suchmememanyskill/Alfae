@@ -45,6 +45,11 @@ jobs:
         cd ItchIoIntegration
         dotnet publish -o ../Release/plugins/ItchIoIntegration -p:Configuration=Release
 
+    - name: Build SteamGridDb Middleware
+      run: |
+        cd SteamGridDbMiddleware
+        dotnet publish -o ../Release/plugins/SteamGridDbMiddleware -p:Configuration=Release
+
     - name: Build LegendaryIntegration plugin
       run: |
         cd LegendaryIntegration
@@ -107,6 +112,11 @@ jobs:
         run: |
           cd ItchIoIntegration
           dotnet publish -o ../Release/plugins/ItchIoIntegration -p:Configuration=Release
+
+      - name: Build SteamGridDb Middleware
+        run: |
+          cd SteamGridDbMiddleware
+          dotnet publish -o ../Release/plugins/SteamGridDbMiddleware -p:Configuration=Release
 
       - name: Build LegendaryIntegration plugin
         run: |
