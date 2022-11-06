@@ -1,5 +1,7 @@
 ﻿using LauncherGamePlugin;
+using LauncherGamePlugin.Commands;
 using LauncherGamePlugin.Interfaces;
+using SteamGridDbMiddleware.Gui;
 using SteamGridDbMiddleware.Model;
 
 namespace SteamGridDbMiddleware;
@@ -17,8 +19,7 @@ public class SteamGridDb : IGameSource
     {
         Storage = new(app, "steamgriddb.json");
 
-        if (!string.IsNullOrEmpty(Storage.Data.ApiKey))
-            Api = new(Storage.Data.ApiKey);
+        await CheckLoggedInStatus(Storage.Data.ApiKey);
         
         App = app;
 
@@ -29,5 +30,55 @@ public class SteamGridDb : IGameSource
                 new Middleware(this)
             }
         };
+    }
+
+    public async Task<bool> CheckLoggedInStatus(string? key)
+    {
+        Api = null;
+        if (string.IsNullOrEmpty(key))
+            return false;
+        
+        craftersmine.SteamGridDBNet.SteamGridDb api = new(key);
+        try
+        {
+            var game = await api.GetGameByIdAsync(1226);
+            Api = api;
+            return true;
+        }
+        catch (Exception e)
+        {
+            App.Logger.Log($"Failed to check SteamGridDb login status: {e.Message}. Treating as bad login");
+            return false;
+        }
+    }
+
+    public List<Command> GetGlobalCommands()
+    {
+        if (Api == null)
+        {
+            return new()
+            {
+                new("Not logged in"),
+                new(),
+                new("Log in", () => new Authenticate(this).ShowGui())
+            };
+        }
+        else
+        {
+            return new()
+            {
+                new("Logged in"),
+                new(),
+                new("Log out", Logout)
+            };
+        }
+    }
+
+    private async void Logout()
+    {
+        Storage.Data.ApiKey = "";
+        Storage.Save();
+        await CheckLoggedInStatus("");
+        App.ReloadGames();
     }
 }

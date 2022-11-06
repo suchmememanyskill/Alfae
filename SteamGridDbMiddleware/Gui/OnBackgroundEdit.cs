@@ -17,7 +17,7 @@ public class OnBackgroundEdit
         Instance = instance;
     }
 
-    public async void OnGui()
+    public async void ShowGui()
     {
         var games = await Instance.Api.SearchForGamesAsync(Game.Name);
         var game = games.First();

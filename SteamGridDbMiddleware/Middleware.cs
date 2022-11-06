@@ -25,6 +25,8 @@ public class Middleware : IServiceMiddleware
     {
         List<Command> commands = new(next.GetGameCommands(game));
 
+        commands.Add(new Command());
+        
         if (_instance.Api == null)
         {
             commands.Add(new("Edit Cover"));
@@ -32,8 +34,8 @@ public class Middleware : IServiceMiddleware
         }
         else
         {
-            commands.Add(new("Edit Cover", () => new OnCoverEdit(game, _instance).OnGui()));
-            commands.Add(new("Edit Background", () => new OnBackgroundEdit(game, _instance).OnGui()));
+            commands.Add(new("Edit Cover", () => new OnCoverEdit(game, _instance).ShowGui()));
+            commands.Add(new("Edit Background", () => new OnBackgroundEdit(game, _instance).ShowGui()));
         }
         
         return commands;

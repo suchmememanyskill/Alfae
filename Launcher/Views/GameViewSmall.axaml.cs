@@ -3,6 +3,7 @@ using System.Collections.Generic;
 using System.Diagnostics;
 using System.IO;
 using System.Linq;
+using Avalonia.Controls;
 using Avalonia.Layout;
 using Avalonia.Media;
 using Avalonia.Media.Imaging;
@@ -38,11 +39,10 @@ public partial class GameViewSmall : UserControlExt<GameViewSmall>
     [Binding(nameof(TopPanel), "IsVisible")]
     public bool HasProgress => Game.ProgressStatus != null;
     
-    private bool _menuSet = false;
     private bool _isSelected = false;
-    private bool _eventSpamPrevention = false;
     private bool _downloadedImage = false;
     private Loader.App _app;
+    private ContextMenu _contextMenu = new();
 
     public GameViewSmall()
     {
@@ -57,6 +57,13 @@ public partial class GameViewSmall : UserControlExt<GameViewSmall>
         OnUpdate();
         game.OnUpdate += OnUpdateWrapper;
         EffectiveViewportChanged += EffectiveViewportChangedReact;
+
+        _contextMenu.ContextMenuOpening += ((sender, args) =>
+        {
+            _contextMenu.Items = GetCommands().Select(x => x.ToTemplatedControl()).ToList();
+        });
+
+        Control.ContextMenu = _contextMenu;
     }
 
     public void Selected()
@@ -140,8 +147,8 @@ public partial class GameViewSmall : UserControlExt<GameViewSmall>
     
     private void SetMenu()
     {
-        List<Command> commands = _app.Middleware.GetGameCommands(Game.Original, Game.Source);
-        List<Command> functions = commands.Where(x => x.Type == CommandType.Function).ToList();
+        List<Command> commands = GetCommands();
+        List<Command> functions = commands.Where(x => x.Type == CommandType.Function && x.Text != "Set Boot Profile").ToList();
 
         PrimaryButton.IsVisible = false;
         SecondaryButton.IsVisible = false;
@@ -164,22 +171,6 @@ public partial class GameViewSmall : UserControlExt<GameViewSmall>
             SecondaryButtonLabel.Content = functions[1].Text;
         }
 
-        if (Menu.IsVisible && Game.InstalledStatus == InstalledStatus.Installed && Game.EstimatedGamePlatform != Platform.None)
-        {
-            commands.Add(new("Set Boot Profile", () => new BootProfileSelectGUI(Loader.App.GetInstance(), Game).ShowGUI()));
-
-            GameConfig? config = _app.Config.GetGameConfigOptional(Game);
-            if (config != null)
-            {
-                GameSession total = config.GetTotalTime();
-                if (total.TimeSpent.TotalSeconds > 0)
-                {
-                    string time = total.TimeSpent.ToString(@"hh\:mm");
-                    commands.Add(new($"Played for {time}"));
-                }
-            }
-        }
-        
         commands.ForEach(x =>
         {
             if (x.Type == CommandType.Function)
@@ -194,6 +185,31 @@ public partial class GameViewSmall : UserControlExt<GameViewSmall>
         });
         MoreMenu.Items = commands.Select(x => x.ToTemplatedControl());
         Menu.Close();
+    }
+    
+    public List<Command> GetCommands()
+    {
+        List<Command> commands = _app.Middleware.GetGameCommands(Game.Original, Game.Source);
+        
+        commands.Add(new Command());
+        
+        if (Game.InstalledStatus == InstalledStatus.Installed && Game.EstimatedGamePlatform != Platform.None)
+        {
+            commands.Add(new("Set Boot Profile", () => new BootProfileSelectGUI(Loader.App.GetInstance(), Game).ShowGUI()));
+            
+            GameConfig? config = _app.Config.GetGameConfigOptional(Game);
+            if (config != null)
+            {
+                GameSession total = config.GetTotalTime();
+                if (total.TimeSpent.TotalSeconds > 0)
+                {
+                    string time = total.TimeSpent.ToString(@"hh\:mm");
+                    commands.Add(new($"Played for {time}"));
+                }
+            }
+        }
+
+        return commands;
     }
 
     public void Destroy()
