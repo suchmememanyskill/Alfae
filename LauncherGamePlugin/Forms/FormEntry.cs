@@ -12,6 +12,7 @@ public enum FormEntryType
     ButtonList, // Displays a horizontal list of buttons. Uses ButtonList to give names and Actions to the buttons. Respects FormAlignment
     Separator,
     Image,
+    HorizontalPanel,
 }
 
 public enum FormAlignment
@@ -44,12 +45,13 @@ public class FormEntry
     public List<ButtonEntry> ButtonList { get; set; }
     public Form ContainingForm { get; set; }
     public Func<Task<byte[]?>> GetImage { get; set; }
+    public List<FormEntry> HorizontalPanel { get; set; }
     public FormAlignment Alignment;
     public event Action<FormEntry>? OnChange;
     public void InvokeOnChange() => OnChange?.Invoke(this);
     
     public FormEntry(FormEntryType type, string name = "", string value = "", List<string> dropdownOptions = null,
-        List<ButtonEntry> buttonList = null, Action<FormEntry> linkClick = null, Func<Task<byte[]?>> image = null, FormAlignment alignment = FormAlignment.Default)
+        List<ButtonEntry> buttonList = null, Action<FormEntry> linkClick = null, Func<Task<byte[]?>> image = null, List<FormEntry> horizontalPanel = null, FormAlignment alignment = FormAlignment.Default)
     {
         Type = type;
         Name = name;
@@ -59,6 +61,7 @@ public class FormEntry
         LinkClick = linkClick;
         Alignment = alignment;
         GetImage = image;
+        HorizontalPanel = horizontalPanel;
 
         if (Type == FormEntryType.ButtonList && Alignment == FormAlignment.Default)
             Alignment = FormAlignment.Center;

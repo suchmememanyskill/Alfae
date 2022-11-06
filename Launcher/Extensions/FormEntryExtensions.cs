@@ -32,6 +32,8 @@ public static class FormEntryExtensions
                 return new Separator(formEntry);
             case FormEntryType.Image:
                 return new ImageView(formEntry);
+            case FormEntryType.HorizontalPanel:
+                return new HorizontalPanel(formEntry);
             default:
                 throw new NotImplementedException();
         }

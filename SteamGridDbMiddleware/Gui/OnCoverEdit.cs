@@ -1,4 +1,5 @@
 ﻿using craftersmine.SteamGridDBNet;
+using LauncherGamePlugin;
 using LauncherGamePlugin.Forms;
 using LauncherGamePlugin.Interfaces;
 using SteamGridDbMiddleware.Model;
@@ -23,39 +24,44 @@ public class OnCoverEdit
 
         var covers = await Instance.Api.GetGridsForGameAsync(game, dimensions: SteamGridDbDimensions.W600H900);
 
+        List<FormEntry> images = new();
         List<FormEntry> entries = new();
-        entries.Add(Form.Button("Back", _ => Instance.App.HideForm(), "Remove current background", _ => ClearCover()));
 
+        foreach (var steamGridDbGrid in covers.Take(10))
+        {
+            images.Add(Form.Image($"By {steamGridDbGrid.Author.Name}", () => Storage.ImageDownload(steamGridDbGrid.FullImageUrl), _ => SetCover(steamGridDbGrid.Id.ToString(), steamGridDbGrid.FullImageUrl), FormAlignment.Center));
+        }
+
+        entries.Add(Form.TextBox($"Covers for {game.Name}", FormAlignment.Center, "Bold"));
+        entries.Add(Form.Button("Back", _ => Instance.App.HideForm(), "Remove current background", _ => ClearCover()));
+        
         if (!HasCover())
             entries.Last().ButtonList.Last().Action = null;
         
-        foreach (var steamGridDbGrid in covers.Take(10))
+        int i = 0;
+        List<FormEntry> current = new();
+
+        foreach (var x in images)
         {
-            entries.Add(Form.Image($"By {steamGridDbGrid.Author.Name}", () => GetImage(steamGridDbGrid.FullImageUrl), _ => SetCover(steamGridDbGrid.Id.ToString(), steamGridDbGrid.FullImageUrl), FormAlignment.Center));
+            current.Add(x);
+
+            if (current.Count >= 2)
+            {
+                entries.Add(Form.Horizontal(current, alignment: FormAlignment.Center, spacing: 15));
+                current = new();
+            }
         }
         
+        if (current.Count > 0)
+            entries.Add(Form.Horizontal(current, alignment: FormAlignment.Center));
+
         Instance.App.ShowForm(entries);
     }
-
-    private async Task<byte[]?> GetImage(string url)
-    {
-        using HttpClient client = new();
-        try
-        {
-            HttpResponseMessage response = await client.GetAsync(new Uri(url));
-            response.EnsureSuccessStatusCode();
-            return await response.Content.ReadAsByteArrayAsync();
-        }
-        catch
-        {
-            return null;
-        }
-    }
-
+    
     private void ClearCover()
     {
         Instance.App.HideForm();
-        Override? x = Instance.Storage.Data.Covers.Find(x => x.GameName == Game.Name && x.GameSource == Game.Source.ServiceName);
+        Override? x = Instance.Storage.Data.GetCover(Game);
         if (x != null)
         {
             Instance.Storage.Data.Covers.Remove(x);
@@ -67,7 +73,7 @@ public class OnCoverEdit
     private void SetCover(string id, string url)
     {
         Instance.App.HideForm();
-        Override? x = Instance.Storage.Data.Covers.Find(x => x.GameName == Game.Name && x.GameSource == Game.Source.ServiceName);
+        Override? x = Instance.Storage.Data.GetCover(Game);
         x ??= new(Game.Name, Game.Source.ServiceName, url, id);
 
         x.Url = url;
@@ -81,5 +87,5 @@ public class OnCoverEdit
     }
 
     private bool HasCover()
-        => Instance.Storage.Data.Covers.Find(x => x.GameName == Game.Name && x.GameSource == Game.Source.ServiceName) != null;
+        => Instance.Storage.Data.HasCover(Game);
 }

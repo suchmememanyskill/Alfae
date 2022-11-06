@@ -24,11 +24,17 @@ public class Middleware : IServiceMiddleware
     public List<Command> GetGameCommands(IGame game, IGameSource next)
     {
         List<Command> commands = new(next.GetGameCommands(game));
-        
+
         if (_instance.Api == null)
+        {
             commands.Add(new("Edit Cover"));
+            commands.Add(new("Edit Background"));
+        }
         else
+        {
             commands.Add(new("Edit Cover", () => new OnCoverEdit(game, _instance).OnGui()));
+            commands.Add(new("Edit Background", () => new OnBackgroundEdit(game, _instance).OnGui()));
+        }
         
         return commands;
     }

@@ -81,6 +81,9 @@ public class Form
 
     public static FormEntry Image(string label, Func<Task<byte[]?>> image, Action<Form>? onClick = null, FormAlignment alignment = FormAlignment.Default)
         => new(FormEntryType.Image, label, image: image, alignment: alignment, linkClick: x => onClick?.Invoke(x.ContainingForm));
+
+    public static FormEntry Horizontal(List<FormEntry> entries, int spacing = 5, FormAlignment alignment = FormAlignment.Default)
+        => new(FormEntryType.HorizontalPanel, horizontalPanel: entries, value: spacing.ToString(), alignment: alignment);
     
     public static FormEntry Separator(int height = 1)
         => new(FormEntryType.Separator, value: height.ToString());

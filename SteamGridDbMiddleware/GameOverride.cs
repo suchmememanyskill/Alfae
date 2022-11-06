@@ -31,7 +31,7 @@ public class GameOverride : IGame
         if (_instance.Storage.Data.HasCover(_game))
         {
             Override x = _instance.Storage.Data.GetCover(_game)!;
-            return await Storage.Cache($"steamgriddb_{x.Id}.jpg", () => Storage.ImageDownload(x.Url));
+            return await Storage.Cache($"steamgriddb_cover_{x.Id}.jpg", () => Storage.ImageDownload(x.Url));
         }
         else
         {
@@ -41,7 +41,15 @@ public class GameOverride : IGame
 
     public async Task<byte[]?> BackgroundImage()
     {
-        return await _game.BackgroundImage();
+        if (_instance.Storage.Data.HasBackground(_game))
+        {
+            Override x = _instance.Storage.Data.GetBackground(_game)!;
+            return await Storage.Cache($"steamgriddb_bg_{x.Id}.jpg", () => Storage.ImageDownload(x.Url));
+        }
+        else
+        {
+            return await _game.BackgroundImage();   
+        }
     }
 
     public InstalledStatus InstalledStatus => _game.InstalledStatus;
