@@ -1,4 +1,5 @@
-﻿using LauncherGamePlugin;
+﻿using System.Diagnostics;
+using LauncherGamePlugin;
 using LauncherGamePlugin.Commands;
 using LauncherGamePlugin.Enums;
 using LauncherGamePlugin.Extensions;
@@ -185,11 +186,51 @@ public class LocalGameSource : IGameSource
                     }
                     
                     if (flatpaks.Count > 0)
-                        items.Add("Flatpak", flatpaks);
+                        items.Add("Flatpak", flatpaks.OrderBy(x => x.Name).ToList());
                 }
             }
         }
+        
+        // Win Apps
+        if (PlatformExtensions.CurrentPlatform == Platform.Windows)
+        {
+            Utils.DirRepresentation startMenu =
+                Utils.GetDirRepresentation(Environment.GetFolderPath(Environment.SpecialFolder.StartMenu));
 
+            List<AppListing> userStartMenu = new();
+            
+            foreach (var (key, value) in startMenu.Files.Where(x => x.Key.EndsWith(".lnk")))
+            {
+                var link = Lnk.Lnk.LoadFile(key);
+
+                if (File.Exists(link.LocalPath))
+                {
+                    userStartMenu.Add(new(Path.GetFileName(key)[..^4], link.LocalPath, link.Arguments ?? ""));
+                }
+            }
+            
+            if (userStartMenu.Count > 0)
+                items.Add("User Start Menu", userStartMenu.OrderBy(x => x.Name).ToList());
+
+            Utils.DirRepresentation commonStartMenu =
+                Utils.GetDirRepresentation(Environment.GetFolderPath(Environment.SpecialFolder.CommonStartMenu));
+
+            List<AppListing> commonStart = new();
+            
+            foreach (var (key, value) in commonStartMenu.Files.Where(x => x.Key.EndsWith(".lnk")))
+            {
+                var link = Lnk.Lnk.LoadFile(key);
+
+                if (File.Exists(link.LocalPath))
+                {
+                    commonStart.Add(new(Path.GetFileName(key)[..^4], link.LocalPath, link.Arguments ?? ""));
+                }
+            }
+            
+            if (commonStart.Count > 0)
+                items.Add("Common Start Menu", commonStart.OrderBy(x => x.Name).ToList());
+        }
+        
         return items;
     }
 
