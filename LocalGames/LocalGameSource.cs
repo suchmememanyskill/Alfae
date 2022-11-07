@@ -173,9 +173,9 @@ public class LocalGameSource : IGameSource
                 {
                     List<AppListing> flatpaks = new();
                     
-                    foreach (var s in t.StdOut.Skip(1))
+                    foreach (var s in t.StdOut.Where(x => !x.Contains("Application ID"))) // Skip possible first header line
                     {
-                        List<string> split = s.Split("  ").Where(x => !string.IsNullOrWhiteSpace(x)).Select(x => x.Trim()).ToList();
+                        List<string> split = s.Split("	").Where(x => !string.IsNullOrWhiteSpace(x)).Select(x => x.Trim()).ToList();
 
                         if (split.Count == 2)
                         {
