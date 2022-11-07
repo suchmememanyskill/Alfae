@@ -51,27 +51,15 @@ public class OnBackgroundEdit
     private void ClearBackground()
     {
         Instance.App.HideForm();
-        Override? x = Instance.Storage.Data.GetBackground(Game);
-        if (x != null)
-        {
-            Instance.Storage.Data.Backgrounds.Remove(x);
-            Instance.Storage.Save();
-            Instance.App.ReloadGames();
-        }
+        Instance.Storage.Data.ClearBackground(Game);
+        Instance.Storage.Save();
+        Instance.App.ReloadGames();
     }
 
     private void SetBackground(string id, string url)
     {
         Instance.App.HideForm();
-        Override? x = Instance.Storage.Data.GetBackground(Game);
-        x ??= new(Game.Name, Game.Source.ServiceName, url, id);
-
-        x.Url = url;
-        x.Id = id;
-
-        if (!Instance.Storage.Data.Backgrounds.Contains(x))
-            Instance.Storage.Data.Backgrounds.Add(x);
-        
+        Instance.Storage.Data.SetBackground(Game, id, url);
         Instance.Storage.Save();
         Instance.App.ReloadGames();
     }

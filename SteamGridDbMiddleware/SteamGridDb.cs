@@ -97,21 +97,12 @@ public class SteamGridDb : IGameSource
                 if (!game.HasCoverImage)
                 {
                     List<SteamGridDbGrid> covers = new();
-                    
                     covers = (await Api.GetGridsForGameAsync(grid, dimensions: SteamGridDbDimensions.W600H900, types: SteamGridDbTypes.Static))?.ToList() ?? new();
                     
                     if (covers.Count > 0)
                     {
                         var cover = covers.First();
-                        Override? x = Storage.Data.GetCover(game);
-                        x ??= new(game.Name, game.Source.ServiceName, "", "");
-
-                        x.Url = cover.FullImageUrl;
-                        x.Id = cover.Id.ToString();
-
-                        if (!Storage.Data.Covers.Contains(x))
-                            Storage.Data.Covers.Add(x);
-
+                        Storage.Data.SetCover(game, cover.Id.ToString(), cover.FullImageUrl);
                         coverCount++;
                     }
                 }
@@ -125,15 +116,7 @@ public class SteamGridDb : IGameSource
                     if (heroes.Count > 0)
                     {
                         var hero = heroes.First();
-                        Override? x = Storage.Data.GetBackground(game);
-                        x ??= new(game.Name, game.Source.ServiceName, "", "");
-
-                        x.Url = hero.FullImageUrl;
-                        x.Id = hero.Id.ToString();
-
-                        if (!Storage.Data.Backgrounds.Contains(x))
-                            Storage.Data.Backgrounds.Add(x);
-
+                        Storage.Data.SetBackground(game, hero.Id.ToString(), hero.FullImageUrl);
                         backgroundCount++;
                     }
                 }

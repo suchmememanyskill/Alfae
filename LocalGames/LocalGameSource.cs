@@ -45,8 +45,22 @@ public class LocalGameSource : IGameSource
 
     public async Task<List<IGame>> GetGames()
     {
-        Games.ForEach(x => x.Source = this);
+        int idMissingCount = 0;
+        
+        foreach (var localGame in Games)
+        {
+            localGame.Source = this;
 
+            if (string.IsNullOrWhiteSpace(localGame.InternalName))
+            {
+                idMissingCount++;
+                localGame.InternalName = Guid.NewGuid().ToString();
+            }
+        }
+
+        if (idMissingCount > 0)
+            Save();
+        
         List<GeneratedGame> generatedGames = new();
 
         foreach (var generationRules in Rules)

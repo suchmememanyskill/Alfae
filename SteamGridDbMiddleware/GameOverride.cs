@@ -18,6 +18,7 @@ public class GameOverride : IGame
 
     public IGame Original => _game;
     public string Name => _game.Name;
+    public string InternalName => _game.InternalName;
     public bool IsRunning
     {
         get => _game.IsRunning;

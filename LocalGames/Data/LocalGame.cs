@@ -8,6 +8,7 @@ namespace LocalGames.Data;
 
 public class LocalGame : IGame
 {
+    public string InternalName { get; set; }
     public string Name { get; set; }
     public string ExecPath { get; set; }
     public long? Size { get; set; }
@@ -39,7 +40,7 @@ public class LocalGame : IGame
     [JsonIgnore] public IGameSource Source { get; set; }
     [JsonIgnore] public bool HasCoverImage => !string.IsNullOrWhiteSpace(CoverImagePath) && File.Exists(CoverImagePath);
     [JsonIgnore] public bool HasBackgroundImage => !string.IsNullOrWhiteSpace(BackgroundImagePath) && File.Exists(BackgroundImagePath);
-    
+
     public event Action? OnUpdate;
     public void InvokeOnUpdate() => OnUpdate?.Invoke();
 

@@ -68,27 +68,15 @@ public class OnCoverEdit
     private void ClearCover()
     {
         Instance.App.HideForm();
-        Override? x = Instance.Storage.Data.GetCover(Game);
-        if (x != null)
-        {
-            Instance.Storage.Data.Covers.Remove(x);
-            Instance.Storage.Save();
-            Instance.App.ReloadGames();
-        }
+        Instance.Storage.Data.ClearCover(Game);
+        Instance.Storage.Save();
+        Instance.App.ReloadGames();
     }
 
     private void SetCover(string id, string url)
     {
         Instance.App.HideForm();
-        Override? x = Instance.Storage.Data.GetCover(Game);
-        x ??= new(Game.Name, Game.Source.ServiceName, url, id);
-
-        x.Url = url;
-        x.Id = id;
-
-        if (!Instance.Storage.Data.Covers.Contains(x))
-            Instance.Storage.Data.Covers.Add(x);
-        
+        Instance.Storage.Data.SetCover(Game, id, url);
         Instance.Storage.Save();
         Instance.App.ReloadGames();
     }
