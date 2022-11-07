@@ -1,5 +1,6 @@
 ﻿using System.Diagnostics;
 using System.Runtime.InteropServices;
+using LauncherGamePlugin.Enums;
 
 namespace LauncherGamePlugin;
 
@@ -166,6 +167,28 @@ public static class Utils
         catch
         {
             return false;
+        }
+    }
+
+    public static string? WhereSearch(string filename)
+    {
+        if (PlatformExtensions.CurrentPlatform == Platform.Windows)
+        {
+            var paths = new[]{ Environment.CurrentDirectory }
+                .Concat(Environment.GetEnvironmentVariable("PATH")!.Split(';'));
+            var extensions = new[]{ String.Empty }
+                .Concat(Environment.GetEnvironmentVariable("PATHEXT")!.Split(';')
+                    .Where(e => e.StartsWith(".")));
+            var combinations = paths.SelectMany(x => extensions,
+                (path, extension) => Path.Combine(path, filename + extension));
+            return combinations.FirstOrDefault(File.Exists);
+        }
+        else
+        {
+            var paths = new[]{ Environment.CurrentDirectory }
+                .Concat(Environment.GetEnvironmentVariable("PATH")!.Split(':'));
+            var combinations = paths.Select(x => Path.Combine(x, filename));
+            return combinations.FirstOrDefault(File.Exists);
         }
     }
 }

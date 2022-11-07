@@ -1,5 +1,6 @@
 ﻿using LauncherGamePlugin;
 using LauncherGamePlugin.Commands;
+using LauncherGamePlugin.Enums;
 using LauncherGamePlugin.Extensions;
 using LauncherGamePlugin.Forms;
 using LauncherGamePlugin.Interfaces;
@@ -19,6 +20,7 @@ public class LocalGameSource : IGameSource
     private IApp _app;
     public List<LocalGame> Games => _storage.Data.LocalGames;
     public List<GenerationRules> Rules => _storage.Data.GenerationRules;
+    public Dictionary<string, List<AppListing>> ExternalApps { get; private set; }
     private Storage<Store> _storage;
 
     public async Task<InitResult?> Initialize(IApp app)
@@ -35,6 +37,7 @@ public class LocalGameSource : IGameSource
             File.Delete(legacy.Path);
         }
 
+        ExternalApps = await GetExternalApps();
         Log("Hello World!");
         return null;
     }
@@ -129,14 +132,21 @@ public class LocalGameSource : IGameSource
         {
             new Command($"Loaded {Games.Count} games"),
             new Command(),
+            new Command("Reload", Reload),
             new Command("Add a game", () => new AddOrEditGameGui(_app, this).ShowGui()),
-            new Command("Reload", () => _app.ReloadGames()),
-            Games.Count <= 0
-                ? new Command("Add a generation rule")
-                : new Command("Add a generation rule", () => new AddOrEditGenerationRules(_app, this).ShowGui())
             
         };
 
+        if (ExternalApps.Count > 0)
+        {
+            List<Command> existingSources = ExternalApps.Select(x => new Command(x.Key, x.Value.Select(y => new Command(y.Name, () => ShowExistingGuiModal(y))).ToList())).ToList();
+            commands.Add(new("Add a game from existing app", existingSources));
+        }
+
+        commands.Add(Games.Count <= 0
+            ? new Command("Add a generation rule")
+            : new Command("Add a generation rule", () => new AddOrEditGenerationRules(_app, this).ShowGui()));
+        
         List<Command> edits = Rules
             .Select(x => new Command($"Edit {x.Name}", () => new AddOrEditGenerationRules(_app, this).ShowGui(rules: x)))
             .ToList();
@@ -147,6 +157,50 @@ public class LocalGameSource : IGameSource
         return commands;
     }
 
+    private async Task<Dictionary<string, List<AppListing>>> GetExternalApps()
+    {
+        Dictionary<string, List<AppListing>> items = new();
+        
+        // Flatpak
+        if (PlatformExtensions.CurrentPlatform == Platform.Linux)
+        {
+            Terminal t = new(_app);
+            string? flatpakLoc = Utils.WhereSearch("flatpak");
+
+            if (flatpakLoc != null)
+            {
+                if (await t.Exec(flatpakLoc, "list --app --columns=name,application"))
+                {
+                    List<AppListing> flatpaks = new();
+                    
+                    foreach (var s in t.StdOut.Skip(1))
+                    {
+                        List<string> split = s.Split("  ").Where(x => !string.IsNullOrWhiteSpace(x)).Select(x => x.Trim()).ToList();
+
+                        if (split.Count == 2)
+                        {
+                            AppListing listing = new(split[0], flatpakLoc, $"run {split[1]}");
+                            flatpaks.Add(listing);
+                        }
+                    }
+                    
+                    if (flatpaks.Count > 0)
+                        items.Add("Flatpak", flatpaks);
+                }
+            }
+        }
+
+        return items;
+    }
+
+    private async void Reload()
+    {
+        _app.ShowTextPrompt("Reloading Local Games...");
+        _app.ReloadGames();
+        ExternalApps = await GetExternalApps();
+        _app.HideForm();
+    }
+
     public void Remove(LocalGame localGame)
     {
         _app.ShowTextPrompt($"Removing {localGame.Name}...");
@@ -154,5 +208,10 @@ public class LocalGameSource : IGameSource
         _app.ReloadGames();
         Save();
         _app.HideForm();
+    }
+
+    public void ShowExistingGuiModal(AppListing appListing)
+    {
+        new AddOrEditGameGui(_app, this).ShowGui(gameName: appListing.Name, execPath: appListing.ExecPath, args: appListing.CliArgs);
     }
 }
