@@ -98,9 +98,12 @@ public class AddOrEditGameGui
         _instance.Log($"Calculating game {gameName} size at path {execPath}");
         _app.ShowTextPrompt($"Processing {gameName}...");
         LocalGame localGame;
-        
+
         if (form.Game == null)
+        {
             localGame = new LocalGame();
+            localGame.InternalName = Guid.NewGuid().ToString();
+        }
         else
             localGame = (form.Game as LocalGame)!;
 
