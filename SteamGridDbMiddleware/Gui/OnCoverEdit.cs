@@ -40,7 +40,7 @@ public class OnCoverEdit
         }
 
         entries.Add(Form.TextBox($"Covers for {gameName}", FormAlignment.Center, "Bold"));
-        entries.Add(Form.Button("Back", _ => Instance.App.HideForm(), "Remove current background", _ => ClearCover()));
+        entries.Add(Form.Button("Back", _ => Instance.App.HideForm(), "Remove current Cover", _ => ClearCover()));
         
         if (!HasCover())
             entries.Last().ButtonList.Last().Action = null;

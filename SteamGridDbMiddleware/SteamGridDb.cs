@@ -125,7 +125,7 @@ public class SteamGridDb : IGameSource
                     if (heroes.Count > 0)
                     {
                         var hero = heroes.First();
-                        Override? x = Storage.Data.GetCover(game);
+                        Override? x = Storage.Data.GetBackground(game);
                         x ??= new(game.Name, game.Source.ServiceName, "", "");
 
                         x.Url = hero.FullImageUrl;
