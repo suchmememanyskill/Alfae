@@ -111,7 +111,11 @@ public class LegendaryGameSource : IGameSource
 
     public List<Command> GetGlobalCommands()
     {
-        List<Command> commands = new List<Command>();
+        List<Command> commands = new List<Command>()
+        {
+            new("Open Wiki", () => Utils.OpenUrl("https://github.com/suchmememanyskill/Alfae/wiki/Epic-Games-Integration")),
+            new(),
+        };
         
         if (auth == null)
             commands.Add(new("Not logged in"));

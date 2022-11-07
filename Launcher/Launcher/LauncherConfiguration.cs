@@ -63,6 +63,9 @@ public class LauncherConfiguration
     {
         List<Command> commands = new();
         
+        commands.Add(new("Open Wiki", () => LauncherGamePlugin.Utils.OpenUrl("https://github.com/suchmememanyskill/Alfae/wiki/Boot-profiles")));
+        commands.Add(new());
+
         if (WindowsDefaultProfile != null)
             commands.Add(new($"Default for Windows executables: {WindowsDefaultProfile.Name}"));
         

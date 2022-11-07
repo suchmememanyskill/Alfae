@@ -114,6 +114,12 @@ public class ItchGameSource : IGameSource
 
     public List<Command> GetGlobalCommands()
     {
+        List<Command> commands = new List<Command>()
+        {
+            new("Open Wiki", () => Utils.OpenUrl("https://github.com/suchmememanyskill/Alfae/wiki/Itch.io-integration-plugin")),
+            new(),
+        };
+        
         if (_offline)
         {
             return new()
@@ -124,22 +130,18 @@ public class ItchGameSource : IGameSource
         
         if (Profile == null)
         {
-            return new()
-            {
-                new("Not logged in..."),
-                new(),
-                new("Log in", () => new LoginForm(this, App).ShowForm())
-            };
+            commands.Add(new("Not logged in..."));
+            commands.Add(new());
+            commands.Add(new("Log in", () => new LoginForm(this, App).ShowForm()));
+            return commands;
         }
 
-        return new List<Command>()
-        {
-            new($"Logged in as {Profile.User.Username}"),
-            new(),
-            new("Reload games", LoadWithGui),
-            new("Logout", () => SetNewApiKey("")),
-            new("Search free games/demos", () => new SearchForm(App, Profile!, this).ShowForm())
-        };
+        commands.Add(new($"Logged in as {Profile.User.Username}"));
+        commands.Add(new());
+        commands.Add(new("Reload games", LoadWithGui));
+        commands.Add(new("Logout", () => SetNewApiKey("")));
+        commands.Add(new("Search free games/demos", () => new SearchForm(App, Profile!, this).ShowForm()));
+        return commands;
     }
 
     public void Log(string message, LogType type = LogType.Info) => App.Logger.Log(message, type, "ItchIo");
