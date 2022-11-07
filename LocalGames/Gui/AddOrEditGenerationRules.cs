@@ -137,6 +137,7 @@ public class AddOrEditGenerationRules
             _instance.Rules.Remove(rules);
         
         _app.HideForm();
+        _instance.Save();
         _app.ReloadGames();
     }
 }
