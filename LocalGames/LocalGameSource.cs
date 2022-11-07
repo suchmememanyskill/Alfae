@@ -127,7 +127,7 @@ public class LocalGameSource : IGameSource
             .Select(x => new Command($"Edit {x.Name}", () => new AddOrEditGenerationRules(_app, this).ShowGui(rules: x)))
             .ToList();
 
-        if (edits.Count >= 0)
+        if (edits.Count >= 1)
             commands.Add(new Command("Edit generation rule", edits));
         
         return commands;
