@@ -57,25 +57,27 @@ public class SteamGridDb : IGameSource
 
     public List<Command> GetGlobalCommands()
     {
+        List<Command> commands = new()
+        {
+            new("Wiki", () => Utils.OpenUrl("https://github.com/suchmememanyskill/Alfae/wiki/SteamGridDb-Integration")),
+            new(),
+        };
+
         if (Api == null)
         {
-            return new()
-            {
-                new("Not logged in"),
-                new(),
-                new("Log in", () => new Authenticate(this).ShowGui())
-            };
+            commands.Add(new("Not logged in"));
+            commands.Add(new());
+            commands.Add(new("Log in", () => new Authenticate(this).ShowGui()));
         }
         else
         {
-            return new()
-            {
-                new("Logged in"),
-                new(),
-                new("Log out", Logout),
-                new("Set images on installed games with missing images", SetFirstImageOnInstalledMissingImages),
-            };
+            commands.Add(new("Logged in"));
+            commands.Add(new());
+            commands.Add(new("Log out", Logout));
+            commands.Add(new("Set images on installed games with missing images", SetFirstImageOnInstalledMissingImages));
         }
+
+        return commands;
     }
 
     public async void SetFirstImageOnInstalledMissingImages()

@@ -10,6 +10,7 @@ public class OnBackgroundEdit
 {
     public IGame Game { get; set; }
     public SteamGridDb Instance { get; set; }
+    private string _searchTerm;
 
     public OnBackgroundEdit(IGame game, SteamGridDb instance)
     {
@@ -17,9 +18,15 @@ public class OnBackgroundEdit
         Instance = instance;
     }
 
-    public async void ShowGui()
+    public void ShowGui()
     {
-        var games = await Instance.Api.SearchForGamesAsync(Game.Name);
+        _searchTerm = Game.Name;
+        ShowGuiInternal();
+    }
+    
+    private async void ShowGuiInternal()
+    {
+        var games = await Instance.Api.SearchForGamesAsync(_searchTerm);
 
         List<SteamGridDbHero> covers = new();
         string gameName = "???";
@@ -35,7 +42,7 @@ public class OnBackgroundEdit
         List<FormEntry> entries = new();
 
         entries.Add(Form.TextBox($"Backgrounds for {gameName}", FormAlignment.Center, "Bold"));
-        entries.Add(Form.Button("Back", _ => Instance.App.HideForm(), "Remove current background", _ => ClearBackground()));
+        entries.Add(Form.Button("Back", _ => Instance.App.HideForm(), "Change search term", _ => NewSearchTerm(), "Remove current background", _ => ClearBackground()));
         
         if (!HasBackground())
             entries.Last().ButtonList.Last().Action = null;
@@ -46,6 +53,17 @@ public class OnBackgroundEdit
         }
 
         Instance.App.ShowForm(entries);
+    }
+
+    private void NewSearchTerm()
+    {
+        SearchTermEdit edit = new(Instance.App, _searchTerm);
+        edit.OnSubmit += x =>
+        {
+            _searchTerm = x;
+            ShowGuiInternal();
+        };
+        edit.ShowGui();
     }
     
     private void ClearBackground()

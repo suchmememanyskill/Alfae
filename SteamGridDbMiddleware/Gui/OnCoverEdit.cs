@@ -10,6 +10,7 @@ public class OnCoverEdit
 {
     public IGame Game { get; set; }
     public SteamGridDb Instance { get; set; }
+    private string _searchTerm;
 
     public OnCoverEdit(IGame game, SteamGridDb instance)
     {
@@ -17,9 +18,15 @@ public class OnCoverEdit
         Instance = instance;
     }
 
-    public async void ShowGui()
+    public void ShowGui()
     {
-        var games = await Instance.Api.SearchForGamesAsync(Game.Name);
+        _searchTerm = Game.Name;
+        ShowGuiInternal();
+    }
+    
+    private async void ShowGuiInternal()
+    {
+        var games = await Instance.Api.SearchForGamesAsync(_searchTerm);
 
         List<SteamGridDbGrid> covers = new();
         string gameName = "???";
@@ -40,7 +47,7 @@ public class OnCoverEdit
         }
 
         entries.Add(Form.TextBox($"Covers for {gameName}", FormAlignment.Center, "Bold"));
-        entries.Add(Form.Button("Back", _ => Instance.App.HideForm(), "Remove current Cover", _ => ClearCover()));
+        entries.Add(Form.Button("Back", _ => Instance.App.HideForm(), "Change search term", _ => NewSearchTerm(), "Remove current Cover", _ => ClearCover()));
         
         if (!HasCover())
             entries.Last().ButtonList.Last().Action = null;
@@ -63,6 +70,17 @@ public class OnCoverEdit
             entries.Add(Form.Horizontal(current, alignment: FormAlignment.Center));
 
         Instance.App.ShowForm(entries);
+    }
+    
+    private void NewSearchTerm()
+    {
+        SearchTermEdit edit = new(Instance.App, _searchTerm);
+        edit.OnSubmit += x =>
+        {
+            _searchTerm = x;
+            ShowGuiInternal();
+        };
+        edit.ShowGui();
     }
     
     private void ClearCover()
