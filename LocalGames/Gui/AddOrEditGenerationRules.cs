@@ -15,7 +15,7 @@ public class AddOrEditGenerationRules
         _instance = instance;
     }
 
-    public void ShowGui(string name = "", List<string>? extensions = null, string localGameName = "", string additionalCliArgs = "", string path = "", GenerationRules? rules = null, string errMessage = "")
+    public void ShowGui(string name = "", List<string>? extensions = null, string localGameName = "", string additionalCliArgs = "", string path = "", bool? drillDown = null, GenerationRules? rules = null, string errMessage = "")
     {
         extensions ??= new();
 
@@ -35,6 +35,9 @@ public class AddOrEditGenerationRules
 
             if (path == "")
                 path = rules.Path;
+
+            if (drillDown == null)
+                drillDown = rules.DrillDown;
         }
 
         List<FormEntry> elements = new()
@@ -46,6 +49,7 @@ public class AddOrEditGenerationRules
             Form.Separator(),
             Form.TextInput("Name: ", name),
             Form.FolderPicker("Folder: ", path),
+            Form.Toggle("Recursively search folder", drillDown!.Value),
             Form.Dropdown("Base game: ", _instance.Games.Select(x => x.Name).ToList(), localGameName),
             Form.Separator(),
             Form.TextBox("Extensions are provided in a csv format. Example: '.png, .jpg, .gif'"),
@@ -77,10 +81,13 @@ public class AddOrEditGenerationRules
         string baseGame = form.GetValue("Base game: ")!;
         string extensions = form.GetValue("Valid Extensions: ")!;
         string cliArgs = form.GetValue("Additional CLI Args: ")!;
+        string drillDownStr = form.GetValue("Recursively search folder")!;
+
+        bool drillDown = drillDownStr == "1";
 
         if (string.IsNullOrWhiteSpace(extensions))
         {
-            ShowGui(name, new(), baseGame, cliArgs, folder, rules, "Extensions list cannot be empty!");
+            ShowGui(name, new(), baseGame, cliArgs, folder, drillDown, rules, "Extensions list cannot be empty!");
             return;
         }
         
@@ -88,31 +95,31 @@ public class AddOrEditGenerationRules
         
         if (string.IsNullOrWhiteSpace(name))
         {
-            ShowGui(name, splitExtensions, baseGame, cliArgs, folder, rules, "Name cannot be empty!");
+            ShowGui(name, splitExtensions, baseGame, cliArgs, folder, drillDown, rules, "Name cannot be empty!");
             return;
         }
         
         if (string.IsNullOrWhiteSpace(folder) || !Directory.Exists(folder))
         {
-            ShowGui(name, splitExtensions, baseGame, cliArgs, folder, rules, "Folder cannot be empty and must exist!");
+            ShowGui(name, splitExtensions, baseGame, cliArgs, folder, drillDown, rules, "Folder cannot be empty and must exist!");
             return;
         }
         
         if (string.IsNullOrWhiteSpace(baseGame) || _instance.Games.All(x => x.Name != baseGame))
         {
-            ShowGui(name, splitExtensions, baseGame, cliArgs, folder, rules, "Base Game is invalid!");
+            ShowGui(name, splitExtensions, baseGame, cliArgs, folder, drillDown, rules, "Base Game is invalid!");
             return;
         }
         
         if (string.IsNullOrWhiteSpace(cliArgs) || !cliArgs.Contains("{EXEC}"))
         {
-            ShowGui(name, splitExtensions, baseGame, cliArgs, folder, rules, "Cli Args cannot be empty and must contain '{EXEC}'!");
+            ShowGui(name, splitExtensions, baseGame, cliArgs, folder, drillDown, rules, "Cli Args cannot be empty and must contain '{EXEC}'!");
             return;
         }
 
         if ((rules == null || rules.Name != name) && _instance.Rules.Any(x => x.Name == name))
         {
-            ShowGui(name, splitExtensions, baseGame, cliArgs, folder, rules, "Name already exists!");
+            ShowGui(name, splitExtensions, baseGame, cliArgs, folder, drillDown, rules, "Name already exists!");
         }
 
         GenerationRules newRules = rules ?? new();
@@ -122,6 +129,7 @@ public class AddOrEditGenerationRules
         newRules.Path = folder;
         newRules.AdditionalCliArgs = cliArgs;
         newRules.LocalGameName = baseGame;
+        newRules.DrillDown = drillDown;
         
         if (!_instance.Rules.Contains(newRules))
             _instance.Rules.Add(newRules);

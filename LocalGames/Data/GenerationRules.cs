@@ -7,4 +7,5 @@ public class GenerationRules
     public string Path { get; set; } = "";
     public string LocalGameName { get; set; } = "";
     public string AdditionalCliArgs { get; set; } = "";
+    public bool DrillDown { get; set; } = false;
 }

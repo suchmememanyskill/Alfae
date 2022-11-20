@@ -76,7 +76,7 @@ public class LocalGameSource : IGameSource
             if (local == null)
                 continue;
 
-            foreach (var enumerateFile in Directory.EnumerateFiles(generationRules.Path))
+            foreach (var enumerateFile in Directory.EnumerateFiles(generationRules.Path, "*", (generationRules.DrillDown) ? SearchOption.AllDirectories : SearchOption.TopDirectoryOnly))
             {
                 if (generationRules.Extensions.Any(x => enumerateFile.EndsWith(x)))
                 {
@@ -121,6 +121,7 @@ public class LocalGameSource : IGameSource
                     Log($"Starting generated game {generatedGame.Name}");
                     _app.Launch(generatedGame.ToExecLaunch());
                 }),
+                new Command("Open File Location", () => Utils.OpenFolderWithHighlightedFile(generatedGame.FilePath))
             };
         }
 

@@ -10,14 +10,14 @@ public class GeneratedGame : IGame
     private LocalGame _base;
     private LocalGameSource _local;
     private string _cli;
-    private string _filePath;
+    public string FilePath { get; set; }
 
     public GeneratedGame(LocalGame @base, LocalGameSource local, string cli, string filePath)
     {
         _base = @base;
         _local = local;
         _cli = cli;
-        _filePath = filePath;
+        FilePath = filePath;
         Name = Path.GetFileName(filePath).Split('.').First();
         Size = new FileInfo(filePath).Length;
         InstalledStatus = InstalledStatus.Installed;
