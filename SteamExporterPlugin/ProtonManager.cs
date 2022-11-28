@@ -24,7 +24,7 @@ public class ProtonManager
 
         foreach (var enumerateDirectory in Directory.EnumerateDirectories(steamApps))
         {
-            if (Path.GetFileName(enumerateDirectory).Contains("Proton"))
+            if (Path.GetFileName(enumerateDirectory).Contains("Proton") && File.Exists(Path.Join(enumerateDirectory, "proton")))
             {
                 string version = Path.GetFileName(enumerateDirectory).Split(' ', 2).Last();
                 entries.Add(version, enumerateDirectory);
