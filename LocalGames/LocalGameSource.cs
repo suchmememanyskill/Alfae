@@ -15,7 +15,7 @@ public class LocalGameSource : IGameSource
 {
     public string ServiceName => "Local Games Integration";
     public string ShortServiceName => "Local";
-    public string Version => "v1.0.3";
+    public string Version => "v2.0.0";
     public string SlugServiceName => "local-games";
 
     private IApp _app;
