@@ -40,6 +40,8 @@ public class AddOrEditGenerationRules
                 drillDown = rules.DrillDown;
         }
 
+        drillDown ??= false;
+
         List<FormEntry> elements = new()
         {
             Form.TextBox((rules == null) ? "Add generation rule" : $"Edit generation rule '{name}'", FormAlignment.Center,
@@ -56,7 +58,7 @@ public class AddOrEditGenerationRules
             Form.TextInput("Valid Extensions: ", string.Join(", ", extensions)),
             Form.Separator(),
             Form.TextBox(
-                "Additional CLI args will be put after the base game's cli args, with a space inbetween. '{EXEC}' will be replaced with a file path."),
+                "Additional CLI args will be put after the base game's cli args, with a space in between. '{EXEC}' will be replaced with a file path."),
             Form.TextInput("Additional CLI Args: ", additionalCliArgs),
             Form.Separator(),
             Form.Button("Back", _ => _app.HideForm(), "Save", x => Save(x, rules))
