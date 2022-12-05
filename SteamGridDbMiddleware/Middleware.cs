@@ -28,10 +28,9 @@ public class Middleware : IServiceMiddleware
         if (_instance.App != null)
         {
             commands.Add(new Command());
-            commands.Add(new Command("Edit Images",
-                SteamGridDb.ImageTypes
+            commands.AddRange(SteamGridDb.ImageTypes
                     .Select(x => new Command($"Edit {x}", () => new OnImageEdit(game, _instance, x).ShowGui()))
-                    .ToList()));
+                    .ToList());
         }
 
         return commands;
