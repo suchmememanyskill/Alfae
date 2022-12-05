@@ -49,4 +49,24 @@ public class LocalGame : IGame
         LaunchParams launchParams = new LaunchParams(ExecPath, LaunchArgs, InstalledPath, this);
         return launchParams;
     }
+    
+    public bool HasImage(ImageType type)
+    {
+        if (type == ImageType.VerticalCover)
+            return HasCoverImage;
+        if (type == ImageType.Background)
+            return HasBackgroundImage;
+
+        return false;
+    }
+
+    public async Task<byte[]?> GetImage(ImageType type)
+    {
+        if (type == ImageType.VerticalCover)
+            return await CoverImage();
+        if (type == ImageType.Background)
+            return await BackgroundImage();
+
+        return null;
+    }
 }

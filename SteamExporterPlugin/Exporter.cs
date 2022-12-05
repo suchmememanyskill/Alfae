@@ -202,6 +202,8 @@ public class Exporter : IGameSource
         if (entry.Exe.Contains(" "))
             entry.Exe = $"\"{entry.Exe}\"";
         entry.LaunchOptions = $"{game.Source.SlugServiceName} \"{game.InternalName}\" Launch";
+        string iconPath = Path.Combine(gridPath, $"{entry.AppId}_icon.png");
+        entry.Icon = iconPath;
     }
     
     public async Task<Tuple<int, int>> Update()
@@ -257,24 +259,40 @@ public class Exporter : IGameSource
 
     private async Task SetImage(ShortcutEntry entry, IGame game)
     {
-        string path = Path.Combine(gridPath, $"{entry.AppId}.jpg");
-        string pPath = Path.Combine(gridPath, $"{entry.AppId}p.jpg");
-        string heroPath = Path.Combine(gridPath, $"{entry.AppId}_hero.jpg");
+        string verticalCoverPath = Path.Combine(gridPath, $"{entry.AppId}p.jpg");
+        string horizontalCoverPath = Path.Combine(gridPath, $"{entry.AppId}.jpg");
+        string backgroundPath = Path.Combine(gridPath, $"{entry.AppId}_hero.jpg");
+        string logoPath = Path.Combine(gridPath, $"{entry.AppId}_logo.jpg");
+        string iconPath = Path.Combine(gridPath, $"{entry.AppId}_icon.png");
         
-        byte[]? cover = (game.HasCoverImage) ? await game.CoverImage() : null;
-        if (cover != null)
-            await File.WriteAllBytesAsync(path, cover);
+        byte[]? data = (game.HasImage(ImageType.VerticalCover)) ? await game.GetImage(ImageType.VerticalCover) : null;
+        if (data != null)
+            await File.WriteAllBytesAsync(verticalCoverPath, data);
 
-        if (File.Exists(path))
+        if (game.HasImage(ImageType.HorizontalCover))
         {
-            if (File.Exists(pPath))
-                File.Delete(pPath);
+            data = await game.GetImage(ImageType.HorizontalCover);
+            if (data != null)
+                await File.WriteAllBytesAsync(horizontalCoverPath, data);
+        }
+        else if (game.HasImage(ImageType.VerticalCover)) // To make behaviour consistent with older alfae versions
+        {
+            if (File.Exists(horizontalCoverPath))
+                File.Delete(horizontalCoverPath);
             
-            File.Copy(path, pPath);
+            File.Copy(verticalCoverPath, horizontalCoverPath);
         }
         
-        byte[]? background = (game.HasBackgroundImage) ? await game.BackgroundImage() : null;
-        if (background != null)
-            await File.WriteAllBytesAsync(heroPath, background);
+        data = (game.HasImage(ImageType.Background)) ? await game.GetImage(ImageType.Background) : null;
+        if (data != null)
+            await File.WriteAllBytesAsync(backgroundPath, data);
+
+        data = (game.HasImage(ImageType.Logo)) ? await game.GetImage(ImageType.Logo) : null;
+        if (data != null)
+            await File.WriteAllBytesAsync(logoPath, data);
+        
+        data = (game.HasImage(ImageType.Icon)) ? await game.GetImage(ImageType.Icon) : null;
+        if (data != null)
+            await File.WriteAllBytesAsync(iconPath, data);
     }
 }

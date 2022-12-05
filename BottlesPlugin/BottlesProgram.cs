@@ -10,9 +10,6 @@ public class BottlesProgram : IGame
     public string Name { get; }
     public IGameSource Source { get; }
     public long? Size { get; } = 0;
-    public async Task<byte[]?> CoverImage() => null;
-
-    public async Task<byte[]?> BackgroundImage() => null;
     public InstalledStatus InstalledStatus { get; } = InstalledStatus.Installed;
     public Platform EstimatedGamePlatform => Platform.None;
     public ProgressStatus? ProgressStatus { get; } = null;
@@ -40,4 +37,6 @@ public class BottlesProgram : IGame
     }
 
     public void InvokeOnUpdate() => OnUpdate?.Invoke();
+    public bool HasImage(ImageType type) => false;
+    public async Task<byte[]?> GetImage(ImageType type) => null;
 }

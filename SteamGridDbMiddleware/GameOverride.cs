@@ -27,34 +27,20 @@ public class GameOverride : IGame
 
     public IGameSource Source => _game.Source;
     public long? Size => _game.Size;
-    public async Task<byte[]?> CoverImage()
-    {
-        if (_instance.Storage.Data.HasCover(_game))
-        {
-            Override x = _instance.Storage.Data.GetCover(_game)!;
-            return await Storage.Cache($"steamgriddb_cover_{x.Id}.jpg", () => Storage.ImageDownload(x.Url));
-        }
-        else
-        {
-            return await _game.CoverImage();
-        }
-    }
 
-    public async Task<byte[]?> BackgroundImage()
-    {
-        if (_instance.Storage.Data.HasBackground(_game))
-        {
-            Override x = _instance.Storage.Data.GetBackground(_game)!;
-            return await Storage.Cache($"steamgriddb_bg_{x.Id}.jpg", () => Storage.ImageDownload(x.Url));
-        }
-        else
-        {
-            return await _game.BackgroundImage();   
-        }
-    }
+    public bool HasImage(ImageType type) =>
+        _instance.Storage.Data.GetOverride(this, type) != null || _game.HasImage(type);
 
-    public bool HasCoverImage => _instance.Storage.Data.HasCover(_game) || _game.HasCoverImage;
-    public bool HasBackgroundImage => _instance.Storage.Data.HasBackground(_game) || _game.HasBackgroundImage;
+    public async Task<byte[]?> GetImage(ImageType type)
+    {
+        Override? @override = _instance.Storage.Data.GetOverride(this, type);
+        if (@override != null)
+            return await Storage.Cache($"steamgriddb_{type.ToString()}_{@override.Id}.jpg",
+                () => Storage.ImageDownload(@override.Url));
+
+        return await _game.GetImage(type);
+    }
+    
     public InstalledStatus InstalledStatus => _game.InstalledStatus;
     public Platform EstimatedGamePlatform => _game.EstimatedGamePlatform;
     public ProgressStatus? ProgressStatus => _game.ProgressStatus;

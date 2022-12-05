@@ -29,7 +29,6 @@ public class ItchGame : IGame
     [JsonIgnore] public IGameSource Source => ItchSource;
     [JsonIgnore] public ProgressStatus? ProgressStatus => Download;
     [JsonIgnore] public ItchGameSource ItchSource { get; set; }
-    [JsonIgnore] public bool HasCoverImage => true;
     public event Action? OnUpdate;
 
     public ItchGame()
@@ -160,11 +159,7 @@ public class ItchGame : IGame
         LaunchParams args = new(path, CommandlineArgs, Path.GetDirectoryName(path), this, target.GetPlatform());
         ItchSource.App.Launch(args);
     }
-
-    public Task<byte[]?> CoverImage() =>
-        Storage.Cache(CoverUri?.AbsoluteUri.Split("/").Last() ?? "", () => Storage.ImageDownload(CoverUri));
-
-    public async Task<byte[]?> BackgroundImage() => null;
+    
     public void InvokeOnUpdate() => OnUpdate?.Invoke();
     public Task<ItchApiGameUploads?> GetUploads() => ItchApiGameUploads.Get(ItchSource.Profile!, this);
 
@@ -177,4 +172,9 @@ public class ItchGame : IGame
 
         return target.GetPlatform();
     }
+    
+    public bool HasImage(ImageType type) => (type == ImageType.VerticalCover);
+    public async Task<byte[]?> GetImage(ImageType type) => (type == ImageType.VerticalCover) ? await CoverImage() : null;
+    public Task<byte[]?> CoverImage() =>
+        Storage.Cache(CoverUri?.AbsoluteUri.Split("/").Last() ?? "", () => Storage.ImageDownload(CoverUri));
 }

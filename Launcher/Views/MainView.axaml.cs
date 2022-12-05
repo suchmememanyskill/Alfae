@@ -97,7 +97,7 @@ public partial class MainView : UserControlExt<MainView>
     {
         Background.Source = null;
 
-        byte[]? image = (game.Game.HasBackgroundImage) ? await game.Game.BackgroundImage() : null;
+        byte[]? image = (game.Game.HasImage(ImageType.Background)) ? await game.Game.GetImage(ImageType.Background) : null;
         if (image != null && _currentSelection == game)
         {
             MemoryStream stream = new(image);

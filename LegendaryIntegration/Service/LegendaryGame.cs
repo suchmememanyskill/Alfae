@@ -114,10 +114,8 @@ public class LegendaryGame : IGame
     
     public Task<byte[]?> CoverImage() => Storage.Cache(GetGameImage("DieselGameBoxTall")?.FileName ?? "", GenerateCover);
     public Task<byte[]?> BackgroundImage() => Storage.Cache(GetGameImage("DieselGameBox")?.FileName ?? "", () => Storage.ImageDownload(GetGameImage("DieselGameBox")?.Url ?? null));
+    public Task<byte[]?> LogoImage() => Storage.Cache(GetGameImage("DieselGameBoxLogo")?.FileName ?? "", () => Storage.ImageDownload(GetGameImage("DieselGameBoxLogo")?.Url ?? null));
 
-    public bool HasCoverImage => true;
-    public bool HasBackgroundImage => GetGameImage("DieselGameBox")?.Url != null;
-    
     public async Task<LegendaryInfoResponse?> GetInfo()
     {
         if (localInfo != null)
@@ -303,5 +301,29 @@ public class LegendaryGame : IGame
             Parser.Config.GameConfigs[InternalName] = item;
         else
             Parser.Config.GameConfigs.Add(InternalName, item);
+    }
+
+    public bool HasImage(ImageType type)
+    {
+        if (type == ImageType.VerticalCover)
+            return GetGameImage("DieselGameBoxTall")?.Url != null;
+        if (type == ImageType.Background)
+            return GetGameImage("DieselGameBox")?.Url != null;
+        if (type == ImageType.Logo)
+            return GetGameImage("DieselGameBoxLogo")?.Url != null;
+
+        return false;
+    }
+
+    public async Task<byte[]?> GetImage(ImageType type)
+    {
+        if (type == ImageType.VerticalCover)
+            return await CoverImage();
+        if (type == ImageType.Background)
+            return await BackgroundImage();
+        if (type == ImageType.Logo)
+            return await LogoImage();
+
+        return null;
     }
 }

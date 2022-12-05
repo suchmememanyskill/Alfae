@@ -10,10 +10,8 @@ public interface IGame
     public string InternalName => Name;
     public IGameSource Source { get; }
     public long? Size { get; }
-    public bool HasCoverImage => false;
-    public bool HasBackgroundImage => false;
-    public Task<byte[]?> CoverImage();
-    public Task<byte[]?> BackgroundImage();
+    public bool HasImage(ImageType type);
+    public Task<byte[]?> GetImage(ImageType type);
     public InstalledStatus InstalledStatus { get; }
     public Platform EstimatedGamePlatform { get; } // Used to limit options for the boot profiles
     public ProgressStatus? ProgressStatus { get; }

@@ -42,8 +42,6 @@ public class GogGame : IGame
     public GogDlDownload? DownloadStatus { get; private set; }
     [JsonIgnore] 
     public bool IsRunning { get; set; }
-    [JsonIgnore]
-    public bool HasCoverImage => true;
     public event Action? OnUpdate;
 
     public GogGame()
@@ -60,9 +58,6 @@ public class GogGame : IGame
         PageUrl = product.GetPageUrl();
         Platforms = product.Platforms;
     }
-    
-    public Task<byte[]?> CoverImage() =>
-        Storage.Cache(CoverUrl?.Split("/").Last() ?? "", () => Storage.ImageDownload(CoverUrl));
 
     public async Task GetDlInfo()
     {
@@ -170,4 +165,10 @@ public class GogGame : IGame
 
     public async Task<byte[]?> BackgroundImage() => null;
     public void InvokeOnUpdate() => OnUpdate?.Invoke();
+    
+    public bool HasImage(ImageType type) => (type == ImageType.VerticalCover);
+    public async Task<byte[]?> GetImage(ImageType type) => (type == ImageType.VerticalCover) ? await CoverImage() : null;
+    
+    public Task<byte[]?> CoverImage() =>
+        Storage.Cache(CoverUrl?.Split("/").Last() ?? "", () => Storage.ImageDownload(CoverUrl));
 }

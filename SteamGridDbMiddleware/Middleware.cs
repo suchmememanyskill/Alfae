@@ -24,20 +24,16 @@ public class Middleware : IServiceMiddleware
     public List<Command> GetGameCommands(IGame game, IGameSource next)
     {
         List<Command> commands = new(next.GetGameCommands(game));
+        
+        if (_instance.App != null)
+        {
+            commands.Add(new Command());
+            commands.Add(new Command("Edit Images",
+                SteamGridDb.ImageTypes
+                    .Select(x => new Command($"Edit {x}", () => new OnImageEdit(game, _instance, x).ShowGui()))
+                    .ToList()));
+        }
 
-        commands.Add(new Command());
-        
-        if (_instance.Api == null)
-        {
-            commands.Add(new("Edit Cover"));
-            commands.Add(new("Edit Background"));
-        }
-        else
-        {
-            commands.Add(new("Edit Cover", () => new OnCoverEdit(game, _instance).ShowGui()));
-            commands.Add(new("Edit Background", () => new OnBackgroundEdit(game, _instance).ShowGui()));
-        }
-        
         return commands;
     }
 }

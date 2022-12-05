@@ -27,8 +27,6 @@ public class GeneratedGame : IGame
     public bool IsRunning { get; set; }
     public IGameSource Source => _local;
     public long? Size { get; }
-    public async Task<byte[]?> CoverImage() => null;
-    public async Task<byte[]?> BackgroundImage() => null;
     public InstalledStatus InstalledStatus { get; }
     public Platform EstimatedGamePlatform => _base.EstimatedGamePlatform;
     public ProgressStatus? ProgressStatus { get; } = null;
@@ -45,4 +43,8 @@ public class GeneratedGame : IGame
 
         return newLaunchParams;
     }
+
+    public bool HasImage(ImageType type) => false;
+
+    public async Task<byte[]?> GetImage(ImageType type) => null;
 }

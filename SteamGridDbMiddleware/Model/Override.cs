@@ -2,20 +2,18 @@
 
 public class Override
 {
-    public string GameName { get; set; }
-    public string GameSource { get; set; }
+    public int Id { get; set; }
     public string Url { get; set; }
-    public string Id { get; set; }
+    public string Author { get; set; }
 
     public Override()
     {
     }
 
-    public Override(string gameName, string gameSource, string url, string id)
+    public Override(string url, int id, string author)
     {
-        GameName = gameName;
-        GameSource = gameSource;
         Url = url;
         Id = id;
+        Author = author;
     }
 }

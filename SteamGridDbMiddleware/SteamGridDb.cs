@@ -12,16 +12,17 @@ namespace SteamGridDbMiddleware;
 public class SteamGridDb : IGameSource
 {
     public string ServiceName => "SteamGridDb";
-    public string Version => "v1.0.0";
+    public string Version => "v1.1.0";
     public string SlugServiceName => "steam-grid-db";
     public string ShortServiceName => "steamgriddb";
     public IApp App { get; set; }
     public craftersmine.SteamGridDBNet.SteamGridDb? Api { get; set; }
     public Storage<Store> Storage { get; set; }
+    public static List<ImageType> ImageTypes { get; } = new() { ImageType.VerticalCover, ImageType.HorizontalCover, ImageType.Background, ImageType.Logo, ImageType.Icon };
     public async Task<InitResult?> Initialize(IApp app)
     {
         Storage = new(app, "steamgriddb.json");
-
+        
         await CheckLoggedInStatus(Storage.Data.ApiKey);
         
         App = app;
@@ -83,51 +84,70 @@ public class SteamGridDb : IGameSource
     public async void SetFirstImageOnInstalledMissingImages()
     {
         App.ShowTextPrompt("Looking up images for installed games with missing content...");
-        int coverCount = 0;
-        int backgroundCount = 0;
+        int imageCount = 0;
         List<IGame> games = App.GetAllGames().Where(x => x.InstalledStatus == InstalledStatus.Installed).ToList();
+
         foreach (var game in games)
         {
-            if (!game.HasCoverImage || !game.HasBackgroundImage)
+            List<ImageType> missingTypes = ImageTypes.Where(x => !game.HasImage(x)).ToList();
+            
+            if (missingTypes.Count <= 0)
+                continue;
+            
+            var gridGames = await Api.SearchForGamesAsync(game.Name);
+            
+            if (gridGames.Length <= 0)
+                continue;
+                
+            var grid = gridGames.First();
+            
+            foreach (var missingType in missingTypes)
             {
-                var gridGames = await Api.SearchForGamesAsync(game.Name);
-                if (gridGames.Length <= 0)
+                imageCount++;
+                List<Override> overrides = await GetOverridesForImageType(grid, missingType);
+                
+                if (overrides.Count <= 0)
                     continue;
-                
-                var grid = gridGames.First();
-                
-                if (!game.HasCoverImage)
-                {
-                    List<SteamGridDbGrid> covers = new();
-                    covers = (await Api.GetGridsForGameAsync(grid, dimensions: SteamGridDbDimensions.W600H900, types: SteamGridDbTypes.Static))?.ToList() ?? new();
-                    
-                    if (covers.Count > 0)
-                    {
-                        var cover = covers.First();
-                        Storage.Data.SetCover(game, cover.Id.ToString(), cover.FullImageUrl);
-                        coverCount++;
-                    }
-                }
 
-                if (!game.HasBackgroundImage)
-                {
-                    List<SteamGridDbHero> heroes = new();
-                    heroes = (await Api.GetHeroesForGameAsync(grid,
-                        dimensions: SteamGridDbDimensions.W1920H620 | SteamGridDbDimensions.W3840H1240, types: SteamGridDbTypes.Static))?.ToList() ?? new();
-
-                    if (heroes.Count > 0)
-                    {
-                        var hero = heroes.First();
-                        Storage.Data.SetBackground(game, hero.Id.ToString(), hero.FullImageUrl);
-                        backgroundCount++;
-                    }
-                }
+                Override first = overrides.First();
+                Storage.Data.SetOverride(game, missingType, first);
             }
         }
         
         Storage.Save();
         App.ReloadGames();
-        App.ShowDismissibleTextPrompt($"Set {coverCount} Covers and {backgroundCount} Backgrounds");
+        App.ShowDismissibleTextPrompt($"Downloaded and set {imageCount} images");
+    }
+
+    public async Task<List<Override>> GetOverridesForImageType(SteamGridDbGame game, ImageType type)
+    {
+        if (Api == null)
+            return new();
+        
+        if (type == ImageType.VerticalCover)
+            return ((await Api.GetGridsForGameAsync(game, dimensions: SteamGridDbDimensions.W600H900,
+                    types: SteamGridDbTypes.Static))?.ToList() ?? new())
+                .Select(x => new Override(x.FullImageUrl, x.Id, x.Author.Name)).ToList();
+        
+        if (type == ImageType.HorizontalCover)
+            return ((await Api.GetGridsForGameAsync(game, dimensions: SteamGridDbDimensions.W460H215 | SteamGridDbDimensions.W920H430,
+                    types: SteamGridDbTypes.Static))?.ToList() ?? new())
+                .Select(x => new Override(x.FullImageUrl, x.Id, x.Author.Name)).ToList();
+        
+        if (type == ImageType.Background)
+            return ((await Api.GetHeroesForGameAsync(game, dimensions: SteamGridDbDimensions.W1920H620 | SteamGridDbDimensions.W3840H1240, 
+                    types: SteamGridDbTypes.Static))?.ToList() ?? new())
+                .Select(x => new Override(x.FullImageUrl, x.Id, x.Author.Name)).ToList();
+
+        if (type == ImageType.Logo)
+            return ((await Api.GetLogosForGameAsync(game, types: SteamGridDbTypes.Static, formats: SteamGridDbFormats.Png))?.ToList() ?? new())
+                .Select(x => new Override(x.FullImageUrl, x.Id, x.Author.Name)).ToList();
+        
+        if (type == ImageType.Icon)
+            return ((await Api.GetIconsForGameAsync(game, types: SteamGridDbTypes.Static))?.ToList() ?? new())
+                .Select(x => new Override(x.FullImageUrl, x.Id, x.Author.Name)).ToList();
+
+        throw new NotImplementedException();
     }
 
     private async void Logout()
