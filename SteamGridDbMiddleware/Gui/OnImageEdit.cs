@@ -20,7 +20,7 @@ public class OnImageEdit
         Game = new GameOverride(game, instance);
         Instance = instance;
         Type = type;
-        _searchTerm = game.Name;
+        _searchTerm = Instance.CacheSearchTerm(game, game.Name);
 
         if (Type == ImageType.VerticalCover)
             _perRow = 2;
@@ -42,18 +42,16 @@ public class OnImageEdit
 
         List<FormEntry> form = new();
         
-        form.Add(Form.TextBox($"{Type.ToString()}(s) for {gameName}", FormAlignment.Center, "Bold"));
-
         if (Game.HasImage(Type))
         {
-            form.Add(Form.Separator());
             form.Add(Form.Image($"Current {Type.ToString()}", () => Game.GetImage(Type), alignment: FormAlignment.Center));
             form.Add(Form.Separator());
         }
         
-        form.Add(Form.Button("Back", _ => Instance.App.HideForm(), "Change search term", _ => NewSearchTerm(), "Remove current Cover", _ => Clear()));
+        form.Add(Form.TextBox($"{Type.ToString()}(s) for {gameName}", FormAlignment.Center, "Bold"));
+        form.Add(Form.Button("Back", _ => Instance.App.HideForm(), "Change search term", _ => NewSearchTerm(), $"Remove current {Type}", _ => Clear()));
         
-        if (!Game.HasImage(Type))
+        if (Instance.Storage.Data.GetOverride(Game, Type) == null)
             form.Last().ButtonList.Last().Action = null;
 
         List<List<Override>> imageGroups = Enumerable.Range(0, (overrides.Count / _perRow))
@@ -88,6 +86,7 @@ public class OnImageEdit
         edit.OnSubmit += x =>
         {
             _searchTerm = x;
+            Instance.SetSearchTermCache(Game, _searchTerm);
             ShowGui();
         };
         edit.ShowGui();

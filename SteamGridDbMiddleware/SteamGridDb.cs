@@ -18,6 +18,7 @@ public class SteamGridDb : IGameSource
     public IApp App { get; set; }
     public craftersmine.SteamGridDBNet.SteamGridDb? Api { get; set; }
     public Storage<Store> Storage { get; set; }
+    private Dictionary<string, string> _searchTermTracker = new();
     public static List<ImageType> ImageTypes { get; } = new() { ImageType.VerticalCover, ImageType.HorizontalCover, ImageType.Background, ImageType.Logo, ImageType.Icon };
     public async Task<InitResult?> Initialize(IApp app)
     {
@@ -148,6 +149,22 @@ public class SteamGridDb : IGameSource
                 .Select(x => new Override(x.FullImageUrl, x.Id, x.Author.Name)).ToList();
 
         throw new NotImplementedException();
+    }
+
+    public string CacheSearchTerm(IGame game, string defaultSearch)
+    {
+        string key = $"{game.Source.ShortServiceName}:{game.InternalName}";
+        if (_searchTermTracker.ContainsKey(key))
+            return _searchTermTracker[key];
+
+        SetSearchTermCache(game, defaultSearch);
+        return defaultSearch;
+    }
+
+    public void SetSearchTermCache(IGame game, string value)
+    {
+        string key = $"{game.Source.ShortServiceName}:{game.InternalName}";
+        _searchTermTracker[key] = value;
     }
 
     private async void Logout()
