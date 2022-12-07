@@ -44,7 +44,7 @@ public class GogDlImport
             : game.InstallPath!;
         
         Terminal t = new(app);
-        if (!(await t.ExecGog($"import --token {auth.AccessToken} \"{path}\"")) || t.ExitCode != 0 || t.StdOut.Count <= 0)
+        if (!(await t.ExecGog($"import --token {auth.AccessToken} \"{path}\"", auth.AccessToken)) || t.ExitCode != 0 || t.StdOut.Count <= 0)
             return null;
 
         return JsonConvert.DeserializeObject<GogDlImport>(t.StdOut.First());

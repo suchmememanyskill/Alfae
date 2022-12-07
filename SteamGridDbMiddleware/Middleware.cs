@@ -25,7 +25,7 @@ public class Middleware : IServiceMiddleware
     {
         List<Command> commands = new(next.GetGameCommands(game));
         
-        if (_instance.App != null)
+        if (_instance.Api != null)
         {
             commands.Add(new Command());
             commands.AddRange(SteamGridDb.ImageTypes

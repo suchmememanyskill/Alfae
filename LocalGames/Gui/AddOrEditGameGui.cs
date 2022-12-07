@@ -109,7 +109,17 @@ public class AddOrEditGameGui
 
         localGame.Name = gameName;
         localGame.ExecPath = execPath;
-        localGame.Size = Utils.DirSize(new DirectoryInfo(localGame.InstalledPath));
+        localGame.Size = 0;
+        
+        try
+        {
+            localGame.Size = Utils.DirSize(new DirectoryInfo(localGame.InstalledPath));
+        }
+        catch (Exception e)
+        {
+            _app.Logger.Log($"Failed to retrieve folder size for new local game: {e.Message}", service: "LocalGames", type: LogType.Warn);
+        }
+        
         localGame.CoverImagePath = coverImage;
         localGame.BackgroundImagePath = backgroundImage;
         localGame.LaunchArgs = args;

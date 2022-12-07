@@ -35,7 +35,7 @@ public class GogDlInfo
     public static async Task<GogDlInfo?> Get(GogApiAuth auth, GogGame game, IApp app)
     {
         Terminal t = new Terminal(app);
-        if (!await t.ExecGog($"info {game.Id} --os windows --token {auth.AccessToken}") || t.ExitCode != 0 || t.StdOut.Count <= 0)
+        if (!await t.ExecGog($"info {game.Id} --os windows --token {auth.AccessToken}", auth.AccessToken) || t.ExitCode != 0 || t.StdOut.Count <= 0)
             return null;
 
         GogDlInfo? round1 = JsonConvert.DeserializeObject<GogDlInfo>(t.StdOut.First());
@@ -45,7 +45,7 @@ public class GogDlInfo
 
         var lang = round1.Languages.Contains("en-US") ? "en-US" : round1.Languages.First(); // TODO: Bit of a hack but it works for now
         
-        if (!await t.ExecGog($"info {game.Id} --lang={lang} --os windows --token {auth.AccessToken}") || t.ExitCode != 0 || t.StdOut.Count <= 0)
+        if (!await t.ExecGog($"info {game.Id} --lang={lang} --os windows --token {auth.AccessToken}", auth.AccessToken) || t.ExitCode != 0 || t.StdOut.Count <= 0)
             return null;
         
         GogDlInfo? round2 = JsonConvert.DeserializeObject<GogDlInfo>(t.StdOut.First());

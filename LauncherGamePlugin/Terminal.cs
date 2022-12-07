@@ -14,6 +14,7 @@ public class Terminal
     public string WorkingDirectory { get; set; } = "";
     public event Action<Terminal, string> OnNewLine;
     public event Action<Terminal, string> OnNewErrLine;
+    public List<string> NoLog { get; } = new();
 
     private Process proc;
     private IApp _app;
@@ -123,5 +124,5 @@ public class Terminal
         }
     }
 
-    private void Log(string message, LogType type = LogType.Info) => _app.Logger.Log(message, type, "Terminal");
+    private void Log(string message, LogType type = LogType.Info) => _app.Logger.Log(NoLog.Aggregate(message, (msg,i) => msg.Replace(i, "*****")), type, "Terminal");
 }

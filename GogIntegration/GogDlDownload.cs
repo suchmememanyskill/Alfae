@@ -53,7 +53,7 @@ public class GogDlDownload : ProgressStatus
 
         ActiveDownload = true;
         await Terminal.ExecGog(
-            $"download {game.Id} --platform {DownloadedPlatform.GetGogDlString()} --path=\"{InstallPath}\" --skip-dlcs --lang={game.DlInfo.UsedLanguage} --token {auth.AccessToken}");
+            $"download {game.Id} --platform {DownloadedPlatform.GetGogDlString()} --path=\"{InstallPath}\" --skip-dlcs --lang={game.DlInfo.UsedLanguage} --token {auth.AccessToken}", auth.AccessToken);
         ActiveDownload = false;
         
         InstallPath = Path.Join(InstallPath, game.DlInfo.FolderName);
