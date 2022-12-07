@@ -21,7 +21,7 @@ public class LaunchParams
 
     [Obsolete("Please use ListArguments instead")]
     public string Arguments => (UsingListArgs) ? String.Join(" ", _listArgs) : _args;
-    public List<string> ListArguments => (UsingListArgs) ? _listArgs : _args.Split(" ").ToList();
+    public List<string> ListArguments => (UsingListArgs) ? _listArgs : _args.Split(" ").Where(x => !string.IsNullOrWhiteSpace(x)).ToList();
 
     public LaunchParams(string executable, string arguments, string workingDirectory, IGame game, Platform platform)
     {

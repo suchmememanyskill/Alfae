@@ -58,7 +58,14 @@ public class ProtonWrapper : IBootProfile
 
         FormEntry runInPrefix = Form.Button(
             "Run executable in prefix", _ => new RunInPrefixGui(this, game).Show(_exporter.App!),
-            "Open prefix folder", _ => Utils.OpenFolder(GetPrefixFolder(config, game))
+            "Open prefix folder", _ => Utils.OpenFolder(GetPrefixFolder(config, game)),
+            "Run winecfg", _ =>
+                {
+                    LaunchParams launch = new("winecfg", "", GetPrefixFolder(config, game), game);
+                    launch.ForceBootProfile = this;
+                    _exporter.App!.HideForm();
+                    _exporter.App!.Launch(launch);
+                }
             , alignment: FormAlignment.Left);
 
         return new() {entry, runInPrefix};
