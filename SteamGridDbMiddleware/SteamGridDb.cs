@@ -124,29 +124,40 @@ public class SteamGridDb : IGameSource
     {
         if (Api == null)
             return new();
-        
-        if (type == ImageType.VerticalCover)
-            return ((await Api.GetGridsForGameAsync(game, dimensions: SteamGridDbDimensions.W600H900,
-                    types: SteamGridDbTypes.Static))?.ToList() ?? new())
-                .Select(x => new Override(x.FullImageUrl, x.Id, x.Author.Name)).ToList();
-        
-        if (type == ImageType.HorizontalCover)
-            return ((await Api.GetGridsForGameAsync(game, dimensions: SteamGridDbDimensions.W460H215 | SteamGridDbDimensions.W920H430,
-                    types: SteamGridDbTypes.Static))?.ToList() ?? new())
-                .Select(x => new Override(x.FullImageUrl, x.Id, x.Author.Name)).ToList();
-        
-        if (type == ImageType.Background)
-            return ((await Api.GetHeroesForGameAsync(game, dimensions: SteamGridDbDimensions.W1920H620 | SteamGridDbDimensions.W3840H1240, 
-                    types: SteamGridDbTypes.Static))?.ToList() ?? new())
-                .Select(x => new Override(x.FullImageUrl, x.Id, x.Author.Name)).ToList();
 
-        if (type == ImageType.Logo)
-            return ((await Api.GetLogosForGameAsync(game, types: SteamGridDbTypes.Static, formats: SteamGridDbFormats.Png))?.ToList() ?? new())
-                .Select(x => new Override(x.FullImageUrl, x.Id, x.Author.Name)).ToList();
-        
-        if (type == ImageType.Icon)
-            return ((await Api.GetIconsForGameAsync(game, types: SteamGridDbTypes.Static))?.ToList() ?? new())
-                .Select(x => new Override(x.FullImageUrl, x.Id, x.Author.Name)).ToList();
+        try
+        {
+            if (type == ImageType.VerticalCover)
+                return ((await Api.GetGridsForGameAsync(game, dimensions: SteamGridDbDimensions.W600H900,
+                        types: SteamGridDbTypes.Static))?.ToList() ?? new())
+                    .Select(x => new Override(x.FullImageUrl, x.Id, x.Author.Name)).ToList();
+
+            if (type == ImageType.HorizontalCover)
+                return ((await Api.GetGridsForGameAsync(game,
+                        dimensions: SteamGridDbDimensions.W460H215 | SteamGridDbDimensions.W920H430,
+                        types: SteamGridDbTypes.Static))?.ToList() ?? new())
+                    .Select(x => new Override(x.FullImageUrl, x.Id, x.Author.Name)).ToList();
+
+            if (type == ImageType.Background)
+                return ((await Api.GetHeroesForGameAsync(game,
+                        dimensions: SteamGridDbDimensions.W1920H620 | SteamGridDbDimensions.W3840H1240,
+                        types: SteamGridDbTypes.Static))?.ToList() ?? new())
+                    .Select(x => new Override(x.FullImageUrl, x.Id, x.Author.Name)).ToList();
+
+            if (type == ImageType.Logo)
+                return ((await Api.GetLogosForGameAsync(game, types: SteamGridDbTypes.Static,
+                        formats: SteamGridDbFormats.Png))?.ToList() ?? new())
+                    .Select(x => new Override(x.FullImageUrl, x.Id, x.Author.Name)).ToList();
+
+            if (type == ImageType.Icon)
+                return ((await Api.GetIconsForGameAsync(game, types: SteamGridDbTypes.Static))?.ToList() ?? new())
+                    .Select(x => new Override(x.FullImageUrl, x.Id, x.Author.Name)).ToList();
+        }
+        catch (Exception e)
+        {
+            App.Logger.Log($"Failed to get images: {e.Message}", LogType.Warn, "SteamGridDb");
+            return new();
+        }
 
         throw new NotImplementedException();
     }
