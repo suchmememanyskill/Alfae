@@ -150,34 +150,42 @@ public class LauncherConfiguration
             throw new Exception("Found no profile to launch given executable");
 
         _app.Logger.Log($"Launching {launchParams.Executable} using {profile.Name}");
-
-        GameSession session = new();
-
-        profile.OnGameLaunch += x =>
-        {
-            _app.Logger.Log($"Launched {x.Game.Name}");
-            x.InvokeOnGameLaunch();
-            
-            session.StartTime = DateTime.Now;
-
-            x.Game.IsRunning = true;
-            x.Game.InvokeOnUpdate();
-        };
         
-        profile.OnGameClose += x =>
-        {
-            _app.Logger.Log($"{x.Game.Name} closed");
-            x.InvokeOnGameClose();
-            
-            session.EndTime = DateTime.Now;
-            session.CalcTimeSpent();
-            _app.Config.GetGameConfig(x.Game).Sessions.Add(session);
-            _app.Config.Save(_app);
-            
-            x.Game.IsRunning = false;
-            x.Game.InvokeOnUpdate();
-        };
+        _activeSessions[launchParams] = (new(), profile);
 
+        profile.OnGameLaunch += OnGameLaunch;
+        profile.OnGameClose += OnGameClose;
         profile.Launch(launchParams);
+    }
+
+    private Dictionary<LaunchParams, (GameSession, IBootProfile)> _activeSessions = new();
+
+    private void OnGameLaunch(LaunchParams x)
+    {
+        _app.Logger.Log($"Launched {x.Game.Name}");
+        x.InvokeOnGameLaunch();
+            
+        _activeSessions[x].Item1.StartTime = DateTime.Now;
+
+        x.Game.IsRunning = true;
+        x.Game.InvokeOnUpdate();
+    }
+    
+    private void OnGameClose(LaunchParams x)
+    {
+        _app.Logger.Log($"{x.Game.Name} closed");
+        x.InvokeOnGameClose();
+            
+        _activeSessions[x].Item1.EndTime = DateTime.Now;
+        _activeSessions[x].Item1.CalcTimeSpent();
+        _app.Config.GetGameConfig(x.Game).Sessions.Add(_activeSessions[x].Item1);
+        _app.Config.Save(_app);
+            
+        x.Game.IsRunning = false;
+        x.Game.InvokeOnUpdate();
+
+        _activeSessions[x].Item2.OnGameLaunch -= OnGameLaunch;
+        _activeSessions[x].Item2.OnGameClose -= OnGameClose;
+        _activeSessions.Remove(x);
     }
 }
