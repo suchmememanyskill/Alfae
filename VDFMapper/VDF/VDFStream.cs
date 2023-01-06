@@ -15,15 +15,15 @@ namespace VDFMapper.VDF
 
         public string ReadString()
         {
-            StringBuilder stringBuilder = new StringBuilder();
+            List<byte> text = new();
             while (true)
             {
-                char c = (char)reader.ReadByte();
-                if (c == '\0') break;
-                stringBuilder.Append(c);
+                byte c = ReadByte();
+                if (c == 0) break;
+                text.Add(c);
             }
 
-            return stringBuilder.ToString();
+            return Encoding.UTF8.GetString(text.ToArray());
         }
 
         public uint ReadInteger()
