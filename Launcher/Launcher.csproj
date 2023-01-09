@@ -3,11 +3,9 @@
     <OutputType>WinExe</OutputType>
     <TargetFramework>net6.0</TargetFramework>
     <Nullable>enable</Nullable>
-    <!--Avalonia doesen't support TrimMode=link currently,but we are working on that https://github.com/AvaloniaUI/Avalonia/issues/6892 -->
-    <TrimMode>copyused</TrimMode>
-    <BuiltInComInteropSupport>true</BuiltInComInteropSupport>
+    <TrimMode>link</TrimMode>
     <PackageVersion>1.0.0</PackageVersion>
-    <AssemblyVersion>1.3.1</AssemblyVersion>
+    <AssemblyVersion>1.3.2</AssemblyVersion>
     <AssemblyName>Alfae</AssemblyName>
   </PropertyGroup>
   <ItemGroup>
@@ -23,12 +21,12 @@
     <TrimmableAssembly Include="Avalonia.Themes.Default" />
   </ItemGroup>
   <ItemGroup>
-    <PackageReference Include="Avalonia" Version="11.0.0-preview1" />
-    <PackageReference Include="Avalonia.Desktop" Version="11.0.0-preview1" />
+    <PackageReference Include="Avalonia" Version="11.0.0-preview4" />
+    <PackageReference Include="Avalonia.Desktop" Version="11.0.0-preview4" />
     <!--Condition below is needed to remove Avalonia.Diagnostics package from build output in Release configuration.-->
-    <PackageReference Condition="'$(Configuration)' == 'Debug'" Include="Avalonia.Diagnostics" Version="11.0.0-preview1" />
-    <PackageReference Include="Avalonia.Themes.Fluent" Version="11.0.0-preview1" />
-    <PackageReference Include="XamlNameReferenceGenerator" Version="1.3.4" />
+    <PackageReference Condition="'$(Configuration)' == 'Debug'" Include="Avalonia.Diagnostics" Version="11.0.0-preview4" />
+    <PackageReference Include="Avalonia.Themes.Fluent" Version="11.0.0-preview4" />
+    <PackageReference Include="XamlNameReferenceGenerator" Version="1.5.1" />
   </ItemGroup>
   <ItemGroup>
     <ProjectReference Include="..\LauncherGamePlugin\LauncherGamePlugin.csproj" />
