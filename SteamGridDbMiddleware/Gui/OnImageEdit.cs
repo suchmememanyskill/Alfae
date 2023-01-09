@@ -42,6 +42,9 @@ public class OnImageEdit
 
         List<FormEntry> form = new();
         
+        form.Add(Form.ButtonList(SteamGridDb.ImageTypes.Select(x => new ButtonEntry(x.ToString(), _ => new OnImageEdit(Game, Instance, x).ShowGui())).ToList()));
+        form.Add(Form.Separator());
+        
         if (Game.HasImage(Type))
         {
             form.Add(Form.Image($"Current {Type.ToString()}", () => Game.GetImage(Type), alignment: FormAlignment.Center));
@@ -49,7 +52,7 @@ public class OnImageEdit
         }
         
         form.Add(Form.TextBox($"{Type.ToString()}(s) for {gameName}", FormAlignment.Center, "Bold"));
-        form.Add(Form.Button("Back", _ => Instance.App.HideForm(), "Change search term", _ => NewSearchTerm(), $"Remove current {Type}", _ => Clear()));
+        form.Add(Form.Button("Back", _ => Hide(), "Change search term", _ => NewSearchTerm(), $"Remove current {Type}", _ => Clear()));
         
         if (Instance.Storage.Data.GetOverride(Game, Type) == null)
             form.Last().ButtonList.Last().Action = null;
@@ -95,9 +98,14 @@ public class OnImageEdit
     private void Clear() => Set(null);
     private void Set(Override? @override)
     {
-        Instance.App.HideForm();
         Instance.Storage.Data.SetOverride(Game, Type, @override);
         Instance.Storage.Save();
+        ShowGui();
+    }
+
+    private void Hide()
+    {
+        Instance.App.HideForm();
         Instance.App.ReloadGames();
     }
 }
