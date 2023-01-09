@@ -85,7 +85,6 @@ public class Exporter : IGameSource
 
     public async void UpdateSteamGames()
     {
-        App.ShowTextPrompt("Updating steam games...");
         if (!Read())
         {
             App.ShowDismissibleTextPrompt($"Failure reading {vdfPath}.\nDo you have at least 1 non-steam game shortcut in steam?");
@@ -156,6 +155,14 @@ public class Exporter : IGameSource
 
     public bool Write()
     {
+        string bakDir = Path.Join(Path.GetDirectoryName(vdfPath), "alfae_bak");
+
+        if (!Directory.Exists(bakDir))
+            Directory.CreateDirectory(bakDir);
+
+        string bakFile = Path.Join(bakDir, $"{DateTime.Now:yy-MM-dd HH-mm-ss}.vdf");
+        File.Copy(vdfPath, bakFile);
+        
         File.WriteAllText(vdfPath, "");
         BinaryWriter writer = new BinaryWriter(new FileStream(vdfPath, FileMode.OpenOrCreate));
         root!.Write(writer, null);
@@ -225,6 +232,7 @@ public class Exporter : IGameSource
                     string gameName = entry.AppName[..(idx - 1)];
                     string serviceName = entry.AppName[(idx + 1)..^1];
 
+                    App.ShowTextPrompt($"Updating old entry '{entry.AppName}'");
                     IGame? game = copy.Find(x => gameName == x.Name && x.Source.ShortServiceName == serviceName);
                     if (game != null)
                     {
@@ -243,6 +251,7 @@ public class Exporter : IGameSource
 
             foreach (var game in copy)
             {
+                App.ShowTextPrompt($"Adding new entry '{game.Name}'");
                 ShortcutEntry entry = ShortcutRoot.AddEntry();
                 entry.AppName = $"{game.Name} ({game.Source.ShortServiceName})";
                 UpdateExe(entry, game);
