@@ -7,6 +7,7 @@
     <PackageVersion>1.0.0</PackageVersion>
     <AssemblyVersion>1.3.2</AssemblyVersion>
     <AssemblyName>Alfae</AssemblyName>
+    <ApplicationIcon>Assets\icon.ico</ApplicationIcon>
   </PropertyGroup>
   <ItemGroup>
     <None Remove=".gitignore" />
