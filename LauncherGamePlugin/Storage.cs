@@ -1,4 +1,5 @@
-﻿using LauncherGamePlugin.Interfaces;
+﻿using LauncherGamePlugin.Enums;
+using LauncherGamePlugin.Interfaces;
 using Newtonsoft.Json;
 
 namespace LauncherGamePlugin;
@@ -16,11 +17,7 @@ public static class Storage
                 throw new Exception("Invalid file name detected!");
         }
 
-        string tempPath = Path.Join(Path.GetTempPath(), "Alfae_Cache");
-        if (!Directory.Exists(tempPath))
-            Directory.CreateDirectory(tempPath);
-
-        string path = Path.Join(tempPath, filename);
+        string path = Path.Join(GetCachePath(), filename);
         if (File.Exists(path))
             return await File.ReadAllBytesAsync(path);
 
@@ -50,6 +47,30 @@ public static class Storage
         {
             return null;
         }
+    }
+
+    public static string GetCachePath()
+    {
+        string path;
+        if (PlatformExtensions.CurrentPlatform == Platform.Windows)
+        {
+            path = Path.Join(Environment.GetFolderPath(Environment.SpecialFolder.InternetCache), "Alfae");
+        }
+        else if (PlatformExtensions.CurrentPlatform == Platform.Linux)
+        {
+            string? cacheDir = Environment.GetEnvironmentVariable("XDG_CACHE_HOME");
+            cacheDir ??= Path.Join(Environment.GetFolderPath(Environment.SpecialFolder.UserProfile), ".cache");
+            path = Path.Join(cacheDir, "Alfae");
+        }
+        else
+        {
+            throw new PlatformNotSupportedException();
+        }
+
+        if (!Directory.Exists(path))
+            Directory.CreateDirectory(path);
+
+        return path;
     }
 }
 
