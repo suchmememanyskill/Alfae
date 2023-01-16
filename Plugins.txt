@@ -1,0 +1,8 @@
+BottlesPlugin
+GogIntegration
+HideGamesMiddleware
+ItchIoIntegration
+LegendaryIntegration
+LocalGames
+SteamExporterPlugin
+SteamGridDbMiddleware
