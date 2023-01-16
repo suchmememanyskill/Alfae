@@ -58,6 +58,9 @@ public class LegendaryAuth
         Terminal t = new Terminal(LegendaryGameSource.Source.App);
         LegendaryInstalled = true;
 
+        if (!t.NoLog.Contains(authCode))
+            t.NoLog.Add(authCode);
+        
         if (!await t.ExecLegendary($"auth --code {authCode}"))
         {
             LegendaryInstalled = false;
