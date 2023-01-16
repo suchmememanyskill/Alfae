@@ -18,15 +18,29 @@ public class CustomBootProfile : IBootProfile
     public Platform CompatibleExecutable { get => (Platform)CompatibleExecutableInt; set => CompatibleExecutableInt = (int)value; }
     public int CompatibleExecutableInt { get; set; } = 0;
     public bool EscapeReplaceables { get; set; } = false;
-
-    // TODO: use listargs instead of args
+    
     public void Launch(LaunchParams launchParams)
     {
         if (launchParams.Platform != CompatibleExecutable)
             throw new Exception("Incompatible profile");
 
+        List<string> args = new();
+        foreach (var s in Args.Split(" ", StringSplitOptions.RemoveEmptyEntries))
+        {
+            if (s == "{EXEC}" || s == "\"{EXEC}\"") // Backwards compat
+                args.Add((EscapeReplaceables ? launchParams.Executable.Curse() : launchParams.Executable));
+            
+            else if (s == "{ARGS}")
+                args.AddRange(launchParams.ListArguments);
+            
+            else if (s == "{WORKDIR}")
+                args.Add((EscapeReplaceables ? launchParams.WorkingDirectory.Curse() : launchParams.WorkingDirectory));
+            
+            else
+                args.Add(s);
+        }
+
         string exec = Replace(Executable, launchParams);
-        string args = Replace(Args, launchParams);
 
         LaunchParams convertedLaunchParams = new(exec, args, launchParams.WorkingDirectory,
             launchParams.Game, CompatibleExecutable);
