@@ -15,14 +15,14 @@ public static class PluginLoader
         List<string> items = new();
         
         #if DEBUG
-            items.Add(Path.GetFullPath(Path.Join(path, "..", "..", "..", "..", "..", "LocalGames", "bin", "Debug", "net6.0", "LocalGames.dll")));
-            items.Add(Path.GetFullPath(Path.Join(path, "..", "..", "..", "..", "..", "LegendaryIntegration", "bin", "Debug", "net6.0", "LegendaryIntegration.dll")));
-            items.Add(Path.GetFullPath(Path.Join(path, "..", "..", "..", "..", "..", "SteamExporterPlugin", "bin", "Debug", "net6.0", "SteamExporterPlugin.dll")));
-            items.Add(Path.GetFullPath(Path.Join(path, "..", "..", "..", "..", "..", "BottlesPlugin", "bin", "Debug", "net6.0", "BottlesPlugin.dll")));
-            items.Add(Path.GetFullPath(Path.Join(path, "..", "..", "..", "..", "..", "ItchIoIntegration", "bin", "Debug", "net6.0", "ItchIoIntegration.dll")));
-            items.Add(Path.GetFullPath(Path.Join(path, "..", "..", "..", "..", "..", "GogIntegration", "bin", "Debug", "net6.0", "GogIntegration.dll")));
-            items.Add(Path.GetFullPath(Path.Join(path, "..", "..", "..", "..", "..", "SteamGridDbMiddleware", "bin", "Debug", "net6.0", "SteamGridDbMiddleware.dll")));
-            items.Add(Path.GetFullPath(Path.Join(path, "..", "..", "..", "..", "..", "HideGamesMiddleware", "bin", "Debug", "net6.0", "HideGamesMiddleware.dll")));
+            items.Add(Path.GetFullPath(Path.Join(path, "..", "..", "..", "..", "..", "LocalGames", "bin", "Debug", "net7.0", "LocalGames.dll")));
+            items.Add(Path.GetFullPath(Path.Join(path, "..", "..", "..", "..", "..", "LegendaryIntegration", "bin", "Debug", "net7.0", "LegendaryIntegration.dll")));
+            items.Add(Path.GetFullPath(Path.Join(path, "..", "..", "..", "..", "..", "SteamExporterPlugin", "bin", "Debug", "net7.0", "SteamExporterPlugin.dll")));
+            items.Add(Path.GetFullPath(Path.Join(path, "..", "..", "..", "..", "..", "BottlesPlugin", "bin", "Debug", "net7.0", "BottlesPlugin.dll")));
+            items.Add(Path.GetFullPath(Path.Join(path, "..", "..", "..", "..", "..", "ItchIoIntegration", "bin", "Debug", "net7.0", "ItchIoIntegration.dll")));
+            items.Add(Path.GetFullPath(Path.Join(path, "..", "..", "..", "..", "..", "GogIntegration", "bin", "Debug", "net7.0", "GogIntegration.dll")));
+            items.Add(Path.GetFullPath(Path.Join(path, "..", "..", "..", "..", "..", "SteamGridDbMiddleware", "bin", "Debug", "net7.0", "SteamGridDbMiddleware.dll")));
+            items.Add(Path.GetFullPath(Path.Join(path, "..", "..", "..", "..", "..", "HideGamesMiddleware", "bin", "Debug", "net7.0", "HideGamesMiddleware.dll")));
         #endif
         
         if (!Directory.Exists(path))
