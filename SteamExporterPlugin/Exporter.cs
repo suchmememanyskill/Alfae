@@ -99,7 +99,7 @@ public class Exporter : IGameSource
             return;
         }
         
-        App.ShowDismissibleTextPrompt($"Added {res.Item2} games to steam, and removed {res.Item1} games from steam");
+        App.ShowDismissibleTextPrompt($"Added {res.Item2} games to steam, and removed {res.Item1} games from steam. Restart steam to finalize changes");
     }
 
     public void RemoveSteamGames()
@@ -120,7 +120,7 @@ public class Exporter : IGameSource
             return;
         }
         
-        App.ShowDismissibleTextPrompt($"Removed {res} games from steam");
+        App.ShowDismissibleTextPrompt($"Removed {res} games from steam. Restart steam to finalize changes");
     }
     
     private string vdfPath = "";
