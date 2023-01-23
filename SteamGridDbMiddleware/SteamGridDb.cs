@@ -76,7 +76,7 @@ public class SteamGridDb : IGameSource
             commands.Add(new("Logged in"));
             commands.Add(new());
             commands.Add(new("Log out", Logout));
-            commands.Add(new("Set images on installed games with missing images", SetFirstImageOnInstalledMissingImages));
+            commands.Add(new("Set missing images on installed games", SetFirstImageOnInstalledMissingImages));
         }
 
         return commands;

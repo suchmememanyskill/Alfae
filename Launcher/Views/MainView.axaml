@@ -21,6 +21,12 @@
                 </StackPanel>
             </DockPanel>
             
+            <DockPanel DockPanel.Dock="Left">
+                <ScrollViewer Name="PluginSideBarScroll" VerticalScrollBarVisibility="Hidden">
+                    <StackPanel Name="PluginSideBar" Width="250" />
+                </ScrollViewer>
+            </DockPanel>
+            
             <Panel>
                 <Image Name="Background" Stretch="UniformToFill" />
                 <Rectangle Fill="#A000"></Rectangle>

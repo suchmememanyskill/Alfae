@@ -18,7 +18,7 @@ namespace Launcher
             InitializeComponent();
             _app = Loader.App.GetInstance();
             _app.MainWindow = this;
-            Dispatcher.UIThread.Post(Initialize);
+            Initialize();
             Content = new LoadingScreen();
             Title = $"Alfae {Loader.App.Version}: A Launcher For Almost Everything";
         }

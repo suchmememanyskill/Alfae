@@ -37,6 +37,7 @@ public partial class MainView : UserControlExt<MainView>
         InstalledListBox.SelectionChanged += (_, _) => MonitorListBox(InstalledListBox);
         NotInstalledListBox.SelectionChanged += (_, _) => MonitorListBox(NotInstalledListBox);
         SearchBox.KeyUp += (_, _) => ApplySearch();
+        OnUpdateView += GenerateNewMenuItems;
     }
     
     public void ApplySearch()
@@ -126,6 +127,25 @@ public partial class MainView : UserControlExt<MainView>
         }).ToTemplatedControl());
 
         return controls;
+    }
+
+    private void GenerateNewMenuItems()
+    {
+        Loader.App app = Loader.App.GetInstance();
+        PluginSideBar.Children.Clear();
+        var controls = app.GameSources.Select(x =>
+        {
+            List<Command> pluginCommands = app.Middleware.GetGlobalCommands(x);
+            return new BoxCommandView($"{x.ServiceName} - {x.Version}", pluginCommands);
+        }).ToList();
+
+        controls.Add(new($"Alfae {Loader.App.Version}", new List<Command>()
+        {
+            new("Open configuration folder", () => LauncherGamePlugin.Utils.OpenFolder(app.ConfigDir)),
+            new("Open games folder", () => LauncherGamePlugin.Utils.OpenFolder(app.GameDir))
+        }));
+        
+        PluginSideBar.Children.AddRange(controls);
     }
 
     [Command(nameof(DownloadLocationButton))]
