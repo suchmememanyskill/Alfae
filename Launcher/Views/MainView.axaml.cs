@@ -14,16 +14,16 @@ namespace Launcher.Views;
 
 public partial class MainView : UserControlExt<MainView>
 {
-    [Binding(nameof(PluginMenu), "Items")] public List<TemplatedControl> MenuItems => GenerateMenuItems();
+    //[Binding(nameof(PluginMenu), "Items")] public List<TemplatedControl> MenuItems => GenerateMenuItems();
 
-    [Binding(nameof(ProfileMenu), "Items")]
+    //[Binding(nameof(ProfileMenu), "Items")]
     public List<TemplatedControl> BootProfileItems =>
         _app.Launcher.BuildCommands().Select(x => x.ToTemplatedControl()).ToList();
 
     [Binding(nameof(DownloadLocationButton), "Content")]
     public string DlText => $"Current download location: {_app.GameDir}";
 
-    [Binding(nameof(GameCountLabel), "Content")]
+    //[Binding(nameof(GameCountLabel), "Content")]
     public string GameCountText => (_app.Games != null) ? $"Found {_app.Games.Count} games, {_app.InstalledGames.Count} installed" : "";
 
     private GameViewSmall _currentSelection;
@@ -141,8 +141,10 @@ public partial class MainView : UserControlExt<MainView>
 
         controls.Add(new($"Alfae {Loader.App.Version}", new List<Command>()
         {
+            new(GameCountText),
             new("Open configuration folder", () => LauncherGamePlugin.Utils.OpenFolder(app.ConfigDir)),
-            new("Open games folder", () => LauncherGamePlugin.Utils.OpenFolder(app.GameDir))
+            new("Open games folder", () => LauncherGamePlugin.Utils.OpenFolder(app.GameDir)),
+            new("Boot Profiles", _app.Launcher.BuildCommands())
         }));
         
         PluginSideBar.Children.AddRange(controls);
