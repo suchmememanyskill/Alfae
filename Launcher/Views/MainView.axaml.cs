@@ -20,6 +20,9 @@ public partial class MainView : UserControlExt<MainView>
     public List<TemplatedControl> BootProfileItems =>
         _app.Launcher.BuildCommands().Select(x => x.ToTemplatedControl()).ToList();
 
+    [Binding(nameof(HidePluginSideBar), "Content")]
+    public string HidePluginSideBarLabel => PluginSideBar.IsVisible ? "Hide" : "Show";
+
     [Binding(nameof(DownloadLocationButton), "Content")]
     public string DlText => $"Current download location: {_app.GameDir}";
 
@@ -160,5 +163,12 @@ public partial class MainView : UserControlExt<MainView>
             _app.GameDir = result;
             UpdateView();
         }
+    }
+
+    [Command(nameof(HidePluginSideBar))]
+    public async void OnHidePluginSideBar()
+    {
+        PluginSideBar.IsVisible = !PluginSideBar.IsVisible;
+        UpdateView();
     }
 }
