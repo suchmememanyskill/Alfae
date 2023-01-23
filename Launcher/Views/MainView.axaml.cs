@@ -36,6 +36,7 @@ public partial class MainView : UserControlExt<MainView>
     {
         InitializeComponent();
         SetControls();
+        PluginSideBar.IsVisible = _app.SidebarState;
         UpdateView();
         InstalledListBox.SelectionChanged += (_, _) => MonitorListBox(InstalledListBox);
         NotInstalledListBox.SelectionChanged += (_, _) => MonitorListBox(NotInstalledListBox);
@@ -134,19 +135,18 @@ public partial class MainView : UserControlExt<MainView>
 
     private void GenerateNewMenuItems()
     {
-        Loader.App app = Loader.App.GetInstance();
         PluginSideBar.Children.Clear();
-        var controls = app.GameSources.Select(x =>
+        var controls = _app.GameSources.Select(x =>
         {
-            List<Command> pluginCommands = app.Middleware.GetGlobalCommands(x);
+            List<Command> pluginCommands = _app.Middleware.GetGlobalCommands(x);
             return new BoxCommandView($"{x.ServiceName} - {x.Version}", pluginCommands);
         }).ToList();
 
         controls.Add(new($"Alfae {Loader.App.Version}", new List<Command>()
         {
             new(GameCountText),
-            new("Open configuration folder", () => LauncherGamePlugin.Utils.OpenFolder(app.ConfigDir)),
-            new("Open games folder", () => LauncherGamePlugin.Utils.OpenFolder(app.GameDir)),
+            new("Open configuration folder", () => LauncherGamePlugin.Utils.OpenFolder(_app.ConfigDir)),
+            new("Open games folder", () => LauncherGamePlugin.Utils.OpenFolder(_app.GameDir)),
             new("Boot Profiles", _app.Launcher.BuildCommands())
         }));
         
@@ -169,6 +169,7 @@ public partial class MainView : UserControlExt<MainView>
     public async void OnHidePluginSideBar()
     {
         PluginSideBar.IsVisible = !PluginSideBar.IsVisible;
+        _app.SidebarState = PluginSideBar.IsVisible;
         UpdateView();
     }
 }
