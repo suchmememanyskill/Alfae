@@ -56,11 +56,16 @@ public class LegendaryGameSource : IGameSource
 
         if (!legendaryGame.IsInstalled)
         {
-            commands.Add(new("Install", () => Download(legendaryGame)));
+            if (legendaryGame.FromOrigin)
+                commands.Add(new("Play on Origin", () => Launch(legendaryGame, false)));
+            else
+                commands.Add(new("Install", () => Download(legendaryGame)));
+            
+            
             commands.Add(new("Show in browser", legendaryGame.ShowInBrowser));
             commands.Add(new("Import", () => new ImportFileSelect(legendaryGame).Show(App)));
             
-            if (legendaryGame.Size == 0)
+            if (legendaryGame.Size == 0 && !legendaryGame.FromOrigin)
                 commands.Add(new("Get game install size", () => GetOfflineGameSize(legendaryGame)));
         }
         else
