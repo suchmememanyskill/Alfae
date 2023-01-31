@@ -42,7 +42,7 @@ public class BottlesWrapper : IBootProfile
 
         if (launchParams.ListArguments.Count >= 1)
         {
-            args.AddRange(launchParams.ListArguments);
+            args.Add(launchParams.Arguments);
         }
 
         LaunchParams newParams = new("flatpak", args, launchParams.WorkingDirectory, launchParams.Game);
