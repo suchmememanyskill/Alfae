@@ -42,7 +42,6 @@ public class BottlesWrapper : IBootProfile
 
         if (launchParams.ListArguments.Count >= 1)
         {
-            args.Add("-a");
             args.Add(launchParams.Arguments);
         }
 

@@ -59,6 +59,16 @@ public class App : IApp
         }
     }
 
+    public bool SidebarState
+    {
+        get => Config.SidebarState;
+        set
+        {
+            Config.SidebarState = value;
+            Config.Save(this);
+        }
+    }
+
     public bool HeadlessMode { get; set; } = false;
 
     public Logger Logger { get; }

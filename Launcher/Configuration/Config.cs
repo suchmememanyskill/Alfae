@@ -17,6 +17,7 @@ public class Config
     public List<LocalBootProfile> CustomProfiles { get; set; } = new();
     public string WindowsDefaultProfile { get; set; } = "";
     public string LinuxDefaultProfile { get; set; } = "";
+    public bool SidebarState { get; set; } = true;
 
     public static Config Load(IApp app)
     {

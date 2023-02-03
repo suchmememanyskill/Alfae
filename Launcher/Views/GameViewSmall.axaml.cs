@@ -4,6 +4,7 @@ using System.Diagnostics;
 using System.IO;
 using System.Linq;
 using Avalonia.Controls;
+using Avalonia.Input;
 using Avalonia.Layout;
 using Avalonia.Media;
 using Avalonia.Media.Imaging;
@@ -33,16 +34,13 @@ public partial class GameViewSmall : UserControlExt<GameViewSmall>
     [Binding(nameof(SizeLabel), "Content")]
     public string GameSize => (Game.Size == 0) ? Game.Source.ShortServiceName : $"{Game.ReadableSize()} | {Game.Source.ShortServiceName}";
 
-    [Binding(nameof(ButtonPanel), "IsVisible")]
-    public bool IsSelected => _isSelected;
-
     [Binding(nameof(TopPanel), "IsVisible")]
     public bool HasProgress => Game.ProgressStatus != null;
     
-    private bool _isSelected = false;
     private bool _downloadedImage = false;
     private Loader.App _app;
     private ContextMenu _contextMenu = new();
+    private int _clickCount = 0;
 
     public GameViewSmall()
     {
@@ -64,32 +62,44 @@ public partial class GameViewSmall : UserControlExt<GameViewSmall>
         });
 
         Control.ContextMenu = _contextMenu;
+
+        OnUpdateView += () =>
+        {
+            if (_downloadedImage)
+                SetIcons();
+        };
+        
+        PointerPressed += (sender, args) =>
+        {
+            _clickCount = args.ClickCount;
+        };
+
+        PointerReleased += (sender, args) =>
+        {
+            if (_clickCount == 2 && args.InitialPressMouseButton == MouseButton.Left && PlayButton.IsVisible && EmptySpace.Bounds.Contains(args.GetPosition(EmptySpace)))
+            {
+                PlayButton.Command?.Execute(null);
+            }
+        };
     }
 
     public void Selected()
     {
-        _isSelected = true;
         UpdateView();
-        SetMenu();
     }
 
     public void Deselected()
     {
-        _isSelected = false;
         UpdateView();
     }
 
     private void OnUpdateWrapper() => Dispatcher.UIThread.Post(OnUpdate);
     private void OnUpdate()
     {
-        if (_isSelected)
-            SetMenu();
-        
         if (!TopPanel.IsVisible && HasProgress)
             Loader.App.GetInstance().MainView.SetNewSelection(this);
         
         UpdateView();
-        _downloadedImage = false;
 
         if (HasProgress)
         {
@@ -106,6 +116,7 @@ public partial class GameViewSmall : UserControlExt<GameViewSmall>
             return;
 
         _downloadedImage = true;
+        SetIcons();
         Dispatcher.UIThread.Post(GetCoverImage, DispatcherPriority.Background);
     }
 
@@ -124,7 +135,7 @@ public partial class GameViewSmall : UserControlExt<GameViewSmall>
         if (TopLabel2.IsVisible)
             TopLabel2.Content = Game.ProgressStatus.Line2;
         
-        SetMenu();
+        SetIcons();
     }
 
     public async void GetCoverImage()
@@ -144,47 +155,29 @@ public partial class GameViewSmall : UserControlExt<GameViewSmall>
             Loader.App.GetInstance().Logger.Log($"Failed to get cover of {Game.Name}");
         }
     }
-    
-    private void SetMenu()
+
+    public void SetIcons()
     {
         List<Command> commands = GetCommands();
-        List<Command> functions = commands.Where(x => x.Type == CommandType.Function && x.Text != "Set Boot Profile").ToList();
-
-        PrimaryButton.IsVisible = false;
-        SecondaryButton.IsVisible = false;
-
-        if (functions.Count >= 1)
-        {
-            PrimaryButton.IsVisible = true;
-            Action actionOne = functions[0].Action;
-            PrimaryButton.Command = new LambdaCommand(x => actionOne());
-            PrimaryButtonLabel.Content = functions[0].Text;
-        }
         
-        Menu.IsVisible = !(commands.Count == functions.Count && commands.Count <= 2);
+        MenuFlyout flyout = new MenuFlyout();
+        flyout.Items = commands.Select(x => x.ToTemplatedControl()).ToList();
+        MenuButton.Flyout = flyout;
 
-        if (functions.Count >= 2 && !Menu.IsVisible)
-        {
-            SecondaryButton.IsVisible = true;
-            Action actionTwo = functions[1].Action;
-            SecondaryButton.Command = new LambdaCommand(x => actionTwo());
-            SecondaryButtonLabel.Content = functions[1].Text;
-        }
+        SetIconButton(PlayButton, "Launch", commands);
+        SetIconButton(RunningButton, "Running", commands);
+        SetIconButton(InstallButton, "Install", commands);
+        SetIconButton(UpdateButton, "Update", commands);
+        SetIconButton(PauseButton, "Pause", commands);
+        SetIconButton(StopButton, "Stop", commands);
+        SetIconButton(SettingsButton, "Config/Info", commands);
+    }
 
-        commands.ForEach(x =>
-        {
-            if (x.Type == CommandType.Function)
-            {
-                Action originalAction = x.Action;
-                x.Action = () =>
-                {
-                    originalAction?.Invoke();
-                    Menu.Close();
-                };
-            }
-        });
-        MoreMenu.Items = commands.Select(x => x.ToTemplatedControl());
-        Menu.Close();
+    private void SetIconButton(Button button, string target, List<Command> commands)
+    {
+        Command? found = commands.Find(x => x.Text == target);
+        button.IsVisible = found != null;
+        button.Command = found != null ? new LambdaCommand(_ => found.Action?.Invoke()) : null;
     }
     
     public List<Command> GetCommands()

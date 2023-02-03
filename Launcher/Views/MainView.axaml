@@ -5,13 +5,16 @@
              mc:Ignorable="d" d:DesignWidth="800" d:DesignHeight="450"
              x:Class="Launcher.Views.MainView">
     <Panel>
+        <Image Name="Background" Stretch="UniformToFill" />
+        <Rectangle Fill="#A000"></Rectangle>
         <DockPanel>
+            <!--
             <DockPanel DockPanel.Dock="Top" Background="OrangeRed" Height="50">
                 <StackPanel DockPanel.Dock="Left" Orientation="Horizontal" Spacing="10" Name="TopBarLeftSide" Margin="10,0,0,0">
                     <Label VerticalAlignment="Center" Name="GameCountLabel" FontSize="20">Found 6 games, 9 installed</Label>
                 </StackPanel>
                 <StackPanel DockPanel.Dock="Right" Orientation="Horizontal" HorizontalAlignment="Right" Spacing="10" Name="TopBarRightSide" Margin="0,0,10,0">
-                    <TextBox Width="200" Watermark="Search..." Name="SearchBox" VerticalAlignment="Center" />
+                    <TextBox Width="200" Watermark="Search..." VerticalAlignment="Center" />
                     <Menu VerticalAlignment="Center">
                         <MenuItem Header="Boot Profiles" Classes="ButtonLike" Name="ProfileMenu" FontSize="16"  />
                     </Menu>
@@ -20,10 +23,15 @@
                     </Menu>
                 </StackPanel>
             </DockPanel>
+            -->
+            
+            <DockPanel DockPanel.Dock="Left">
+                <ScrollViewer Name="PluginSideBarScroll" VerticalScrollBarVisibility="Hidden" Margin="0,50,0,0">
+                    <StackPanel Name="PluginSideBar" Width="250" />
+                </ScrollViewer>
+            </DockPanel>
             
             <Panel>
-                <Image Name="Background" Stretch="UniformToFill" />
-                <Rectangle Fill="#A000"></Rectangle>
                 <ScrollViewer Margin="10">
                     <StackPanel Name="MainContent" Spacing="10">
                         <StackPanel Orientation="Horizontal" Spacing="10" HorizontalAlignment="Center" Name="InstalledLabel">
@@ -55,6 +63,11 @@
                 </ScrollViewer>
             </Panel>
         </DockPanel>
+        <StackPanel HorizontalAlignment="Left" VerticalAlignment="Top" Orientation="Horizontal" Margin="10" Spacing="5" Width="250">
+            <Button Name="HidePluginSideBar" Width="60" HorizontalContentAlignment="Center">Hide</Button>
+            <TextBox Width="169" Watermark="Search for Games..." Background="#CC000000" Name="SearchBox" />
+        </StackPanel>
+        
         <Panel Name="Overlay" IsVisible="False" />
     </Panel>
 </UserControl>

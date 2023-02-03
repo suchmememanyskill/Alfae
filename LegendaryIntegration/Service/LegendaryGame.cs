@@ -40,6 +40,18 @@ public class LegendaryGame : IGame
     public InstalledStatus InstalledStatus => IsInstalled ? InstalledStatus.Installed : InstalledStatus.NotInstalled;
     public Platform EstimatedGamePlatform => Platform.Windows;
     public ProgressStatus? ProgressStatus => Download;
+
+    public bool FromOrigin
+    {
+        get
+        {
+            if (Metadata?.Metadata?.CustomAttributes?.ContainsKey("ThirdPartyManagedApp") ?? false)
+                return Metadata.Metadata.CustomAttributes["ThirdPartyManagedApp"].Value == "Origin";
+
+            return false;
+        }
+    }
+
     public LegendaryDownload? Download { get; set; }
     public event Action? OnUpdate;
     public void InvokeOnUpdate() => OnUpdate?.Invoke();
@@ -165,6 +177,11 @@ public class LegendaryGame : IGame
     public async Task<LaunchParams?> Launch(bool ignoreUpdate = false)
     {
         Terminal t = new(LegendaryGameSource.Source.App);
+
+        if (FromOrigin)
+        {
+           return new(LegendaryAuth.LegendaryPath, $"launch --origin {InternalName}", ".", this, Platform.Windows);
+        }
 
         if (!IsInstalled)
             throw new Exception("Game is not installed");

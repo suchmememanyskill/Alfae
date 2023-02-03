@@ -14,16 +14,19 @@ namespace Launcher.Views;
 
 public partial class MainView : UserControlExt<MainView>
 {
-    [Binding(nameof(PluginMenu), "Items")] public List<TemplatedControl> MenuItems => GenerateMenuItems();
+    //[Binding(nameof(PluginMenu), "Items")] public List<TemplatedControl> MenuItems => GenerateMenuItems();
 
-    [Binding(nameof(ProfileMenu), "Items")]
+    //[Binding(nameof(ProfileMenu), "Items")]
     public List<TemplatedControl> BootProfileItems =>
         _app.Launcher.BuildCommands().Select(x => x.ToTemplatedControl()).ToList();
+
+    [Binding(nameof(HidePluginSideBar), "Content")]
+    public string HidePluginSideBarLabel => PluginSideBar.IsVisible ? "Hide" : "Show";
 
     [Binding(nameof(DownloadLocationButton), "Content")]
     public string DlText => $"Current download location: {_app.GameDir}";
 
-    [Binding(nameof(GameCountLabel), "Content")]
+    //[Binding(nameof(GameCountLabel), "Content")]
     public string GameCountText => (_app.Games != null) ? $"Found {_app.Games.Count} games, {_app.InstalledGames.Count} installed" : "";
 
     private GameViewSmall _currentSelection;
@@ -33,10 +36,12 @@ public partial class MainView : UserControlExt<MainView>
     {
         InitializeComponent();
         SetControls();
+        PluginSideBar.IsVisible = _app.SidebarState;
         UpdateView();
         InstalledListBox.SelectionChanged += (_, _) => MonitorListBox(InstalledListBox);
         NotInstalledListBox.SelectionChanged += (_, _) => MonitorListBox(NotInstalledListBox);
         SearchBox.KeyUp += (_, _) => ApplySearch();
+        OnUpdateView += GenerateNewMenuItems;
     }
     
     public void ApplySearch()
@@ -128,6 +133,26 @@ public partial class MainView : UserControlExt<MainView>
         return controls;
     }
 
+    private void GenerateNewMenuItems()
+    {
+        PluginSideBar.Children.Clear();
+        var controls = _app.GameSources.Select(x =>
+        {
+            List<Command> pluginCommands = _app.Middleware.GetGlobalCommands(x);
+            return new BoxCommandView($"{x.ServiceName} - {x.Version}", pluginCommands);
+        }).ToList();
+
+        controls.Add(new($"Alfae {Loader.App.Version}", new List<Command>()
+        {
+            new(GameCountText),
+            new("Open configuration folder", () => LauncherGamePlugin.Utils.OpenFolder(_app.ConfigDir)),
+            new("Open games folder", () => LauncherGamePlugin.Utils.OpenFolder(_app.GameDir)),
+            new("Boot Profiles", _app.Launcher.BuildCommands())
+        }));
+        
+        PluginSideBar.Children.AddRange(controls);
+    }
+
     [Command(nameof(DownloadLocationButton))]
     public async void OnDownloadLocationButton()
     {
@@ -138,5 +163,13 @@ public partial class MainView : UserControlExt<MainView>
             _app.GameDir = result;
             UpdateView();
         }
+    }
+
+    [Command(nameof(HidePluginSideBar))]
+    public async void OnHidePluginSideBar()
+    {
+        PluginSideBar.IsVisible = !PluginSideBar.IsVisible;
+        _app.SidebarState = PluginSideBar.IsVisible;
+        UpdateView();
     }
 }

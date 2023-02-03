@@ -4,12 +4,49 @@
              xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006"
              mc:Ignorable="d" d:DesignWidth="800" d:DesignHeight="450"
              x:Class="Launcher.Views.GameViewSmall"
-             Margin="12,9,12,12" Width="200" Height="300" Name="Control">
+             Margin="12,9,12,12" Width="200" Height="300" Name="Control"
+             xmlns:materialIcons="clr-namespace:Material.Icons.Avalonia;assembly=Material.Icons.Avalonia">
     <Panel Width="200" Height="300">
         <Rectangle Fill="OrangeRed" />
         <Image Width="200" Stretch="UniformToFill" Name="CoverImage" />
         <DockPanel>
             <StackPanel DockPanel.Dock="Bottom" Name="BottomPanel">
+                <DockPanel LastChildFill="True">
+                    <StackPanel Orientation="Horizontal" Spacing="5" DockPanel.Dock="Right">
+                        <Button Padding="5,2,5,3" Classes="invisible" Name="SettingsButton" IsVisible="False">
+                            <materialIcons:MaterialIcon Kind="Cog" Height="26" Width="26" />
+                        </Button>
+                        <Button Padding="5,2,5,3" Classes="invisible" Name="MenuButton">
+                            <materialIcons:MaterialIcon Kind="DotsHorizontal" Height="26" Width="26" />
+                        </Button>
+                    </StackPanel>
+                    <StackPanel Orientation="Horizontal" Spacing="5" DockPanel.Dock="Left">
+                        <Button Padding="5,2,5,3" Classes="invisible" Name="PlayButton" IsVisible="False">
+                            <materialIcons:MaterialIcon Kind="Play" Height="26" Width="26" />
+                        </Button>
+                        
+                        <Button Padding="5,2,5,3" Classes="invisible" Name="RunningButton" IsVisible="False">
+                            <materialIcons:MaterialIcon Kind="CheckboxMarkedCircle" Height="26" Width="26" />
+                        </Button>
+                        
+                        <Button Padding="5,2,5,3" Classes="invisible" Name="InstallButton" IsVisible="False">
+                            <materialIcons:MaterialIcon Kind="Download" Height="26" Width="26" />
+                        </Button>
+                        
+                        <Button Padding="5,2,5,3" Classes="invisible" Name="UpdateButton" IsVisible="False">
+                            <materialIcons:MaterialIcon Kind="DownloadMultiple" Height="26" Width="26" />
+                        </Button>
+                
+                        <Button Padding="5,2,5,3" Classes="invisible" Name="PauseButton" IsVisible="False">
+                            <materialIcons:MaterialIcon Kind="Pause" Height="26" Width="26" />
+                        </Button>
+                        
+                        <Button Padding="5,2,5,3" Classes="invisible" Name="StopButton" IsVisible="False">
+                            <materialIcons:MaterialIcon Kind="Stop" Height="26" Width="26" />
+                        </Button>
+                    </StackPanel>
+                </DockPanel>
+                
                 <Label HorizontalAlignment="Center" Name="GameLabel">Game</Label>
                 <Label HorizontalAlignment="Center" Name="SizeLabel">Size</Label>
             </StackPanel>
@@ -18,17 +55,7 @@
                 <Label Name="TopLabel1" HorizontalAlignment="Center" />
                 <Label Name="TopLabel2" HorizontalAlignment="Center" />
             </StackPanel>
-            <StackPanel HorizontalAlignment="Center" VerticalAlignment="Center" Spacing="10" Name="ButtonPanel">
-                <Button FontSize="20" Width="150" Name="PrimaryButton" Classes="darker">
-                    <Label HorizontalAlignment="Center" Name="PrimaryButtonLabel">Play</Label>
-                </Button>
-                <Button FontSize="20" Width="150" Name="SecondaryButton" Classes="darker">
-                    <Label HorizontalAlignment="Center" Name="SecondaryButtonLabel">Play</Label>
-                </Button>
-                <Menu Height="45" Name="Menu" Classes="darker ButtonLike" Padding="0">
-                    <MenuItem Header="More" Classes="CenterAccessText" Background="Transparent" FontSize="20" Width="150" Name="MoreMenu" />
-                </Menu>
-            </StackPanel>
+            <Panel Name="EmptySpace" />
         </DockPanel>
     </Panel>
 </UserControl>

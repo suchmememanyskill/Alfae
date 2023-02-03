@@ -13,6 +13,7 @@ namespace Launcher.Extensions
     public abstract class UserControlExt<T> : UserControl
     {
         private List<BindingAttribute> bindings = new();
+        protected event Action OnUpdateView;
 
         public void Init()
         {
@@ -90,6 +91,10 @@ namespace Launcher.Extensions
             }
         }
 
-        public void UpdateView() => bindings.ForEach(x => x.Set());
+        public void UpdateView()
+        {
+            bindings.ForEach(x => x.Set());
+            OnUpdateView?.Invoke();
+        }
     }
 }
