@@ -13,6 +13,7 @@ public class LaunchParams
     public string WorkingDirectory { get; }
     public Platform Platform { get; }
     public IGame Game { get; }
+    public TimeSpan? ExecutionTime { get; set; }
     public bool UsingListArgs { get; } = false;
 
     private string _args = "";

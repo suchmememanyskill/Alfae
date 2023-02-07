@@ -30,8 +30,9 @@ public abstract class NativeProfile : IBootProfile
         Thread t = new(() =>
         {
             p.WaitForExit();
+            // Until i figure this out, this will stay commented out :(
+            //args.ExecutionTime = p.UserProcessorTime; // TODO: This is a hack but i don't really want to change this event chain right now
             OnGameClose?.Invoke(args);
-            OnGameClose = null;
         });
         t.Start();
     }
