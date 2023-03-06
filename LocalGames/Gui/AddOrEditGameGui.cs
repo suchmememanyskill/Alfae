@@ -17,7 +17,7 @@ public class AddOrEditGameGui
         _instance = instance;
     }
     
-    public void ShowGui(string possibleWarn = "", string gameName = "", string execPath = "", string coverImage = "", string backgroundImage = "", string args = "", LocalGame? game = null)
+    public void ShowGui(string possibleWarn = "", string gameName = "", string execPath = "", string coverImage = "", string backgroundImage = "", string args = "", string workingDirectory = "", LocalGame? game = null)
     {
         string addOrEdit = game == null ? "Add" : "Edit";
 
@@ -37,6 +37,9 @@ public class AddOrEditGameGui
 
             if (args == "")
                 args = game.LaunchArgs ?? "";
+
+            if (workingDirectory == "")
+                workingDirectory = game.WorkingDirectory ?? "";
         }
 
         List<FormEntry> entries = new()
@@ -45,6 +48,7 @@ public class AddOrEditGameGui
             new FormEntry(FormEntryType.TextInput, "Game name:", gameName),
             new FormEntry(FormEntryType.FilePicker, "Game executable:", execPath),
             new FormEntry(FormEntryType.TextBox, "\nOptional", "Bold"),
+            new FormEntry(FormEntryType.FolderPicker, "Working Directory:", workingDirectory),
             new FormEntry(FormEntryType.FilePicker, "Cover Image:", coverImage),
             new FormEntry(FormEntryType.FilePicker, "Background Image:", backgroundImage),
             new FormEntry(FormEntryType.TextInput, "CLI Arguments:", args),
@@ -72,6 +76,7 @@ public class AddOrEditGameGui
         string? coverImage = form.GetValue("Cover Image:");
         string? backgroundImage = form.GetValue("Background Image:");
         string? args = form.GetValue("CLI Arguments:");
+        string? workingDirectory = form.GetValue("Working Directory:")?.Trim();
         string errMessage = "";
         
         if (string.IsNullOrWhiteSpace(gameName))
@@ -89,9 +94,12 @@ public class AddOrEditGameGui
         if (errMessage == "" && coverImage != "" && !File.Exists(backgroundImage))
             errMessage = "Background image path does not exist!";
 
+        if (errMessage == "" && !string.IsNullOrWhiteSpace(workingDirectory) && !Directory.Exists(workingDirectory))
+            errMessage = "Working directory does not exist";
+
         if (errMessage != "")
         {
-            ShowGui(errMessage, gameName, execPath,coverImage, backgroundImage, args, form.Game as LocalGame);
+            ShowGui(errMessage, gameName, execPath,coverImage, backgroundImage, args, workingDirectory, form.Game as LocalGame);
             return;
         }
         
@@ -109,6 +117,7 @@ public class AddOrEditGameGui
 
         localGame.Name = gameName;
         localGame.ExecPath = execPath;
+        localGame.WorkingDirectory = workingDirectory;
         localGame.Size = 0;
         
         try

@@ -11,6 +11,7 @@ public class LocalGame : IGame
     public string InternalName { get; set; }
     public string Name { get; set; }
     public string ExecPath { get; set; }
+    public string WorkingDirectory { get; set; } = "";
     public long? Size { get; set; }
     public string? CoverImagePath { get; set; } = "";
     public string? BackgroundImagePath { get; set; } = "";
@@ -36,7 +37,7 @@ public class LocalGame : IGame
     [JsonIgnore] public InstalledStatus InstalledStatus => InstalledStatus.Installed;
     [JsonIgnore] public Platform EstimatedGamePlatform => ExecPath.EndsWith(".exe") ? Platform.Windows : Platform.Linux;
     [JsonIgnore] public ProgressStatus? ProgressStatus { get; set; }
-    [JsonIgnore] public string InstalledPath => Path.GetDirectoryName(ExecPath);
+    [JsonIgnore] public string InstalledPath => string.IsNullOrWhiteSpace(WorkingDirectory) ? Path.GetDirectoryName(ExecPath) : WorkingDirectory;
     [JsonIgnore] public IGameSource Source { get; set; }
     [JsonIgnore] public bool HasCoverImage => !string.IsNullOrWhiteSpace(CoverImagePath) && File.Exists(CoverImagePath);
     [JsonIgnore] public bool HasBackgroundImage => !string.IsNullOrWhiteSpace(BackgroundImagePath) && File.Exists(BackgroundImagePath);
@@ -46,7 +47,8 @@ public class LocalGame : IGame
 
     public LaunchParams ToExecLaunch()
     {
-        LaunchParams launchParams = new LaunchParams(ExecPath, LaunchArgs, InstalledPath, this);
+        LaunchParams launchParams =
+            new LaunchParams(ExecPath, LaunchArgs, InstalledPath, this);
         return launchParams;
     }
     
