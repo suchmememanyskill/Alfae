@@ -2,6 +2,7 @@
 using LauncherGamePlugin.Commands;
 using LauncherGamePlugin.Enums;
 using LauncherGamePlugin.Extensions;
+using LauncherGamePlugin.Interfaces;
 
 namespace LauncherGamePlugin.Launcher;
 
@@ -19,7 +20,7 @@ public class CustomBootProfile : IBootProfile
     public int CompatibleExecutableInt { get; set; } = 0;
     public bool EscapeReplaceables { get; set; } = false;
     
-    public void Launch(LaunchParams launchParams)
+    public void Launch(LaunchParams launchParams, IApp? app)
     {
         if (launchParams.Platform != CompatibleExecutable)
             throw new Exception("Incompatible profile");
@@ -57,7 +58,7 @@ public class CustomBootProfile : IBootProfile
 
         profile.OnGameLaunch += _ => OnGameLaunch?.Invoke(launchParams);
         profile.OnGameClose += _ => OnGameClose?.Invoke(launchParams);
-        profile.Launch(convertedLaunchParams);
+        profile.Launch(convertedLaunchParams, app);
     }
 
     public event Action<LaunchParams>? OnGameLaunch;

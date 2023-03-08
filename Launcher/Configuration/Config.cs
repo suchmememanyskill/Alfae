@@ -18,6 +18,7 @@ public class Config
     public string WindowsDefaultProfile { get; set; } = "";
     public string LinuxDefaultProfile { get; set; } = "";
     public bool SidebarState { get; set; } = true;
+    public int LogLevel { get; set; } = 1;
 
     public static Config Load(IApp app)
     {

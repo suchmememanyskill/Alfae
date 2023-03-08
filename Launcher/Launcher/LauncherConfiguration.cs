@@ -159,7 +159,7 @@ public class LauncherConfiguration
         
         _activeSessions[launchParams] = (new(), profile);
         
-        profile.Launch(launchParams);
+        profile.Launch(launchParams, _app);
     }
 
     private Dictionary<LaunchParams, (GameSession, IBootProfile)> _activeSessions = new();

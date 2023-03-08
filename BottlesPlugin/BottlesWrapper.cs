@@ -1,4 +1,5 @@
 using LauncherGamePlugin.Enums;
+using LauncherGamePlugin.Interfaces;
 using LauncherGamePlugin.Launcher;
 
 namespace BottlesPlugin;
@@ -16,7 +17,7 @@ public class BottlesWrapper : IBootProfile
         _internalName = internalName;
     }
     
-    public void Launch(LaunchParams launchParams)
+    public void Launch(LaunchParams launchParams, IApp? app)
     {
         // Hack to execute .cmd files in bottles
         if (launchParams.Executable.EndsWith(".cmd"))
@@ -50,7 +51,7 @@ public class BottlesWrapper : IBootProfile
         IBootProfile profile = new NativeLinuxProfile();
         profile.OnGameLaunch += _ => OnGameLaunch?.Invoke(launchParams);
         profile.OnGameClose += _ => OnGameClose?.Invoke(launchParams);
-        profile.Launch(newParams);
+        profile.Launch(newParams, app);
     }
 
     public event Action<LaunchParams>? OnGameLaunch;

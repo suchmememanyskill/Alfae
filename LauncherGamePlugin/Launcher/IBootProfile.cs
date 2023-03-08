@@ -11,7 +11,8 @@ public interface IBootProfile
     public Platform CompatiblePlatform { get; }
     public Platform CompatibleExecutable { get; }
     public List<Command> CustomCommands() => new();
-    public void Launch(LaunchParams launchParams);
+    public void Launch(LaunchParams launchParams) => Launch(launchParams, null);
+    public void Launch(LaunchParams launchParams, IApp? app);
     public List<FormEntry> GameOptions(IGame game) => new();
     public event Action<LaunchParams> OnGameLaunch;
     public event Action<LaunchParams> OnGameClose;

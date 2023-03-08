@@ -69,6 +69,16 @@ public class App : IApp
         }
     }
 
+    public LogType LogLevel
+    {
+        get => (LogType)Config.LogLevel;
+        set
+        {
+            Config.LogLevel = (int)value;
+            Config.Save(this);
+        }
+    }
+
     public bool HeadlessMode { get; set; } = false;
 
     public Logger Logger { get; }
@@ -272,7 +282,7 @@ public class App : IApp
     {
         Middleware = new();
         Config = Config.Load(this);
-        Logger = new(this);
+        Logger = new(this, LogLevel);
         Launcher = new(this);
         Logger.Log($"Launcher {Version}");
         OnPluginInitialised += (g, t) => Logger.Log($"[Plugin loaded] {g.ServiceName} in {t} ms");
