@@ -5,6 +5,7 @@
         mc:Ignorable="d" d:DesignWidth="800" d:DesignHeight="450"
         x:Class="Launcher.MainWindow"
         Title="Launcher"
-        Icon="/Assets/icon.png">
+        Icon="/Assets/icon.png"
+        RequestedThemeVariant="Dark">
     Welcome to Avalonia!
 </Window>

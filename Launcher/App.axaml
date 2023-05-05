@@ -3,7 +3,7 @@
              xmlns:avalonia="clr-namespace:Material.Icons.Avalonia;assembly=Material.Icons.Avalonia"
              x:Class="Launcher.App">
     <Application.Styles>
-        <FluentTheme Mode="Dark"/>
+        <FluentTheme />
         <Style Selector="Label,Button,MenuItem">
             <Setter Property="FontFamily" Value="/Assets/Fonts/Roboto-Regular.ttf"/>
         </Style>

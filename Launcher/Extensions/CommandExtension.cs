@@ -33,7 +33,7 @@ public static class CommandExtension
                 MenuItem root = new()
                 {
                     Header = command.Text,
-                    Items = command.SubCommands.Select(x => x.ToTemplatedControl()).ToList()
+                    ItemsSource = command.SubCommands.Select(x => x.ToTemplatedControl()).ToList()
                 };
                 return root;
             default:

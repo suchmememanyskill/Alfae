@@ -8,6 +8,7 @@ using Avalonia.Input;
 using Avalonia.Layout;
 using Avalonia.Media;
 using Avalonia.Media.Imaging;
+using Avalonia.Skia;
 using Avalonia.Threading;
 using Launcher.Configuration;
 using Launcher.Extensions;
@@ -58,7 +59,7 @@ public partial class GameViewSmall : UserControlExt<GameViewSmall>
 
         _contextMenu.ContextMenuOpening += ((sender, args) =>
         {
-            _contextMenu.Items = GetCommands().Select(x => x.ToTemplatedControl()).ToList();
+            _contextMenu.ItemsSource = GetCommands().Select(x => x.ToTemplatedControl()).ToList();
         });
 
         Control.ContextMenu = _contextMenu;
@@ -161,7 +162,7 @@ public partial class GameViewSmall : UserControlExt<GameViewSmall>
         List<Command> commands = GetCommands();
         
         MenuFlyout flyout = new MenuFlyout();
-        flyout.Items = commands.Select(x => x.ToTemplatedControl()).ToList();
+        flyout.ItemsSource = commands.Select(x => x.ToTemplatedControl()).ToList();
         MenuButton.Flyout = flyout;
 
         SetIconButton(PlayButton, "Launch", commands);
@@ -219,9 +220,10 @@ public partial class GameViewSmall : UserControlExt<GameViewSmall>
 
     private void EffectiveViewportChangedReact(object? obj, EffectiveViewportChangedEventArgs args)
     {
-        if (args.EffectiveViewport.IsEmpty)
+        // TODO: This is fundementally broken
+        if (args.EffectiveViewport.ToSKRect().IsEmpty)
             return;
-        
+
         EffectiveViewportChanged -= EffectiveViewportChangedReact;
         UpdateCoverImage();
     }

@@ -13,7 +13,7 @@ public partial class Dropdown : UserControl
 
     public Dropdown(FormEntry formEntry) : this()
     {
-        ComboBox.Items = formEntry.DropdownOptions;
+        ComboBox.ItemsSource = formEntry.DropdownOptions;
         Label.Content = formEntry.Name;
         int idx = formEntry.DropdownOptions.FindIndex(x => x == formEntry.Value);
         if (idx < 0)
