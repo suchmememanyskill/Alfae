@@ -220,8 +220,8 @@ public partial class GameViewSmall : UserControlExt<GameViewSmall>
 
     private void EffectiveViewportChangedReact(object? obj, EffectiveViewportChangedEventArgs args)
     {
-        // TODO: This is fundementally broken
-        if (args.EffectiveViewport.ToSKRect().IsEmpty)
+        Debug.WriteLine($"{args.EffectiveViewport.Width} {args.EffectiveViewport.Height}");
+        if (args.EffectiveViewport.Width == 0 && args.EffectiveViewport.Height == 0)
             return;
 
         EffectiveViewportChanged -= EffectiveViewportChangedReact;
