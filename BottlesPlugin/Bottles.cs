@@ -48,15 +48,26 @@ public class Bottles : IGameSource
             _message = "Flatpak is not installed";
             return;
         }
-
+        
+        /*
         if (t.ExitCode != 0)
         {
             _message = "Couldn't read bottles";
             return;
         }
-
-        Dictionary<string, Bottle> bottles =
-            JsonConvert.DeserializeObject<Dictionary<string, Bottle>>(t.StdOut.First())!;
+        */
+        
+        Dictionary<string, Bottle> bottles;
+        
+        try 
+        {
+            bottles = JsonConvert.DeserializeObject<Dictionary<string, Bottle>>(t.StdOut.First())!;
+        }
+        catch 
+        {
+            _message = "Couldn't read bottles";
+            return;     
+        }
         
         foreach (var (key, value) in bottles)
         {

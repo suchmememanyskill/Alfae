@@ -1,5 +1,7 @@
 ﻿using System.Diagnostics;
+using System.Drawing;
 using LauncherGamePlugin.Enums;
+using LauncherGamePlugin.Interfaces;
 
 namespace LauncherGamePlugin.Launcher;
 
@@ -9,7 +11,7 @@ public abstract class NativeProfile : IBootProfile
     public Platform CompatiblePlatform { get; protected set; }
     public Platform CompatibleExecutable { get; protected set; }
 
-    public void Launch(LaunchParams args)
+    public void Launch(LaunchParams args, IApp? app)
     {
         Process p = new Process();
 
@@ -23,6 +25,11 @@ public abstract class NativeProfile : IBootProfile
             args.ListArguments.ForEach(x => p.StartInfo.ArgumentList.Add(x));
         else
             p.StartInfo.Arguments = args.Arguments;
+
+        string envStr = string.Join(" ", args.EnvironmentOverrides.Select(x => $"{x.Key}=\"{x.Value}\""));
+        string argsStr = (args.UsingListArgs) ? (args.ListArguments.Count > 0 ? $"[\"{string.Join("\",\"", args.ListArguments)}\"]" : "[]") : args.Arguments;
+
+        app?.Logger?.Log($"Starting NativeProfile @ {args.WorkingDirectory}> {envStr} {args.Executable} {argsStr}", LogType.Debug, "NativeProfile");
         
         p.Start();
         OnGameLaunch?.Invoke(args);

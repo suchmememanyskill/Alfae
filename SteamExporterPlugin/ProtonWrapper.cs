@@ -11,7 +11,8 @@ public class ProtonWrapper : IBootProfile
     public string Name { get; }
     public Platform CompatiblePlatform => Platform.Linux;
     public Platform CompatibleExecutable => Platform.Windows;
-    public void Launch(LaunchParams launchParams)
+
+    public void Launch(LaunchParams launchParams, IApp? app)
     {
         GameConfig config = _exporter.Config.GetConfigForGame(launchParams.Game);
         
@@ -33,7 +34,7 @@ public class ProtonWrapper : IBootProfile
         IBootProfile profile = new NativeLinuxProfile();
         profile.OnGameLaunch += _ => OnGameLaunch?.Invoke(launchParams);
         profile.OnGameClose += _ => OnGameClose?.Invoke(launchParams);
-        profile.Launch(wrapper);
+        profile.Launch(wrapper, app);
     }
 
     private string _dirPath;
