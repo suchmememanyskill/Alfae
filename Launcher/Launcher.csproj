@@ -5,7 +5,7 @@
     <Nullable>enable</Nullable>
     <TrimMode>link</TrimMode>
     <PackageVersion>1.0.0</PackageVersion>
-    <AssemblyVersion>1.4.0</AssemblyVersion>
+    <AssemblyVersion>1.4.1</AssemblyVersion>
     <AssemblyName>Alfae</AssemblyName>
     <ApplicationIcon>Assets\icon.ico</ApplicationIcon>
   </PropertyGroup>
