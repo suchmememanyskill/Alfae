@@ -25,6 +25,10 @@
                             <materialIcons:MaterialIcon Kind="Play" Height="26" Width="26" />
                         </Button>
                         
+                        <Button Padding="5,2,5,3" Classes="invisible" Name="ContinueButton" IsVisible="False">
+                            <materialIcons:MaterialIcon Kind="PlaySpeed" Height="26" Width="26" />
+                        </Button>
+                        
                         <Button Padding="5,2,5,3" Classes="invisible" Name="RunningButton" IsVisible="False">
                             <materialIcons:MaterialIcon Kind="CheckboxMarkedCircle" Height="26" Width="26" />
                         </Button>

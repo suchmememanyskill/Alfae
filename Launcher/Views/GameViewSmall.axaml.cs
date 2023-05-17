@@ -172,6 +172,7 @@ public partial class GameViewSmall : UserControlExt<GameViewSmall>
         SetIconButton(PauseButton, "Pause", commands);
         SetIconButton(StopButton, "Stop", commands);
         SetIconButton(SettingsButton, "Config/Info", commands);
+        SetIconButton(ContinueButton, "Continue", commands);
     }
 
     private void SetIconButton(Button button, string target, List<Command> commands)
