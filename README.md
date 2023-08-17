@@ -5,6 +5,8 @@
 [![Version](https://img.shields.io/github/v/release/suchmememanyskill/Alfae)](https://github.com/suchmememanyskill/Alfae/releases)
 [![Donations](https://img.shields.io/badge/Support%20on-Ko--Fi-red)](https://ko-fi.com/suchmememanyskill)
 
+![preview](./preview.jpg)
+
 This launcher supports both linux and windows. Windows games on linux are configured trough 'Boot Profiles'
 
 Bundled plugins:
