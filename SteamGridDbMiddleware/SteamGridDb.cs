@@ -141,7 +141,7 @@ public class SteamGridDb : IGameSource
             if (type == ImageType.Background)
                 return ((await Api.GetHeroesForGameAsync(game,
                         dimensions: SteamGridDbDimensions.W1920H620 | SteamGridDbDimensions.W3840H1240,
-                        types: SteamGridDbTypes.Static))?.ToList() ?? new())
+                        types: SteamGridDbTypes.Static, styles: SteamGridDbStyles.AllHeroes))?.ToList() ?? new())
                     .Select(x => new Override(x.FullImageUrl, x.Id, x.Author.Name)).ToList();
 
             if (type == ImageType.Logo)

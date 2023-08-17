@@ -57,7 +57,7 @@ public partial class GameViewSmall : UserControlExt<GameViewSmall>
         game.OnUpdate += OnUpdateWrapper;
         EffectiveViewportChanged += EffectiveViewportChangedReact;
 
-        _contextMenu.ContextMenuOpening += ((sender, args) =>
+        _contextMenu.Opening += ((sender, args) =>
         {
             _contextMenu.ItemsSource = GetCommands().Select(x => x.ToTemplatedControl()).ToList();
         });
