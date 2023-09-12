@@ -15,6 +15,7 @@ public partial class Toggle : UserControl
     {
         ToggleSwitch.OffContent = entry.Name;
         ToggleSwitch.OnContent = entry.Name;
+        ToggleSwitch.IsEnabled = entry.Enabled;
         ToggleSwitch.IsChecked = int.Parse(entry.Value) != 0;
         ToggleSwitch.Checked += (_, _) =>
         {

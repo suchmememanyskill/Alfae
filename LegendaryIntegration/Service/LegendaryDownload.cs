@@ -23,14 +23,22 @@ public class LegendaryDownload : ProgressStatus
     private string _path;
     private string _line1 = "";
     private string _line2 = "";
+    private List<string> _tags;
 
     public override string Line1 => _line1;
     public override string Line2 => _line2;
 
-    public LegendaryDownload(LegendaryGame game, LegendaryStatusType type, string? path = null)
+    public LegendaryDownload(LegendaryGame game, LegendaryStatusType type, string? path = null, List<string>? tags = null)
     {
         Game = game;
         Type = type;
+        _tags = tags ?? new();
+
+        if (_tags.Count > 0)
+        {
+            _tags.Add("");
+        }
+        
         if (Game.Download != null)
             throw new Exception("Game already has a download active");
 
@@ -137,12 +145,13 @@ public class LegendaryDownload : ProgressStatus
             
             return;
         }
-        
+
+        string tags = string.Join(" ", _tags.Select(x => $"--install-tag \"{x}\""));
         
         if (Type == LegendaryStatusType.Repair)
             await _terminal.ExecLegendary($"-y repair {Game.InternalName}");
         else
-            await _terminal.ExecLegendary($"-y install {Game.InternalName} --skip-sdl --game-folder \"{_path}\"");
+            await _terminal.ExecLegendary($"-y install {Game.InternalName} --skip-sdl --game-folder \"{_path}\" {tags}");
         if (!_terminal.Killed)
             OnCompletionOrCancel?.Invoke(this);
     }

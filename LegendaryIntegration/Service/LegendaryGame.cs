@@ -148,13 +148,13 @@ public class LegendaryGame : IGame
         return localInfo;
     }
 
-    public async Task StartDownload(LegendaryStatusType type = LegendaryStatusType.Download, string? path = null)
+    public async Task StartDownload(LegendaryStatusType type = LegendaryStatusType.Download, string? path = null, List<string>? tags = null)
     {
         await GetInfo();
         
         try
         {
-            ReattachDownload(new(this, type, path));
+            ReattachDownload(new(this, type, path, tags));
             Parser.AddDownload(Download!);
         }
         catch

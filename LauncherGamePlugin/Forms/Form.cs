@@ -55,8 +55,8 @@ public class Form
         FormAlignment alignment = FormAlignment.Default, string fontWeight = "")
         => new(FormEntryType.ClickableLinkBox, text, alignment: alignment, linkClick: x => action(x.ContainingForm), value: fontWeight);
 
-    public static FormEntry Toggle(string label, bool value, FormAlignment alignment = FormAlignment.Default)
-        => new(FormEntryType.Toggle, label, value ? "1" : "0", alignment: alignment);
+    public static FormEntry Toggle(string label, bool value, FormAlignment alignment = FormAlignment.Default, bool enabled = true)
+        => new(FormEntryType.Toggle, label, value ? "1" : "0", alignment: alignment, enabled: enabled);
 
     public static FormEntry FilePicker(string label, string value = "")
         => new(FormEntryType.FilePicker, label, value);

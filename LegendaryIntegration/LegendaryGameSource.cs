@@ -5,7 +5,9 @@ using LauncherGamePlugin.Interfaces;
 using LauncherGamePlugin.Launcher;
 using LegendaryIntegration.Extensions;
 using LegendaryIntegration.Gui;
+using LegendaryIntegration.Model;
 using LegendaryIntegration.Service;
+using Newtonsoft.Json;
 
 namespace LegendaryIntegration;
 
@@ -211,9 +213,65 @@ public class LegendaryGameSource : IGameSource
         App.HideForm();
     }
 
+    public async Task<string> UrlGet(string url)
+    {
+        using (HttpClient client = new())
+        {
+            return await client.GetStringAsync(url);
+        }
+    }
+
+    private Dictionary<string, string> _sdl_games = new()
+    {
+        { "Fortnite", "https://legendary.gl/v1/sdl/Fortnite.json" },
+        { "Ginger", "https://legendary.gl/v1/sdl/Ginger.json" }
+    };
+
     public async void Download(LegendaryGame game)
     {
+        if (_sdl_games.ContainsKey(game.InternalName))
+        {
+            string data = await UrlGet(_sdl_games[game.InternalName]);
+            Dictionary<string, LegendaryTags> tags =
+                JsonConvert.DeserializeObject<Dictionary<string, LegendaryTags>>(data)!;
+
+            List<FormEntry> entries = new()
+            {
+                Form.TextBox($"{game.Name} Optional Content", FormAlignment.Center, "Bold")
+            };
+
+            foreach (var x in tags)
+            {
+                entries.Add(Form.Toggle(x.Value.Name, x.Key == "__required", enabled: x.Key != "__required"));
+            }
+            
+            entries.Add(Form.Button("Back", _ => App.HideForm(), "Install", x =>
+            {
+                App.HideForm();
+                DownloadSDL(x, tags, game);
+            }));
+            App.ShowForm(new(entries));
+            return;
+        }
+        
         await game.StartDownload();
+        game.Download!.OnCompletionOrCancel += _ => App.ReloadGames();
+    }
+
+    public async void DownloadSDL(Form form, Dictionary<string, LegendaryTags> tags, LegendaryGame game)
+    {
+        List<string> installTags = new();
+
+        foreach (var x in tags)
+        {
+            string value = form.GetValue(x.Value.Name)!;
+            if (value == "1")
+            {
+                installTags.AddRange(x.Value.Tags);
+            }
+        }
+        
+        await game.StartDownload(tags: installTags);
         game.Download!.OnCompletionOrCancel += _ => App.ReloadGames();
     }
 

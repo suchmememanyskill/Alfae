@@ -39,6 +39,7 @@ public class FormEntry
 {
     public string Name { get; set; }
     public string Value { get; set; }
+    public bool Enabled { get; set; }
     public FormEntryType Type { get; set; }
     public Action<FormEntry> LinkClick { get; set; }
     public List<string> DropdownOptions { get; set; }
@@ -51,11 +52,12 @@ public class FormEntry
     public void InvokeOnChange() => OnChange?.Invoke(this);
     
     public FormEntry(FormEntryType type, string name = "", string value = "", List<string> dropdownOptions = null,
-        List<ButtonEntry> buttonList = null, Action<FormEntry> linkClick = null, Func<Task<byte[]?>> image = null, List<FormEntry> horizontalPanel = null, FormAlignment alignment = FormAlignment.Default)
+        List<ButtonEntry> buttonList = null, Action<FormEntry> linkClick = null, Func<Task<byte[]?>> image = null, List<FormEntry> horizontalPanel = null, FormAlignment alignment = FormAlignment.Default, bool enabled = true)
     {
         Type = type;
         Name = name;
         Value = value;
+        Enabled = enabled;
         DropdownOptions = dropdownOptions;
         ButtonList = buttonList;
         LinkClick = linkClick;
