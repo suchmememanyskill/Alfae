@@ -131,6 +131,7 @@ public class LegendaryGameSource : IGameSource
             commands.Add(new($"Logged in as {auth.StatusResponse.AccountName}"));
             if (auth.OfflineLogin)
                 commands.Add(new("Started in offline mode"));
+            commands.Add(new($"Loaded {manager?.LastGameCount ?? 0} games"));
         }
         
         commands.Add(new());
@@ -229,7 +230,7 @@ public class LegendaryGameSource : IGameSource
 
     public async void Download(LegendaryGame game)
     {
-        if (_sdl_games.ContainsKey(game.InternalName))
+        if (_sdl_games.ContainsKey(game.InternalName) && !game.IsInstalled)
         {
             string data = await UrlGet(_sdl_games[game.InternalName]);
             Dictionary<string, LegendaryTags> tags =

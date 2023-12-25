@@ -10,6 +10,7 @@ public class LegendaryGameManager
     public LegendaryAuth Auth { get; private set; }
     public Config Config => _storage.Data;
     private readonly Storage<Config> _storage;
+    public int LastGameCount { get; private set; }
 
     public LegendaryGameManager(LegendaryAuth auth, IApp app)
     {
@@ -73,6 +74,7 @@ public class LegendaryGameManager
                 games.RemoveAll(x => !x.IsInstalled);
             
             games = games.OrderBy(x => x.Name).ToList();
+            LastGameCount = games.Count;
             _downloads.ForEach(x => games.Find(y => y.InternalName == x.Game.InternalName)?.ReattachDownload(x));
             return games;
         }
