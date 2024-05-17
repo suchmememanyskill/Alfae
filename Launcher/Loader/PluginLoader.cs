@@ -19,7 +19,7 @@ public static class PluginLoader
                 File.ReadAllLines(Path.GetFullPath(Path.Join(path, "..", "..", "..", "..", "..", "Plugins.txt")))
                     .Select(x => x.Trim())
                     .Where(x => !string.IsNullOrWhiteSpace(x))
-                    .Select(x => Path.GetFullPath(Path.Join(path, "..", "..", "..", "..", "..", x, "bin", "Debug", "net7.0", $"{x}.dll"))));
+                    .Select(x => Path.GetFullPath(Path.Join(path, "..", "..", "..", "..", "..", x, "bin", "Debug", "net8.0", $"{x}.dll"))));
         #endif
         
         if (!Directory.Exists(path))

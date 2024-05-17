@@ -6,6 +6,7 @@ using LauncherGamePlugin.Commands;
 using LauncherGamePlugin.Enums;
 using LauncherGamePlugin.Forms;
 using LauncherGamePlugin.Interfaces;
+using LauncherGamePlugin.Launcher;
 using Newtonsoft.Json;
 
 namespace GogIntegration;
@@ -16,6 +17,7 @@ public class GogIntegration : IGameSource
     public string Version => "v1.1.4";
     public string SlugServiceName => "gog-integration";
     public string ShortServiceName => "GOG";
+    public PluginType Type => PluginType.GameSource;
 
     public IApp App { get; private set; }
     public Config Config => _storage.Data;

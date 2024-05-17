@@ -99,7 +99,7 @@ public class App : IApp
 
     public event Action<IGameSource, long> OnPluginInitialised; 
 
-    private async Task<IGameSource> InitialiseService(IGameSource source)
+    private async Task<IGameSource> InitializeService(IGameSource source)
     {
         Stopwatch stopwatch = new();
         stopwatch.Start();
@@ -113,7 +113,7 @@ public class App : IApp
         return source;
     }
     
-    public async Task InitializeGameSources()
+    public async Task InitializeGameSources(Func<IGameSource, bool>? loadPlugin = null)
     {
         if (_initialised)
             return;
@@ -122,8 +122,14 @@ public class App : IApp
         List<Task<IGameSource>> tasks = new();
         sources.ForEach(x =>
         {
-            Logger.Log($"Initialising {x.ServiceName}...");
-            tasks.Add(InitialiseService(x));
+            if (loadPlugin != null && !loadPlugin(x))
+            {
+                Logger.Log($"Skipping load for service {x.ServiceName}...");
+                return;
+            }
+            
+            Logger.Log($"Initialising service {x.ServiceName}...");
+            tasks.Add(InitializeService(x));
         });
 
         while (true)

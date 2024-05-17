@@ -16,6 +16,7 @@ public class ItchGameSource : IGameSource
     public string Version => "v1.1.6";
     public string SlugServiceName => "itch-io";
     public string ShortServiceName => "Itch.io";
+    public PluginType Type => PluginType.GameSource;
 
     private Config Config => _storage.Data;
     private Storage<Config> _storage;

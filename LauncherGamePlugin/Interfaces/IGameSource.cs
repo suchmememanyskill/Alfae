@@ -1,4 +1,5 @@
 ﻿using LauncherGamePlugin.Commands;
+using LauncherGamePlugin.Enums;
 using LauncherGamePlugin.Launcher;
 
 namespace LauncherGamePlugin.Interfaces;
@@ -9,6 +10,7 @@ public interface IGameSource
     string Version { get; }
     string SlugServiceName { get; }
     string ShortServiceName { get; }
+    PluginType Type { get; }
 
     public Task<InitResult?> Initialize(IApp app);
     public async Task<List<IBootProfile>> GetBootProfiles() => new();

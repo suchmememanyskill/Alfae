@@ -6,6 +6,7 @@ using System.Threading;
 using Avalonia;
 using LauncherGamePlugin;
 using LauncherGamePlugin.Commands;
+using LauncherGamePlugin.Enums;
 using LauncherGamePlugin.Extensions;
 using LauncherGamePlugin.Forms;
 using LauncherGamePlugin.Interfaces;
@@ -20,6 +21,7 @@ namespace Launcher
         [STAThread]
         public static void Main(string[] args)
         {
+            args = new[] { "epic-games", "Salt", "Launch" };
             AppDomain.CurrentDomain.UnhandledException += OnUnhandledException;
             
             if (args.Length <= 2)
@@ -32,7 +34,7 @@ namespace Launcher
         {
             Loader.App app = Loader.App.GetInstance();
             app.HeadlessMode = true;
-            app.InitializeGameSources().GetAwaiter().GetResult();
+            app.InitializeGameSources(gameSource => gameSource.Type != PluginType.GameSource || gameSource.SlugServiceName == args[0]).GetAwaiter().GetResult();
             List<IGame> allGames = app.GetGames().GetAwaiter().GetResult();
             IGame? target = allGames.Find(x => x.Source.SlugServiceName == args[0] && x.InternalName == args[1]);
             if (target == null)

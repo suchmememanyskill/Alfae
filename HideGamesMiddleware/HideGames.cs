@@ -1,5 +1,6 @@
 ﻿using LauncherGamePlugin;
 using LauncherGamePlugin.Commands;
+using LauncherGamePlugin.Enums;
 using LauncherGamePlugin.Interfaces;
 
 namespace HideGamesMiddleware;
@@ -12,6 +13,8 @@ public class HideGames : IGameSource
     public string ShortServiceName => SlugServiceName;
     public Storage<Store> Storage { get; set; }
     public IApp App { get; set; }
+    public PluginType Type => PluginType.Middleware;
+    
     public async Task<InitResult?> Initialize(IApp app)
     {
         Storage = new(app, "hidegames.json");

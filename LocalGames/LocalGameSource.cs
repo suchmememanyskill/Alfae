@@ -17,6 +17,7 @@ public class LocalGameSource : IGameSource
     public string ShortServiceName => "Local";
     public string Version => "v2.0.1";
     public string SlugServiceName => "local-games";
+    public PluginType Type => PluginType.GameSource;
 
     private IApp _app;
     public List<LocalGame> Games => _storage.Data.LocalGames;

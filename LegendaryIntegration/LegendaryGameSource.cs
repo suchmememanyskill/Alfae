@@ -1,5 +1,6 @@
 ﻿using LauncherGamePlugin;
 using LauncherGamePlugin.Commands;
+using LauncherGamePlugin.Enums;
 using LauncherGamePlugin.Forms;
 using LauncherGamePlugin.Interfaces;
 using LauncherGamePlugin.Launcher;
@@ -18,6 +19,7 @@ public class LegendaryGameSource : IGameSource
     public string Version => "v1.2.4";
     public string SlugServiceName => "epic-games";
     public string ShortServiceName => "EpicGames";
+    public PluginType Type => PluginType.GameSource;
     public LegendaryAuth? auth;
     public LegendaryGameManager? manager;
     public static LegendaryGameSource Source { get; private set; }

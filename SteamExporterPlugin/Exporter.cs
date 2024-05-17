@@ -16,6 +16,8 @@ public class Exporter : IGameSource
     public string Version => "v1.2.7";
     public string SlugServiceName => "steam-exporter";
     public string ShortServiceName => "Steam";
+    public PluginType Type => PluginType.BootProfile;
+    
     public IApp? App { get; private set; }
     private bool _initialised = false;
     private ProtonManager? _protonManager;

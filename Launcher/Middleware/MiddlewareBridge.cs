@@ -2,6 +2,7 @@
 using System.Threading.Tasks;
 using LauncherGamePlugin;
 using LauncherGamePlugin.Commands;
+using LauncherGamePlugin.Enums;
 using LauncherGamePlugin.Interfaces;
 using LauncherGamePlugin.Launcher;
 
@@ -12,6 +13,7 @@ public class MiddlewareBridge : IGameSource
     public IGameSource Service { get; set; }
     public IServiceMiddleware? NextMiddleware { get; set; }
     public MiddlewareBridge? NextBridge { get; set; }
+    public PluginType Type => PluginType.Middleware;
 
     public MiddlewareBridge(IGameSource service, IServiceMiddleware? nextMiddleware, MiddlewareBridge? nextBridge)
     {

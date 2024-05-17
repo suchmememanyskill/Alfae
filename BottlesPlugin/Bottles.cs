@@ -15,6 +15,8 @@ public class Bottles : IGameSource
     public string Version => "v1.0.8";
     public string SlugServiceName => "bottles";
     public string ShortServiceName => "bottles";
+    public PluginType Type => PluginType.BootProfile;
+    
     private string _message = "";
     private List<BottlesWrapper> _wrappers = new();
     private List<BottlesProgram> _games = new();

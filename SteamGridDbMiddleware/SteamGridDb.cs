@@ -15,6 +15,8 @@ public class SteamGridDb : IGameSource
     public string Version => "v1.2.2";
     public string SlugServiceName => "steam-grid-db";
     public string ShortServiceName => "steamgriddb";
+    public PluginType Type => PluginType.Middleware;
+    
     public IApp App { get; set; }
     public craftersmine.SteamGridDBNet.SteamGridDb? Api { get; set; }
     public Storage<Store> Storage { get; set; }

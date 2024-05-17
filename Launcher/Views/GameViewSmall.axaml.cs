@@ -197,7 +197,7 @@ public partial class GameViewSmall : UserControlExt<GameViewSmall>
                 GameSession total = config.GetTotalTime();
                 if (total.TimeSpent.TotalSeconds > 0)
                 {
-                    string time = total.TimeSpent.ToString(@"hh\:mm");
+                    string time = total.TimeSpent.ToString(@"hh\hmm\m");
                     commands.Add(new($"Played for {time}"));
                 }
             }
