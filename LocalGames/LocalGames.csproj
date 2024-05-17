@@ -1,7 +1,7 @@
 <Project Sdk="Microsoft.NET.Sdk">
 
     <PropertyGroup>
-        <TargetFramework>net7.0</TargetFramework>
+        <TargetFramework>net8.0</TargetFramework>
         <ImplicitUsings>enable</ImplicitUsings>
         <Nullable>enable</Nullable>
         <EnableDynamicLoading>true</EnableDynamicLoading>
@@ -15,6 +15,6 @@
     </ItemGroup>
 
     <ItemGroup>
-      <PackageReference Include="Lnk" Version="1.3.2.5" />
+      <PackageReference Include="Lnk" Version="1.3.8" />
     </ItemGroup>
 </Project>
