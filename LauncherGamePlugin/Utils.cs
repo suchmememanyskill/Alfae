@@ -191,4 +191,13 @@ public static class Utils
             return combinations.FirstOrDefault(File.Exists);
         }
     }
+
+    public static Platform GuessPlatformBasedOnString(string? path)
+    {
+        if (path == null)
+            return Platform.Unknown;
+        
+        List<string> windowsFileExt = [".exe", ".bat", ".msi", ".cmd"];
+        return windowsFileExt.Any(path.EndsWith) ? Platform.Windows : Platform.Linux;
+    }
 }

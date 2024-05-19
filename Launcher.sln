@@ -25,6 +25,8 @@ Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "SteamGridDbMiddleware", "St
 EndProject
 Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "HideGamesMiddleware", "HideGamesMiddleware\HideGamesMiddleware.csproj", "{35AB17CA-C0D8-4112-B78D-0DCC9DB70435}"
 EndProject
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "RemoteDownloaderPlugin", "RemoteDownloaderPlugin\RemoteDownloaderPlugin.csproj", "{068D7641-F9EA-40D3-B313-3FBCD09E71F5}"
+EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution
 		Debug|Any CPU = Debug|Any CPU
@@ -75,6 +77,10 @@ Global
 		{35AB17CA-C0D8-4112-B78D-0DCC9DB70435}.Debug|Any CPU.Build.0 = Debug|Any CPU
 		{35AB17CA-C0D8-4112-B78D-0DCC9DB70435}.Release|Any CPU.ActiveCfg = Release|Any CPU
 		{35AB17CA-C0D8-4112-B78D-0DCC9DB70435}.Release|Any CPU.Build.0 = Release|Any CPU
+		{068D7641-F9EA-40D3-B313-3FBCD09E71F5}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{068D7641-F9EA-40D3-B313-3FBCD09E71F5}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{068D7641-F9EA-40D3-B313-3FBCD09E71F5}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{068D7641-F9EA-40D3-B313-3FBCD09E71F5}.Release|Any CPU.Build.0 = Release|Any CPU
 	EndGlobalSection
 	GlobalSection(SolutionProperties) = preSolution
 		HideSolutionNode = FALSE

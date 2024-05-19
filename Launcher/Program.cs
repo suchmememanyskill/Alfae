@@ -21,7 +21,6 @@ namespace Launcher
         [STAThread]
         public static void Main(string[] args)
         {
-            args = new[] { "epic-games", "Salt", "Launch" };
             AppDomain.CurrentDomain.UnhandledException += OnUnhandledException;
             
             if (args.Length <= 2)
