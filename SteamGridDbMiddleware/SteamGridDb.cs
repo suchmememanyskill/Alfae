@@ -12,7 +12,7 @@ namespace SteamGridDbMiddleware;
 public class SteamGridDb : IGameSource
 {
     public string ServiceName => "SteamGridDb";
-    public string Version => "v1.2.2";
+    public string Version => "v1.2.3";
     public string SlugServiceName => "steam-grid-db";
     public string ShortServiceName => "steamgriddb";
     public PluginType Type => PluginType.Middleware;

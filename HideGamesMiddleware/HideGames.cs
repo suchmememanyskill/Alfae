@@ -8,7 +8,7 @@ namespace HideGamesMiddleware;
 public class HideGames : IGameSource
 {
     public string ServiceName => "Hide Games";
-    public string Version => "v1.0.0";
+    public string Version => "v1.0.1";
     public string SlugServiceName => "hide-games";
     public string ShortServiceName => SlugServiceName;
     public Storage<Store> Storage { get; set; }

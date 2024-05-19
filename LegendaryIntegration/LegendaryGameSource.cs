@@ -16,7 +16,7 @@ namespace LegendaryIntegration;
 public class LegendaryGameSource : IGameSource
 {
     public string ServiceName => "Epic Games Integration";
-    public string Version => "v1.2.4";
+    public string Version => "v1.2.5";
     public string SlugServiceName => "epic-games";
     public string ShortServiceName => "EpicGames";
     public PluginType Type => PluginType.GameSource;

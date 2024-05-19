@@ -13,7 +13,7 @@ namespace ItchIoIntegration;
 public class ItchGameSource : IGameSource
 {
     public string ServiceName => "Itch.io Integration";
-    public string Version => "v1.1.6";
+    public string Version => "v1.1.7";
     public string SlugServiceName => "itch-io";
     public string ShortServiceName => "Itch.io";
     public PluginType Type => PluginType.GameSource;
