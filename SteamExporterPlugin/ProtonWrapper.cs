@@ -79,6 +79,7 @@ public class ProtonWrapper : IBootProfile
     {
         string homeFolder = Environment.GetFolderPath(Environment.SpecialFolder.UserProfile);
         string prefixBaseFolder = Path.Join(homeFolder, ".proton_alfae");
+        string defaultString = $"default_{Name.Replace(" ", "_")}";
 
         if (!Directory.Exists(prefixBaseFolder))
             Directory.CreateDirectory(prefixBaseFolder);
@@ -87,7 +88,11 @@ public class ProtonWrapper : IBootProfile
         if (Directory.Exists(Path.Join(homeFolder, ".proton_launcher")) && !Directory.Exists(Path.Join(prefixBaseFolder, "default")))
             Directory.Move(Path.Join(homeFolder, ".proton_launcher"), Path.Join(prefixBaseFolder, "default"));
         
-        string prefixFolder = Path.Join(prefixBaseFolder, (config.SeparateProtonPath) ? $"{game.Source.SlugServiceName}.{game.InternalName}" : "default");
+        // To keep compatibility with Alfae <= 1.4.3
+        if (Directory.Exists(Path.Join(prefixBaseFolder, "default")))
+            Directory.Move(Path.Join(prefixBaseFolder, "default"), Path.Join(prefixBaseFolder, defaultString));
+        
+        string prefixFolder = Path.Join(prefixBaseFolder, (config.SeparateProtonPath) ? $"{game.Source.SlugServiceName}.{game.InternalName}" : defaultString);
         
         if (!Directory.Exists(prefixFolder))
             Directory.CreateDirectory(prefixFolder);
