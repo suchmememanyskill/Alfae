@@ -50,5 +50,6 @@ public class Store
     public List<InstalledEmuGame> EmuGames { get; set; } = new();
     public List<InstalledPcGame> PcGames { get; set; } = new();
     public List<EmuProfile> EmuProfiles { get; set; } = new();
+    public List<string> HiddenRemotePlatforms { get; set; } = new();
     public string IndexUrl { get; set; } = "";
 }

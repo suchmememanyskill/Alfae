@@ -22,6 +22,7 @@ public class Plugin : IGameSource
 
     private Remote _cachedRemote = new();
     private List<OnlineGame> _onlineGames = new();
+    private List<string> _platforms = new();
     
     public async Task<InitResult?> Initialize(IApp app)
     {
@@ -78,7 +79,7 @@ public class Plugin : IGameSource
 
         List<string> installedIds = installedGames.Select(x => x.Game.Id).ToList();
 
-        return _onlineGames.Where(x => !installedIds.Contains(x.Entry.GameId))
+        return _onlineGames.Where(x => !(installedIds.Contains(x.Entry.GameId) || Storage.Data.HiddenRemotePlatforms.Contains(x.Platform)))
             .Select(x => (IGame)x)
             .Concat(installedGames.Select(x => (IGame)x))
             .ToList();
@@ -97,6 +98,8 @@ public class Plugin : IGameSource
             
             _onlineGames = _cachedRemote.Emu.Select(x => new OnlineGame(x, this))
                 .Concat(_cachedRemote.Pc.Select(x => new OnlineGame(x, this))).ToList();
+
+            _platforms = _onlineGames.Select(x => x.Platform).Distinct().ToList();
             
             return true;
         }
@@ -129,7 +132,18 @@ public class Plugin : IGameSource
                                 App.ReloadGlobalCommands();
                                 App.HideForm();
                             }, _ => App.HideForm());
-                    })).ToList())
+                    })).ToList()),
+            new Command("Hide Platforms", _platforms.Select(x => 
+                new Command(Storage.Data.HiddenRemotePlatforms.Contains(x) ? $"Show {x}" : $"Hide {x}", () =>
+                {
+                    if (!Storage.Data.HiddenRemotePlatforms.Remove(x))
+                    {
+                        Storage.Data.HiddenRemotePlatforms.Add(x);
+                    }
+
+                    Storage.Save();
+                    App.ReloadGames();
+                })).ToList())
         };
         
         return commands;

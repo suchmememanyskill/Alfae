@@ -46,6 +46,7 @@ public partial class GameViewSmall : UserControlExt<GameViewSmall>
     public GameViewSmall()
     {
         InitializeComponent();
+        OnUpdateView += () => ToolTip.SetTip(GameLabel, GameName);
     }
 
     public GameViewSmall(IGame game, Loader.App app) : this()
