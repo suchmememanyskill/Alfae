@@ -41,7 +41,7 @@ public class EmuEntry : IEntry
     public string Emu { get; set; }
 
     [System.Text.Json.Serialization.JsonIgnore] 
-    public long GameSize => Files.FirstOrDefault(x => x.Type == "base")?.DownloadSize ?? 0;
+    public long GameSize => Files.Sum(x => x.DownloadSize);
 }
 
 public class PcEntry : IEntry

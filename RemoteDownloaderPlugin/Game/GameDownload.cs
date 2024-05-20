@@ -53,7 +53,8 @@ public class GameDownload : ProgressStatus
         {
             throw new Exception("Multiple base images, impossible download");
         }
-        
+
+        Line2 = $"{entry.Files.Count(x => x.Type == "base")} base, {entry.Files.Count(x => x.Type == "update")} update, {entry.Files.Count(x => x.Type == "dlc")} dlc";
         var basePath = Path.Join(app.GameDir, "Remote", entry.Emu);
         string baseGamePath = null;
         var extraFilesPath = Path.Join(app.GameDir, "Remote", entry.Emu, entry.GameId);

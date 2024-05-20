@@ -148,14 +148,9 @@ public class InstalledGame : IGame
 
     public void OpenInFileManager()
     {
-        if (_type == GameType.Emu)
-        {
-            LauncherGamePlugin.Utils.OpenFolderWithHighlightedFile(Path.Join(_plugin.App.GameDir, "Remote", _emuGame!.Emu, _emuGame.BaseFilename));
-        }
-        else
-        {
-            LauncherGamePlugin.Utils.OpenFolder(Path.Join(_plugin.App.GameDir, "Remote", "Pc", Game.Id));
-        }
+        LauncherGamePlugin.Utils.OpenFolder(_type == GameType.Emu
+            ? Path.Join(_plugin.App.GameDir, "Remote", _emuGame!.Emu)
+            : Path.Join(_plugin.App.GameDir, "Remote", "Pc", Game.Id));
     }
     
     private Uri? ImageTypeToUri(ImageType type)
