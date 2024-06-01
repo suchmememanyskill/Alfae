@@ -60,6 +60,7 @@ public class Plugin : IGameSource
                 new Command(game.IsRunning ? "Running" : "Launch", installedGame.Play),
                 new Command("Open in File Manager", installedGame.OpenInFileManager),
                 new Command($"Version: {installedGame.Game.Version}"),
+                new Command($"Platform: {installedGame.GamePlatform}"),
                 new Command("Uninstall", () =>         
                     App.Show2ButtonTextPrompt($"Do you want to uninstall {game.Name}?", "Yes", "No", _ =>
                     {

@@ -23,7 +23,7 @@ public class InstalledGame : IGame
         if (url == null)
             return Task.FromResult<byte[]?>(null);
 
-        return Storage.Cache($"{Game.Id}_{type}", () => Storage.ImageDownload(url));
+        return Storage.Cache($"{Game.Id}_{type}.jpg", () => Storage.ImageDownload(url));
     }
 
     public InstalledStatus InstalledStatus => InstalledStatus.Installed;
@@ -31,6 +31,10 @@ public class InstalledGame : IGame
     public Platform EstimatedGamePlatform => (_type == GameType.Emu)
         ? LauncherGamePlugin.Utils.GuessPlatformBasedOnString(_plugin.Storage.Data.EmuProfiles.FirstOrDefault(x => x.Platform == _emuGame!.Emu)?.ExecPath)
         : LauncherGamePlugin.Utils.GuessPlatformBasedOnString(_pcLaunchDetails!.LaunchExec);
+
+    public string GamePlatform => (_type == GameType.Emu)
+        ? _emuGame!.Emu
+        : "Pc";
 
     public ProgressStatus? ProgressStatus => null;
     public event Action? OnUpdate;

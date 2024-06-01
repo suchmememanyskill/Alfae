@@ -23,7 +23,7 @@ public class OnlineGame : IGame
         if (url == null)
             return Task.FromResult<byte[]?>(null);
 
-        return Storage.Cache($"{Entry.GameId}_{type}", () => Storage.ImageDownload(url));
+        return Storage.Cache($"{Entry.GameId}_{type}.jpg", () => Storage.ImageDownload(url));
     }
 
     public InstalledStatus InstalledStatus => InstalledStatus.NotInstalled;
