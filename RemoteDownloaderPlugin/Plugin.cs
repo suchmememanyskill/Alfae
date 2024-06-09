@@ -131,23 +131,14 @@ public class Plugin : IGameSource
             new Command("Reload", Reload),
             new Command(),
             new Command("Edit Index URL", () => new SettingsRemoteIndexGui(App, this).ShowGui()),
-            new Command("Add Emulation Profile", () => new AddOrEditEmuProfileGui(App, this).ShowGui()),
-            new Command("Edit Emulation Profile", 
+            new Command("Emulation Profiles", 
                 Storage.Data.EmuProfiles.Select(
-                    x => new Command($"Edit {x.Platform}", new AddOrEditEmuProfileGui(App, this, x).ShowGui)).ToList()),
-            new Command("Delete Emulation Profile",
-                Storage.Data.EmuProfiles.Select(
-                    x => new Command($"Delete {x.Platform}", () =>
+                    x => new Command($"Edit {x.Platform}", new AddOrEditEmuProfileGui(App, this, x).ShowGui))
+                    .Concat(new List<Command>()
                     {
-                        App.Show2ButtonTextPrompt($"Do you want to remove platform {x.Platform}?", "Yes", "No",
-                            _ =>
-                            {
-                                Storage.Data.EmuProfiles.Remove(x);
-                                Storage.Save();
-                                App.ReloadGlobalCommands();
-                                App.HideForm();
-                            }, _ => App.HideForm());
-                    })).ToList()),
+                        new(),
+                        new Command("Add Emulation Profile", () => new AddOrEditEmuProfileGui(App, this).ShowGui()),
+                    }).ToList()),
             new Command("Hide Platforms", _platforms.Select(x => 
                 new Command(Storage.Data.HiddenRemotePlatforms.Contains(x) ? $"Show {x}" : $"Hide {x}", () =>
                 {

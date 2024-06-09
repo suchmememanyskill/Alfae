@@ -46,8 +46,35 @@ public class AddOrEditEmuProfileGui
             Form.FilePicker("Executable Path:", _path),
             Form.TextInput("CLI Args:", _args),
             Form.FolderPicker("Working Directory:", _workDir),
-            Form.Button("Cancel", _ => _app.HideForm(), "Save", Process)
+            
         };
+
+        if (_addOrUpdate)
+        {
+            formEntries.Add(Form.Button( "Remove", _ => {
+                    EmuProfile? existingProfile = _instance.Storage.Data.EmuProfiles.FirstOrDefault(x => x.Platform == _platform);
+
+                    if (existingProfile == null)
+                    {
+                        return;
+                    }
+                    
+                    _app.Show2ButtonTextPrompt($"Do you want to remove platform {existingProfile.Platform}?", "No", "Yes",
+                        _ => _app.HideForm(),
+                        _ =>
+                        {
+                            _instance.Storage.Data.EmuProfiles.Remove(existingProfile);
+                            _instance.Storage.Save();
+                            _app.ReloadGlobalCommands();
+                            _app.HideForm();
+                        });
+            },
+            "Cancel", _ => _app.HideForm(), "Save", Process));
+        }
+        else
+        {
+            formEntries.Add(Form.Button("Cancel", _ => _app.HideForm(), "Save", Process));
+        }
         
         if (!string.IsNullOrWhiteSpace(_error))
             formEntries.Add(Form.TextBox(_error, fontWeight: "Bold"));
