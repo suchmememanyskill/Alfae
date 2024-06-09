@@ -16,6 +16,8 @@ public class GameDownload : ProgressStatus
     public GameType Type { get; private set; }
     public string BaseFileName { get; private set; }
     public ContentTypes InstalledEntries { get; private set; }
+    
+    private DateTimeOffset _downloadStart = DateTimeOffset.Now;
 
     public GameDownload(IEntry entry)
     {
@@ -29,9 +31,27 @@ public class GameDownload : ProgressStatus
             return;
 
         _lastSecond = DateTime.Now.Second;
+
+        var timeBetweenNowAndStart = DateTimeOffset.Now - _downloadStart;
+        var totalTime = timeBetweenNowAndStart * (1 / progress);
+        var estimatedTime = totalTime - timeBetweenNowAndStart;
+        var estimatedDisplay = "";
+
+        if (estimatedTime.TotalMinutes < 60)
+        {
+            estimatedDisplay = $"{estimatedTime.Minutes}m";
+        }
+        else if (estimatedTime.TotalMinutes < 1440)
+        {
+            estimatedDisplay = $"{estimatedTime.Hours}h{estimatedTime.Minutes}m";
+        }
+        else
+        {
+            estimatedDisplay = $"{estimatedTime.Days}d{estimatedTime.Hours}h{estimatedTime.Minutes}m";
+        }
         
         progress *= 100;
-        Line1 = $"Downloading: {progress:0}%";
+        Line1 = $"Downloading: {progress:0}% {estimatedDisplay}";
         Percentage = progress;
         InvokeOnUpdate();
     }
