@@ -15,10 +15,12 @@ public class GameDownload : ProgressStatus
     public string Version { get; private set; }
     public GameType Type { get; private set; }
     public string BaseFileName { get; private set; }
+    public ContentTypes InstalledEntries { get; private set; }
 
     public GameDownload(IEntry entry)
     {
         _entry = entry;
+        InstalledEntries = new();
     }
     
     private void OnProgressUpdate(object? obj, float progress)
@@ -65,6 +67,7 @@ public class GameDownload : ProgressStatus
 
         for (int i = 0; i < entry.Files.Count; i++)
         {
+            
             Progress<float> localProcess = new();
             localProcess.ProgressChanged += (sender, f) =>
             {
@@ -75,7 +78,8 @@ public class GameDownload : ProgressStatus
             
             var fileEntry = entry.Files[i];
             var destPath = Path.Join(fileEntry.Type == "base" ? basePath : extraFilesPath, fileEntry.Name);
-
+            InstalledEntries.Add(fileEntry.Type);
+            
             if (fileEntry.Type == "base")
             {
                 baseGamePath = destPath;

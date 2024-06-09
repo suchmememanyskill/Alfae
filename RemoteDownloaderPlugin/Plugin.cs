@@ -55,19 +55,32 @@ public class Plugin : IGameSource
 
         if (game is InstalledGame installedGame)
         {
-            return new()
+            var commands = new List<Command>()
             {
                 new Command(game.IsRunning ? "Running" : "Launch", installedGame.Play),
                 new Command("Open in File Manager", installedGame.OpenInFileManager),
                 new Command($"Version: {installedGame.Game.Version}"),
                 new Command($"Platform: {installedGame.GamePlatform}"),
-                new Command("Uninstall", () =>         
-                    App.Show2ButtonTextPrompt($"Do you want to uninstall {game.Name}?", "Yes", "No", _ =>
-                    {
-                        installedGame.Delete();
-                        App.HideForm();
-                    }, _ => App.HideForm(), game))
             };
+
+            if (installedGame.IsEmu)
+            {
+                commands.Add(new());
+                commands.Add(new($"Base: {installedGame.InstalledContentTypes.Base}"));
+                commands.Add(new($"Update: {installedGame.InstalledContentTypes.Update}"));
+                commands.Add(new($"Dlc: {installedGame.InstalledContentTypes.Dlc}"));
+                commands.Add(new($"Extra: {installedGame.InstalledContentTypes.Extra}"));
+                commands.Add(new());
+            }
+            
+            commands.Add(new Command("Uninstall", () =>         
+                App.Show2ButtonTextPrompt($"Do you want to uninstall {game.Name}?", "Yes", "No", _ =>
+                {
+                    installedGame.Delete();
+                    App.HideForm();
+                }, _ => App.HideForm(), game)));
+
+            return commands;
         }
 
         throw new NotImplementedException();

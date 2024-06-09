@@ -72,7 +72,8 @@ public class OnlineGame : IGame
                 GameSize = _download.TotalSize,
                 Version = _download.Version,
                 BaseFilename = _download.BaseFileName,
-                Images = Entry.Img
+                Images = Entry.Img,
+                Types = _download.InstalledEntries
             });
         }
         else

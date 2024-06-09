@@ -17,6 +17,33 @@ public interface IInstalledGame
     public Images Images { get; }
 }
 
+public class ContentTypes
+{
+    public int Base { get; set; }
+    public int Update { get; set; }
+    public int Dlc { get; set; }
+    public int Extra { get; set; }
+
+    public void Add(string type)
+    {
+        switch (type)
+        {
+            case "base":
+                Base++;
+                break;
+            case "update":
+                Update++;
+                break;
+            case "dlc":
+                Dlc++;
+                break;
+            case "extra":
+                Extra++;
+                break;
+        }
+    }
+}
+
 public class InstalledEmuGame : IInstalledGame
 {
     public string Id { get; set; }
@@ -26,6 +53,7 @@ public class InstalledEmuGame : IInstalledGame
     public string Version { get; set; }
     public string BaseFilename { get; set; }
     public Images Images { get; set; }
+    public ContentTypes Types { get; set; } = new();
 }
 
 public class InstalledPcGame : IInstalledGame

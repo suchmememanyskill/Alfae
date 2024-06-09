@@ -15,6 +15,15 @@ public class InstalledGame : IGame
     public long? Size => Game.GameSize;
     public bool HasImage(ImageType type)
         => ImageTypeToUri(type) != null;
+
+    public bool IsEmu => _type == GameType.Emu;
+
+    public ContentTypes InstalledContentTypes => IsEmu
+        ? _emuGame.Types
+        : new ContentTypes()
+        {
+            Base = 1
+        };
     
     public Task<byte[]?> GetImage(ImageType type)
     {
@@ -28,11 +37,11 @@ public class InstalledGame : IGame
 
     public InstalledStatus InstalledStatus => InstalledStatus.Installed;
 
-    public Platform EstimatedGamePlatform => (_type == GameType.Emu)
+    public Platform EstimatedGamePlatform => IsEmu
         ? LauncherGamePlugin.Utils.GuessPlatformBasedOnString(_plugin.Storage.Data.EmuProfiles.FirstOrDefault(x => x.Platform == _emuGame!.Emu)?.ExecPath)
         : LauncherGamePlugin.Utils.GuessPlatformBasedOnString(_pcLaunchDetails!.LaunchExec);
 
-    public string GamePlatform => (_type == GameType.Emu)
+    public string GamePlatform => IsEmu
         ? _emuGame!.Emu
         : "Pc";
 
@@ -70,7 +79,7 @@ public class InstalledGame : IGame
     {
         try
         {
-            if (_type == GameType.Emu)
+            if (IsEmu)
             {
                 var emuProfile = _plugin.Storage.Data.EmuProfiles.FirstOrDefault(x => x.Platform == _emuGame!.Emu);
 
@@ -103,7 +112,7 @@ public class InstalledGame : IGame
 
     public void Delete()
     {
-        if (_type == GameType.Emu)
+        if (IsEmu)
         {
             var baseGamePath = Path.Join(_plugin.App.GameDir, "Remote", _emuGame!.Emu, _emuGame.BaseFilename);
             var extraDir = Path.Join(_plugin.App.GameDir, "Remote", _emuGame!.Emu, Game.Id);
@@ -152,7 +161,7 @@ public class InstalledGame : IGame
 
     public void OpenInFileManager()
     {
-        LauncherGamePlugin.Utils.OpenFolder(_type == GameType.Emu
+        LauncherGamePlugin.Utils.OpenFolder(IsEmu
             ? Path.Join(_plugin.App.GameDir, "Remote", _emuGame!.Emu)
             : Path.Join(_plugin.App.GameDir, "Remote", "Pc", Game.Id));
     }
