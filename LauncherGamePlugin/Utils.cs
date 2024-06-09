@@ -200,4 +200,24 @@ public static class Utils
         List<string> windowsFileExt = [".exe", ".bat", ".msi", ".cmd"];
         return windowsFileExt.Any(path.EndsWith) ? Platform.Windows : Platform.Linux;
     }
+
+    public static string TimeSpanAsTimeEstimate(TimeSpan estimatedTime)
+    {
+        var estimatedDisplay = "";
+        
+        if (estimatedTime.TotalMinutes < 60)
+        {
+            estimatedDisplay = $"{estimatedTime.Minutes}m";
+        }
+        else if (estimatedTime.TotalMinutes < 1440)
+        {
+            estimatedDisplay = $"{estimatedTime.Hours}h{estimatedTime.Minutes}m";
+        }
+        else
+        {
+            estimatedDisplay = $"{estimatedTime.Days}d{estimatedTime.Hours}h{estimatedTime.Minutes}m";
+        }
+
+        return estimatedDisplay;
+    }
 }

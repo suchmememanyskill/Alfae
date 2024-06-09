@@ -17,6 +17,8 @@ public class ItchGameDownload : ProgressStatus
     private readonly CancellationTokenSource _cts = new();
     private bool _doneDownloading = false;
     private int _lastSecond = 0;
+    
+    private DateTimeOffset _downloadStart = DateTimeOffset.Now;
 
     public ItchGameDownload(string url, string path, string filename)
     {
@@ -32,8 +34,13 @@ public class ItchGameDownload : ProgressStatus
 
         _lastSecond = DateTime.Now.Second;
         
+        var timeBetweenNowAndStart = DateTimeOffset.Now - _downloadStart;
+        var totalTime = timeBetweenNowAndStart * (1 / progress);
+        var estimatedTime = totalTime - timeBetweenNowAndStart;
+        var estimatedDisplay = Utils.TimeSpanAsTimeEstimate(estimatedTime);
+        
         progress *= 100;
-        Line1 = $"Downloading: {progress:0}%";
+        Line1 = $"Downloading: {progress:0}% {estimatedDisplay}";
         Percentage = progress;
         InvokeOnUpdate();
     }
