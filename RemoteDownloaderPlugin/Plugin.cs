@@ -65,12 +65,7 @@ public class Plugin : IGameSource
 
             if (installedGame.IsEmu)
             {
-                commands.Add(new());
-                commands.Add(new($"Base: {installedGame.InstalledContentTypes.Base}"));
-                commands.Add(new($"Update: {installedGame.InstalledContentTypes.Update}"));
-                commands.Add(new($"Dlc: {installedGame.InstalledContentTypes.Dlc}"));
-                commands.Add(new($"Extra: {installedGame.InstalledContentTypes.Extra}"));
-                commands.Add(new());
+                commands.Add(new Command(installedGame.InstalledContentTypes.ToString()));
             }
             
             commands.Add(new Command("Uninstall", () =>         

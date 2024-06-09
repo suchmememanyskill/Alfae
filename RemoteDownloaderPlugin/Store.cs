@@ -42,6 +42,15 @@ public class ContentTypes
                 break;
         }
     }
+
+    public override string ToString()
+        => "Content: " + string.Join(", ", new List<string>()
+        {
+            (Base > 0) ? $"{Base} Base" : "",
+            (Update > 0) ? $"{Update} Update" : "",
+            (Dlc > 0) ? $"{Dlc} Dlc" : "",
+            (Extra > 0) ? $"{Extra} Extra" : ""
+        }.Where(x => !string.IsNullOrEmpty(x)));
 }
 
 public class InstalledEmuGame : IInstalledGame
