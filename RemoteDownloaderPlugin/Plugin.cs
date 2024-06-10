@@ -102,7 +102,7 @@ public class Plugin : IGameSource
         try
         {
             using HttpClient client = new();
-            client.Timeout = TimeSpan.FromSeconds(2);
+            client.Timeout = TimeSpan.FromSeconds(10);
             var data = await client.GetStringAsync(Storage.Data.IndexUrl);
             _cachedRemote = JsonConvert.DeserializeObject<Remote>(data)!;
             
