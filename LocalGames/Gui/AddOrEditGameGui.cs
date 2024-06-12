@@ -44,14 +44,14 @@ public class AddOrEditGameGui
 
         List<FormEntry> entries = new()
         {
-            new FormEntry(FormEntryType.TextBox, $"{addOrEdit} a local game", "Bold"),
-            new FormEntry(FormEntryType.TextInput, "Game name:", gameName),
-            new FormEntry(FormEntryType.FilePicker, "Game executable:", execPath),
-            new FormEntry(FormEntryType.TextBox, "\nOptional", "Bold"),
-            new FormEntry(FormEntryType.FolderPicker, "Working Directory:", workingDirectory),
-            new FormEntry(FormEntryType.FilePicker, "Cover Image:", coverImage),
-            new FormEntry(FormEntryType.FilePicker, "Background Image:", backgroundImage),
-            new FormEntry(FormEntryType.TextInput, "CLI Arguments:", args),
+            Form.TextBox($"{addOrEdit} a local game", fontWeight: "Bold"),
+            Form.TextInput("Game name:", gameName),
+            Form.FilePicker("Game executable:", execPath),
+            Form.TextBox("\nOptional", fontWeight: "Bold"),
+            Form.FolderPicker("Working Directory:", workingDirectory),
+            Form.FilePicker("Cover Image:", coverImage),
+            Form.FilePicker("Background Image:", backgroundImage),
+            Form.TextInput("CLI Arguments:", args),
             Form.Button("Cancel", _ => _app.HideForm(), addOrEdit, entry =>
             {
                 new Thread(() => AddGame(entry)).Start();
@@ -59,7 +59,7 @@ public class AddOrEditGameGui
         };
         
         if (possibleWarn != "")
-            entries.Add(new(FormEntryType.TextBox, possibleWarn, "Bold"));
+            entries.Add(Form.TextBox(possibleWarn, fontWeight: "Bold"));
         
         Form form = new(entries);
         if (game != null)

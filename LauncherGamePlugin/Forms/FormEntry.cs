@@ -35,37 +35,140 @@ public class ButtonEntry
     }
 }
 
-public class FormEntry
+public class TextInputElement : FormEntry
+{
+    public TextInputElement(string name = "", string value = "", FormAlignment alignment = FormAlignment.Default,
+        bool enabled = true) : base(name, value, alignment, enabled)
+    {
+        
+    }   
+}
+
+public class TextBoxElement : FormEntry
+{
+    public TextBoxElement(string name = "", string fontWeight = "", FormAlignment alignment = FormAlignment.Default,
+        bool enabled = true) : base(name, fontWeight, alignment, enabled)
+    {
+        
+    }
+}
+
+public class ClickableLinkBoxElement : FormEntry
+{
+    public Action<FormEntry> LinkClick { get; set; }
+    
+    public ClickableLinkBoxElement(string name = "", string value = "", Action<FormEntry> linkClick = null, FormAlignment alignment = FormAlignment.Default,
+        bool enabled = true)
+        : base(name, value, alignment, enabled)
+    {
+        LinkClick = linkClick;
+    }
+}
+
+public class ToggleElement : FormEntry
+{
+    public ToggleElement(string name = "", string value = "", FormAlignment alignment = FormAlignment.Default,
+        bool enabled = true) : base(name, value, alignment, enabled)
+    {
+        
+    }
+}
+
+public class FilePickerElement : FormEntry
+{
+    public FilePickerElement(string name = "", string value = "", FormAlignment alignment = FormAlignment.Default,
+        bool enabled = true) : base(name, value, alignment, enabled)
+    {
+        
+    }   
+}
+
+public class FolderPickerElement : FormEntry
+{
+    public FolderPickerElement(string name = "", string value = "", FormAlignment alignment = FormAlignment.Default,
+        bool enabled = true) : base(name, value, alignment, enabled)
+    {
+        
+    }
+}
+
+public class DropdownElement : FormEntry
+{
+    public List<string> DropdownOptions { get; set; }
+    
+    public DropdownElement(string name = "", string value = "", List<string> dropdownOptions = null, FormAlignment alignment = FormAlignment.Default,
+        bool enabled = true)
+        : base(name, value, alignment, enabled)
+    {
+        DropdownOptions = dropdownOptions ?? new();
+    }
+}
+
+public class ButtonListElement : FormEntry
+{
+    public List<ButtonEntry> Buttons { get; set; }
+    
+    public ButtonListElement(List<ButtonEntry> buttons = null, FormAlignment alignment = FormAlignment.Default,
+        bool enabled = true)
+        : base(null, null, alignment, enabled)
+    {
+        Buttons = buttons ?? new();
+        
+        if (Alignment == FormAlignment.Default)
+            Alignment = FormAlignment.Center;
+    }
+}
+
+public class SeperatorElement : FormEntry
+{
+    public SeperatorElement(string name = "", string value = "", FormAlignment alignment = FormAlignment.Default,
+        bool enabled = true) : base(name, value, alignment, enabled)
+    {
+        
+    }
+}
+
+public class ImageElement : FormEntry
+{
+    public Func<Task<byte[]?>> GetImage { get; set; }
+    public Action<FormEntry> Click { get; set; }
+    
+    public ImageElement(string name = "", string value = "", Func<Task<byte[]?>> getImage = null, Action<FormEntry> click = null, FormAlignment alignment = FormAlignment.Default,
+        bool enabled = true)
+        : base(name, value, alignment, enabled)
+    {
+        GetImage = getImage;
+        Click = click;
+    }
+}
+
+public class HorizontalPanelElement : FormEntry
+{
+    public List<FormEntry> Entries { get; set; }
+
+    public HorizontalPanelElement(string name = "", string value = "", List<FormEntry> entries = null, FormAlignment alignment = FormAlignment.Default,
+        bool enabled = true)
+        : base(name, value, alignment, enabled)
+    {
+        Entries = entries ?? new();
+    }
+}
+
+public abstract class FormEntry
 {
     public string Name { get; set; }
     public string Value { get; set; }
     public bool Enabled { get; set; }
-    public FormEntryType Type { get; set; }
-    public Action<FormEntry> LinkClick { get; set; }
-    public List<string> DropdownOptions { get; set; }
-    public List<ButtonEntry> ButtonList { get; set; }
     public Form ContainingForm { get; set; }
-    public Func<Task<byte[]?>> GetImage { get; set; }
-    public List<FormEntry> HorizontalPanel { get; set; }
     public FormAlignment Alignment;
     public event Action<FormEntry>? OnChange;
     public void InvokeOnChange() => OnChange?.Invoke(this);
-    
-    public FormEntry(FormEntryType type, string name = "", string value = "", List<string> dropdownOptions = null,
-        List<ButtonEntry> buttonList = null, Action<FormEntry> linkClick = null, Func<Task<byte[]?>> image = null, List<FormEntry> horizontalPanel = null, FormAlignment alignment = FormAlignment.Default, bool enabled = true)
+
+    public FormEntry(string name = "", string value = "", FormAlignment alignment = FormAlignment.Default, bool enabled = true)
     {
-        Type = type;
         Name = name;
         Value = value;
         Enabled = enabled;
-        DropdownOptions = dropdownOptions;
-        ButtonList = buttonList;
-        LinkClick = linkClick;
         Alignment = alignment;
-        GetImage = image;
-        HorizontalPanel = horizontalPanel;
-
-        if (Type == FormEntryType.ButtonList && Alignment == FormAlignment.Default)
-            Alignment = FormAlignment.Center;
     }
 }

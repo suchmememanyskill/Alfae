@@ -13,15 +13,15 @@ public static class LegendaryGameForm
         
         Form f = new(new()
         {
-            new FormEntry(FormEntryType.TextBox, "Legendary game configuration and info", "Bold", alignment: FormAlignment.Center),
-            new FormEntry(FormEntryType.TextBox, $"{game.Name} by {game.Developer}"),
-            new FormEntry(FormEntryType.TextBox, $"AppId: {game.InternalName}"),
-            new FormEntry(FormEntryType.TextBox, $"Current Version: {game.InstalledVersion}"),
-            new FormEntry(FormEntryType.ClickableLinkBox, $"Location on disk: {game.InstallPath}", linkClick: x => Utils.OpenFolder(game.InstallPath)),
-            new FormEntry(FormEntryType.TextBox, "\nConfig", "Bold", alignment: FormAlignment.Center),
-            new FormEntry(FormEntryType.Toggle, "Always launch offline", game.ConfigAlwaysOffline ? "1" : "0"),
-            new FormEntry(FormEntryType.Toggle, "Always skip version check", game.ConfigAlwaysSkipUpdateCheck ? "1" : "0"),
-            new FormEntry(FormEntryType.TextInput, "Additional game arguments", game.ConfigAdditionalGameArgs),
+            Form.TextBox("Legendary game configuration and info", FormAlignment.Center, "Bold"),
+            Form.TextBox($"{game.Name} by {game.Developer}"),
+            Form.TextBox($"AppId: {game.InternalName}"),
+            Form.TextBox($"Current Version: {game.InstalledVersion}"),
+            Form.ClickableLinkBox($"Location on disk: {game.InstallPath}", _ => Utils.OpenFolder(game.InstallPath)),
+            Form.TextBox("\nConfig", FormAlignment.Center, "Bold"),
+            Form.Toggle("Always launch offline", game.ConfigAlwaysOffline),
+            Form.Toggle("Always skip version check", game.ConfigAlwaysSkipUpdateCheck),
+            Form.TextInput("Additional game arguments", game.ConfigAdditionalGameArgs),
             Form.Button("Back", _ => LegendaryGameSource.Source.App.HideForm(),
                 "Save", x =>
                 {

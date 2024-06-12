@@ -17,7 +17,7 @@ public class LegendaryEOSOverlay
         installed = File.Exists(Path.Join(Environment.GetFolderPath(Environment.SpecialFolder.UserProfile), ".config", "legendary", "overlay_install.json"));
 
         List<FormEntry> entries = new()
-            {new(FormEntryType.TextBox, "EOS Overlay", "Bold", alignment: FormAlignment.Center)};
+            {Form.TextBox("EOS Overlay", alignment: FormAlignment.Center, "Bold")};
         
         if (installed)
         {
@@ -26,7 +26,7 @@ public class LegendaryEOSOverlay
 
             if (t.ExitCode == 0)
             {
-                entries.Add(new(FormEntryType.TextBox, string.Join("\n", t.StdErr)));
+                entries.Add(Form.TextBox(string.Join("\n", t.StdErr)));
             }
         }
 
@@ -46,7 +46,7 @@ public class LegendaryEOSOverlay
             buttons.Add(new("Install Overlay", x => Install()));
         }
             
-        entries.Add(new(FormEntryType.ButtonList, buttonList: buttons));
+        entries.Add(Form.ButtonList(buttons: buttons));
         _app.ShowForm(new(entries));
     }
 

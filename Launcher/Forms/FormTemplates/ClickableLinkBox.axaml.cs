@@ -9,14 +9,14 @@ namespace Launcher.Forms.FormTemplates;
 
 public partial class ClickableLinkBox : UserControl
 {
-    private FormEntry _formEntry;
+    private ClickableLinkBoxElement _formEntry;
     
     public ClickableLinkBox()
     {
         InitializeComponent();
     }
 
-    public ClickableLinkBox(FormEntry formEntry) : this()
+    public ClickableLinkBox(ClickableLinkBoxElement formEntry) : this()
     {
         _formEntry = formEntry;
         Button.Content = formEntry.Name;

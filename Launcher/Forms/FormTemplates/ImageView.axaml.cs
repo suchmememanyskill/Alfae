@@ -10,14 +10,14 @@ namespace Launcher.Forms.FormTemplates;
 
 public partial class ImageView : UserControl
 {
-    private FormEntry _formEntry;
+    private ImageElement _formEntry;
     
     public ImageView()
     {
         InitializeComponent();
     }
     
-    public ImageView(FormEntry formEntry) : this()
+    public ImageView(ImageElement formEntry) : this()
     {
         _formEntry = formEntry;
         
@@ -28,8 +28,8 @@ public partial class ImageView : UserControl
         else 
             Label.Content = formEntry.Name;
 
-        if (formEntry.LinkClick != null)
-            StackPanel.PointerPressed += (sender, args) => formEntry.LinkClick(formEntry);
+        if (formEntry.Click != null)
+            StackPanel.PointerPressed += (sender, args) => formEntry.Click(formEntry);
         
         SetImage();
     }

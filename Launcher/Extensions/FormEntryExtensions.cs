@@ -11,29 +11,29 @@ public static class FormEntryExtensions
 {
     public static UserControl ToTemplatedControl(this FormEntry formEntry)
     {
-        switch (formEntry.Type)
+        switch (formEntry)
         {
-            case FormEntryType.TextInput:
-                return new TextInput(formEntry);
-            case FormEntryType.TextBox:
-                return new TextBox(formEntry);
-            case FormEntryType.Toggle:
-                return new Toggle(formEntry);
-            case FormEntryType.FilePicker:
-            case FormEntryType.FolderPicker:
+            case TextInputElement textInputElement:
+                return new TextInput(textInputElement);
+            case TextBoxElement textBoxElement:
+                return new TextBox(textBoxElement);
+            case ToggleElement toggleElement:
+                return new Toggle(toggleElement);
+            case FilePickerElement:
+            case FolderPickerElement:
                 return new FilePicker(formEntry);
-            case FormEntryType.ClickableLinkBox:
-                return new ClickableLinkBox(formEntry);
-            case FormEntryType.ButtonList:
-                return new ButtonList(formEntry);
-            case FormEntryType.Dropdown:
-                return new Dropdown(formEntry);
-            case FormEntryType.Separator:
-                return new Separator(formEntry);
-            case FormEntryType.Image:
-                return new ImageView(formEntry);
-            case FormEntryType.HorizontalPanel:
-                return new HorizontalPanel(formEntry);
+            case ClickableLinkBoxElement clickableLinkBoxElement:
+                return new ClickableLinkBox(clickableLinkBoxElement);
+            case ButtonListElement buttonListElement:
+                return new ButtonList(buttonListElement);
+            case DropdownElement dropdownElement:
+                return new Dropdown(dropdownElement);
+            case SeperatorElement separatorElement:
+                return new Separator(separatorElement);
+            case ImageElement imageElement:
+                return new ImageView(imageElement);
+            case HorizontalPanelElement horizontalPanelElement:
+                return new HorizontalPanel(horizontalPanelElement);
             default:
                 throw new NotImplementedException();
         }

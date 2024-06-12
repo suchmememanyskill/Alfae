@@ -55,7 +55,7 @@ public class OnImageEdit
         form.Add(Form.Button("Back", _ => Hide(), "Change search term", _ => NewSearchTerm(), $"Remove current {Type}", _ => Clear()));
         
         if (Instance.Storage.Data.GetOverride(Game, Type) == null)
-            form.Last().ButtonList.Last().Action = null;
+            (form.Last() as ButtonListElement)!.Buttons.Last().Action = null;
 
         List<List<Override>> imageGroups = Enumerable.Range(0, (overrides.Count / _perRow))
             .Select(x => overrides.Skip(x * _perRow).Take(_perRow).ToList()).ToList();

@@ -34,7 +34,7 @@ public partial class FilePicker : UserControl
 
     public async void OnBrowse()
     {
-        if (_formEntry.Type == FormEntryType.FilePicker)
+        if (_formEntry is FilePickerElement)
         {
             OpenFileDialog dialog = new();
             dialog.AllowMultiple = false;

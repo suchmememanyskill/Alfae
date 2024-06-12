@@ -13,12 +13,12 @@ public partial class HorizontalPanel : UserControl
         InitializeComponent();
     }
 
-    public HorizontalPanel(FormEntry formEntry) : this()
+    public HorizontalPanel(HorizontalPanelElement formEntry) : this()
     {
         Core.HorizontalAlignment = formEntry.Alignment.ToAvaloniaAlignment();
         StackPanel.Spacing = int.Parse(formEntry.Value);
 
-        foreach (var entry in formEntry.HorizontalPanel)
+        foreach (var entry in formEntry.Entries)
         {
             StackPanel.Children.Add(entry.ToTemplatedControl());
         }

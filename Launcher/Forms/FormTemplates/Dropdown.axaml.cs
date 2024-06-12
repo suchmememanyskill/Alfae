@@ -11,7 +11,7 @@ public partial class Dropdown : UserControl
         InitializeComponent();
     }
 
-    public Dropdown(FormEntry formEntry) : this()
+    public Dropdown(DropdownElement formEntry) : this()
     {
         ComboBox.ItemsSource = formEntry.DropdownOptions;
         Label.Content = formEntry.Name;

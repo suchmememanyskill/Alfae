@@ -29,16 +29,15 @@ public class CustomBootProfileGUI
         
         List<FormEntry> entries = new()
         {
-            new(FormEntryType.TextBox, $"{createOrEdit} a custom app wrapper", "Bold", alignment: FormAlignment.Center),
-            new(FormEntryType.TextInput, "Name:", _profile.Name),
-            new(FormEntryType.TextInput, "Executable:", _profile.Executable),
-            new(FormEntryType.TextInput, "Args:", _profile.Args),
-            new (FormEntryType.TextBox, "Template replaces:\n- {EXEC}: Gets replaced with the executable\n- {ARGS}: Gets replaced with the arguments passed to the executable\n- {WORKDIR}: Gets replaced with the working directory of the executable"),
-            new(FormEntryType.TextInput, "Environment:", _profile.EnviromentVariables),
-            new(FormEntryType.Dropdown, "Target Executable:",
-                _profile.CompatibleExecutable == Platform.Windows ? "Windows" : "Linux",
-                dropdownOptions: new() {"Windows", "Linux"}),
-            new (FormEntryType.Toggle, "Escape special characters (Linux only)", _profile.EscapeReplaceables ? "1" : "0"),
+            Form.TextBox($"{createOrEdit} a custom app wrapper", FormAlignment.Center, "Bold"),
+            Form.TextInput("Name:", _profile.Name),
+            Form.TextInput("Executable:", _profile.Executable),
+            Form.TextInput("Args:", _profile.Args),
+            Form.TextBox("Template replaces:\n- {EXEC}: Gets replaced with the executable\n- {ARGS}: Gets replaced with the arguments passed to the executable\n- {WORKDIR}: Gets replaced with the working directory of the executable"),
+            Form.TextInput("Environment:", _profile.EnviromentVariables),
+            Form.Dropdown("Target Executable:",
+                dropdownOptions: new() {"Windows", "Linux"}, _profile.CompatibleExecutable == Platform.Windows ? "Windows" : "Linux"),
+            Form.Toggle("Escape special characters (Linux only)", _profile.EscapeReplaceables),
             Form.Button("Back", _ => _app.HideForm(), "Save", x =>
             {
                 _app.HideForm();
@@ -47,7 +46,7 @@ public class CustomBootProfileGUI
         };
         
         if (warnMessage != "")
-            entries.Add(new(FormEntryType.TextBox, warnMessage, "Bold", alignment: FormAlignment.Center));
+            entries.Add(Form.TextBox(warnMessage, alignment: FormAlignment.Center, "Bold"));
         
         _app.ShowForm(new(entries));
     }

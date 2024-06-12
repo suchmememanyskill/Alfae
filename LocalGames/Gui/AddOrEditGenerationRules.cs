@@ -66,7 +66,7 @@ public class AddOrEditGenerationRules
 
         if (rules != null)
         {
-            elements.Last().ButtonList.Add(new($"Delete {name}", _ => Delete(rules)));
+            (elements.Last() as ButtonListElement)!.Buttons.Add(new($"Delete {name}", _ => Delete(rules)));
         }
         
         if (errMessage != "")

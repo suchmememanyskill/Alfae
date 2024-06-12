@@ -7,18 +7,18 @@ namespace Launcher.Forms.FormTemplates;
 
 public partial class ButtonList : UserControl
 {
-    private FormEntry _formEntry;
+    private ButtonListElement _formEntry;
     
     public ButtonList()
     {
         InitializeComponent();
     }
 
-    public ButtonList(FormEntry formEntry) : this()
+    public ButtonList(ButtonListElement formEntry) : this()
     {
         _formEntry = formEntry;
 
-        foreach (var x in _formEntry.ButtonList)
+        foreach (var x in _formEntry.Buttons)
         {
             Button b = new();
             b.Content = x.Name;
