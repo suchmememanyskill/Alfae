@@ -160,6 +160,7 @@ public abstract class FormEntry
     public string Value { get; set; }
     public bool Enabled { get; set; }
     public Form ContainingForm { get; set; }
+    public List<IFormValidator> Validators { get; } = new();
     public FormAlignment Alignment;
     public event Action<FormEntry>? OnChange;
     public void InvokeOnChange() => OnChange?.Invoke(this);
@@ -171,4 +172,7 @@ public abstract class FormEntry
         Enabled = enabled;
         Alignment = alignment;
     }
+
+    public void Validate()
+        => Validators.ForEach(x => x.Validate(this));
 }

@@ -1,5 +1,6 @@
 ﻿using System.Diagnostics;
 using System.Runtime.InteropServices;
+using System.Text;
 using LauncherGamePlugin.Enums;
 
 namespace LauncherGamePlugin;
@@ -220,4 +221,7 @@ public static class Utils
 
         return estimatedDisplay;
     }
+
+    public static string OnlyLetters(string input)
+        => new(input.Where(char.IsLetter).ToArray());
 }

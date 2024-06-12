@@ -15,6 +15,8 @@ public partial class TextBox : UserControl
 
     public TextBox(FormEntry entry) : this()
     {
+        TextBlock.IsVisible = !string.IsNullOrEmpty(entry.Name);
+        
         TextBlock.Text = entry.Name;
         TextBlock.HorizontalAlignment = entry.Alignment.ToAvaloniaAlignment();
         if (!string.IsNullOrWhiteSpace(entry.Value))

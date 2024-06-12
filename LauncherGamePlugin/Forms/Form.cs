@@ -9,6 +9,27 @@ public class Form
 
     public Func<Task<byte[]?>>? Background { get; set; } = null;
     public IGame? Game { get; set; } = null;
+    
+    public TextBoxElement? ValidationFailureField { get; set; }
+
+    public bool Validate(IApp app)
+    {
+        try
+        {
+            FormEntries.ForEach(x => x.Validate());
+        }
+        catch (Exception ex)
+        {
+            if (ValidationFailureField != null)
+            {
+                ValidationFailureField.Name = ex.Message;
+            }
+            app.ShowForm(this);
+            return false;
+        }
+
+        return true;
+    }
 
     public Form(List<FormEntry> entries)
     {
@@ -48,9 +69,9 @@ public class Form
     public static FormEntry TextInput(string label, string value = "") 
         => new TextInputElement(label, value);
 
-    public static FormEntry TextBox(string text, FormAlignment alignment = FormAlignment.Default,
+    public static TextBoxElement TextBox(string text, FormAlignment alignment = FormAlignment.Default,
         string fontWeight = "")
-        => new TextBoxElement(text, fontWeight, alignment: alignment);
+        => new(text, fontWeight, alignment: alignment);
 
     public static FormEntry ClickableLinkBox(string text, Action<Form> action,
         FormAlignment alignment = FormAlignment.Default, string fontWeight = "")
