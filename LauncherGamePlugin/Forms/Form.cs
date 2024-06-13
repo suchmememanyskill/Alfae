@@ -66,31 +66,31 @@ public class Form
         });
     }
 
-    public static FormEntry TextInput(string label, string value = "") 
-        => new TextInputElement(label, value);
+    public static TextInputElement TextInput(string label, string value = "") 
+        => new(label, value);
 
     public static TextBoxElement TextBox(string text, FormAlignment alignment = FormAlignment.Default,
         string fontWeight = "")
         => new(text, fontWeight, alignment: alignment);
 
-    public static FormEntry ClickableLinkBox(string text, Action<Form> action,
+    public static ClickableLinkBoxElement ClickableLinkBox(string text, Action<Form> action,
         FormAlignment alignment = FormAlignment.Default, string fontWeight = "")
-        => new ClickableLinkBoxElement(text, alignment: alignment, linkClick: x => action(x.ContainingForm), value: fontWeight);
+        => new(text, alignment: alignment, linkClick: x => action(x.ContainingForm), value: fontWeight);
 
-    public static FormEntry Toggle(string label, bool value, FormAlignment alignment = FormAlignment.Default, bool enabled = true)
-        => new ToggleElement(label, value ? "1" : "0", alignment: alignment, enabled: enabled);
+    public static ToggleElement Toggle(string label, bool value, FormAlignment alignment = FormAlignment.Default, bool enabled = true)
+        => new(label, value ? "1" : "0", alignment: alignment, enabled: enabled);
 
-    public static FormEntry FilePicker(string label, string value = "")
-        => new FilePickerElement(label, value);
+    public static FilePickerElement FilePicker(string label, string value = "")
+        => new(label, value);
 
-    public static FormEntry FolderPicker(string label, string value = "")
-        => new FolderPickerElement(label, value);
+    public static FolderPickerElement FolderPicker(string label, string value = "")
+        => new(label, value);
 
-    public static FormEntry Dropdown(string label, List<string> dropdownOptions, string value = "")
-        => new DropdownElement(label, value, dropdownOptions: dropdownOptions);
+    public static DropdownElement Dropdown(string label, List<string> dropdownOptions, string value = "")
+        => new(label, value, dropdownOptions: dropdownOptions);
 
-    public static FormEntry ButtonList(List<ButtonEntry> buttons, FormAlignment alignment = FormAlignment.Default)
-        => new ButtonListElement(buttons: buttons, alignment: alignment);
+    public static ButtonListElement ButtonList(List<ButtonEntry> buttons, FormAlignment alignment = FormAlignment.Default)
+        => new(buttons: buttons, alignment: alignment);
 
     public static FormEntry Button(string label, Action<Form> action, FormAlignment alignment = FormAlignment.Default)
         => ButtonList(new() {new(label, action)}, alignment);
@@ -101,14 +101,14 @@ public class Form
     public static FormEntry Button(string label1, Action<Form> action1, string label2, Action<Form> action2, string label3, Action<Form> action3, FormAlignment alignment = FormAlignment.Default)
         => ButtonList(new() {new(label1, action1), new(label2, action2), new(label3, action3)}, alignment);
 
-    public static FormEntry Image(string label, Func<Task<byte[]?>> image, Action<Form>? onClick = null, FormAlignment alignment = FormAlignment.Default)
-        => new ImageElement(label, getImage: image, alignment: alignment, click: x => onClick?.Invoke(x.ContainingForm));
+    public static ImageElement Image(string label, Func<Task<byte[]?>> image, Action<Form>? onClick = null, FormAlignment alignment = FormAlignment.Default)
+        => new(label, getImage: image, alignment: alignment, click: x => onClick?.Invoke(x.ContainingForm));
 
-    public static FormEntry Horizontal(List<FormEntry> entries, int spacing = 5, FormAlignment alignment = FormAlignment.Default)
-        => new HorizontalPanelElement(entries: entries, value: spacing.ToString(), alignment: alignment);
+    public static HorizontalPanelElement Horizontal(List<FormEntry> entries, int spacing = 5, FormAlignment alignment = FormAlignment.Default)
+        => new(entries: entries, value: spacing.ToString(), alignment: alignment);
     
-    public static FormEntry Separator(int height = 1)
-        => new SeperatorElement(value: height.ToString());
+    public static SeperatorElement Separator(int height = 1)
+        => new(value: height.ToString());
 }
 
 public static class FormExtensions

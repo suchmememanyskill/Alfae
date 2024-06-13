@@ -1,5 +1,7 @@
 ﻿using LauncherGamePlugin;
 using LauncherGamePlugin.Enums;
+using LauncherGamePlugin.Extensions;
+using LauncherGamePlugin.Forms;
 using LauncherGamePlugin.Interfaces;
 
 namespace RemoteDownloaderPlugin.Game;
@@ -47,6 +49,29 @@ public class OnlineGame : IGame
 
     public async Task Download()
     {
+        if (Entry is EmuEntry emuEntry)
+        {
+            var baseFiles = emuEntry.Files.Where(x => x.Type == "base").ToList();
+            if (baseFiles.Count >= 2)
+            {
+                var form = new Form(new());
+                
+                form.FormEntries.Add(Form.TextBox("Pick a base edition of the game:", FormAlignment.Center, "Bold"));
+                
+                baseFiles.ForEach(x => form.FormEntries.Add(Form.ClickableLinkBox($"{x.Name}: {x.DownloadSize.ReadableSize()}", _ =>
+                {
+                    emuEntry.Files.RemoveAll(y => y.Type == "base" && y.Name != x.Name);
+                    Download();
+                    _plugin.App.HideForm();
+                }, FormAlignment.Left)));
+                
+                form.FormEntries.Add(Form.Button("Back", _ => _plugin.App.HideForm()));
+                
+                _plugin.App.ShowForm(form);
+                return;
+            }
+        }
+        
         _download = new GameDownload(Entry);
         OnUpdate?.Invoke();
         

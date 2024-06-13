@@ -66,7 +66,7 @@ public class OnImageEdit
         foreach (var imageGroup in imageGroups)
         {
             List<FormEntry> i = imageGroup
-                .Select(x => Form.Image($"By {x.Author}", () => Storage.ImageDownload(x.Url), _ => Set(x)))
+                .Select(x => (FormEntry) Form.Image($"By {x.Author}", () => Storage.ImageDownload(x.Url), _ => Set(x)))
                 .ToList();
 
             if (i.Count == 1)
