@@ -15,6 +15,7 @@ public class GameDownload : ProgressStatus
     public string Version { get; private set; }
     public GameType Type { get; private set; }
     public string BaseFileName { get; private set; }
+    public string BasePath { get; private set; }
     public ContentTypes InstalledEntries { get; private set; }
     
     private DateTimeOffset _downloadStart = DateTimeOffset.Now;
@@ -64,10 +65,10 @@ public class GameDownload : ProgressStatus
         }
 
         Line2 = $"{entry.Files.Count(x => x.Type == "base")} base, {entry.Files.Count(x => x.Type == "update")} update, {entry.Files.Count(x => x.Type == "dlc")} dlc";
-        var basePath = Path.Join(app.GameDir, "Remote", entry.Emu);
+        BasePath = Path.Join(app.GameDir, "Remote", entry.Emu);
         string baseGamePath = null;
         var extraFilesPath = Path.Join(app.GameDir, "Remote", entry.Emu, entry.GameId);
-        Directory.CreateDirectory(basePath);
+        Directory.CreateDirectory(BasePath);
         Directory.CreateDirectory(extraFilesPath);
         
         using HttpClient client = new();
@@ -84,7 +85,7 @@ public class GameDownload : ProgressStatus
             };
             
             var fileEntry = entry.Files[i];
-            var destPath = Path.Join(fileEntry.Type == "base" ? basePath : extraFilesPath, fileEntry.Name);
+            var destPath = Path.Join(fileEntry.Type == "base" ? BasePath : extraFilesPath, fileEntry.Name);
             InstalledEntries.Add(fileEntry.Type);
             
             if (fileEntry.Type == "base")
@@ -125,9 +126,9 @@ public class GameDownload : ProgressStatus
     private async Task DownloadPc(IApp app, PcEntry entry)
     {
         Type = GameType.Pc;
-        var basePath = Path.Join(app.GameDir, "Remote", "Pc", entry.GameId);
-        Directory.CreateDirectory(basePath);
-        var zipFilePath = Path.Join(basePath, "__game__.zip");
+        BasePath = Path.Join(app.GameDir, "Remote", "Pc", entry.GameId);
+        Directory.CreateDirectory(BasePath);
+        var zipFilePath = Path.Join(BasePath, "__game__.zip");
 
         using HttpClient client = new();
         var fs = new FileStream(zipFilePath, FileMode.Create);
@@ -143,7 +144,7 @@ public class GameDownload : ProgressStatus
         {
             await Task.Run(() => fs.Dispose());
 
-            Directory.Delete(basePath);
+            Directory.Delete(BasePath);
             
             throw;
         }
@@ -155,15 +156,15 @@ public class GameDownload : ProgressStatus
         await Task.Run(() => fs.Dispose());
         Line1 = "Unzipping...";
         InvokeOnUpdate();
-        await Task.Run(() => ZipFile.ExtractToDirectory(zipFilePath, basePath));
+        await Task.Run(() => ZipFile.ExtractToDirectory(zipFilePath, BasePath));
         File.Delete(zipFilePath);
 
         if (_cts.IsCancellationRequested)
         {
-            Directory.Delete(basePath);
+            Directory.Delete(BasePath);
         }
         
-        TotalSize = await Task.Run(() => LauncherGamePlugin.Utils.DirSize(new(basePath)));
+        TotalSize = await Task.Run(() => LauncherGamePlugin.Utils.DirSize(new(BasePath)));
         Version = entry.Version;
     }
     

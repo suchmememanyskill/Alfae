@@ -66,7 +66,7 @@ public class InstalledGame : IGame
 
         if (_type == GameType.Pc)
         {
-            var fullPath = Path.Join(plugin.App.GameDir, "Remote", "Pc", Game.Id, "game.json");
+            var fullPath = Path.Join(game.BasePath, "game.json");
             _pcLaunchDetails = PcLaunchDetails.GetFromPath(fullPath);
         }
         else
@@ -88,7 +88,7 @@ public class InstalledGame : IGame
                     throw new Exception($"No '{_emuGame!.Emu}' emulation profile exists");
                 }
 
-                var baseGamePath = Path.Join(_plugin.App.GameDir, "Remote", _emuGame!.Emu, _emuGame.BaseFilename);
+                var baseGamePath = Path.Join(Game.BasePath, _emuGame!.BaseFilename);
 
                 LaunchParams args = new(emuProfile.ExecPath,
                     emuProfile.CliArgs.Replace("{EXEC}", $"\"{baseGamePath}\""), emuProfile.WorkingDirectory, this,
@@ -97,8 +97,8 @@ public class InstalledGame : IGame
             }
             else
             {
-                var execPath = Path.Join(_plugin.App.GameDir, "Remote", "Pc", Game.Id, _pcLaunchDetails!.LaunchExec);
-                var workingDir = Path.Join(_plugin.App.GameDir, "Remote", "Pc", Game.Id, _pcLaunchDetails!.WorkingDir);
+                var execPath = Path.Join(Game.BasePath, _pcLaunchDetails!.LaunchExec);
+                var workingDir = Path.Join(Game.BasePath, _pcLaunchDetails!.WorkingDir);
                 LaunchParams args = new(execPath, _pcLaunchDetails.LaunchArgs, Path.GetDirectoryName(workingDir)!, this,
                     EstimatedGamePlatform);
                 _plugin.App.Launch(args);
@@ -114,8 +114,8 @@ public class InstalledGame : IGame
     {
         if (IsEmu)
         {
-            var baseGamePath = Path.Join(_plugin.App.GameDir, "Remote", _emuGame!.Emu, _emuGame.BaseFilename);
-            var extraDir = Path.Join(_plugin.App.GameDir, "Remote", _emuGame!.Emu, Game.Id);
+            var baseGamePath = Path.Join(Game.BasePath, _emuGame.BaseFilename);
+            var extraDir = Path.Join(Game.BasePath, Game.Id);
             var success = false;
 
             try
@@ -136,12 +136,11 @@ public class InstalledGame : IGame
         }
         else
         {
-            var path = Path.Join(_plugin.App.GameDir, "Remote", "Pc", Game.Id);
             var success = false;
             
             try
             {
-                Directory.Delete(path, true);
+                Directory.Delete(Game.BasePath, true);
                 success = true;
             }
             catch {}
@@ -160,11 +159,7 @@ public class InstalledGame : IGame
     }
 
     public void OpenInFileManager()
-    {
-        LauncherGamePlugin.Utils.OpenFolder(IsEmu
-            ? Path.Join(_plugin.App.GameDir, "Remote", _emuGame!.Emu)
-            : Path.Join(_plugin.App.GameDir, "Remote", "Pc", Game.Id));
-    }
+        => LauncherGamePlugin.Utils.OpenFolder(Game.BasePath);
     
     private Uri? ImageTypeToUri(ImageType type)
         => type switch

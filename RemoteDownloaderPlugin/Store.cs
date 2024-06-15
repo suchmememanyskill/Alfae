@@ -15,6 +15,7 @@ public interface IInstalledGame
     public string Version { get; }
     public long GameSize { get; }
     public Images Images { get; }
+    public string BasePath { get; set; }
 }
 
 public class ContentTypes
@@ -63,6 +64,7 @@ public class InstalledEmuGame : IInstalledGame
     public string BaseFilename { get; set; }
     public Images Images { get; set; }
     public ContentTypes Types { get; set; } = new();
+    public string BasePath { get; set; }
 }
 
 public class InstalledPcGame : IInstalledGame
@@ -72,6 +74,7 @@ public class InstalledPcGame : IInstalledGame
     public long GameSize { get; set; }
     public string Version { get; set; }
     public Images Images { get; set; }
+    public string BasePath { get; set; }
 }
 
 public class EmuProfile

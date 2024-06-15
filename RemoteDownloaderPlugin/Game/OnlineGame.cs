@@ -98,7 +98,8 @@ public class OnlineGame : IGame
                 Version = _download.Version,
                 BaseFilename = _download.BaseFileName,
                 Images = Entry.Img,
-                Types = _download.InstalledEntries
+                Types = _download.InstalledEntries,
+                BasePath = _download.BasePath
             });
         }
         else
@@ -109,7 +110,8 @@ public class OnlineGame : IGame
                 Name = Entry.GameName,
                 GameSize = _download.TotalSize,
                 Version = _download.Version,
-                Images = Entry.Img
+                Images = Entry.Img,
+                BasePath = _download.BasePath
             });
         }
         
