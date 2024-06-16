@@ -2,18 +2,18 @@
 
 public static class LongExtensions
 {
-    private static readonly string[] gameSizes = { "B", "KB", "MB", "GB" };
+    private static readonly string[] gameSizes = { "B", "KB", "MB", "GB", "TB", "PB", "EB", "ZB", "YB" };
 
     public static string ReadableSize(this long size)
     {
-        int type = 0;
-        double bytesLeft = size;
-        while (bytesLeft >= 1024)
+        if (size <= 0)
         {
-            type++;
-            bytesLeft /= 1024;
+            return "0 B";
         }
 
-        return $"{bytesLeft:0.00} {gameSizes[type]}";
+        var i = (int)Math.Floor(Math.Log(size, 1024));
+        var p = Math.Pow(1024, i);
+        var s = Math.Round(size / p, 2);
+        return $"{s} {gameSizes[i]}";
     }
 }

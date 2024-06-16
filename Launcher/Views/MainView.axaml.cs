@@ -7,8 +7,10 @@ using Avalonia.Controls.Primitives;
 using Avalonia.Media.Imaging;
 using Launcher.Extensions;
 using Launcher.Forms;
+using LauncherGamePlugin;
 using LauncherGamePlugin.Commands;
 using LauncherGamePlugin.Enums;
+using LauncherGamePlugin.Extensions;
 
 namespace Launcher.Views;
 
@@ -42,6 +44,7 @@ public partial class MainView : UserControlExt<MainView>
         NotInstalledListBox.SelectionChanged += (_, _) => MonitorListBox(NotInstalledListBox);
         SearchBox.KeyUp += (_, _) => ApplySearch();
         OnUpdateView += GenerateNewMenuItems;
+        OnUpdateView += UpdateDriveStats;
     }
     
     public void ApplySearch()
@@ -171,5 +174,30 @@ public partial class MainView : UserControlExt<MainView>
         PluginSideBar.IsVisible = !PluginSideBar.IsVisible;
         _app.SidebarState = PluginSideBar.IsVisible;
         UpdateView();
+    }
+
+    private void UpdateDriveStats()
+    {
+        StorageSpaceStackPanel.Children.Clear();
+        try
+        {
+            var driveInfo = new DriveInfo(_app.GameDir);
+            StorageSpaceStackPanel.Children.Add(new Label()
+            {
+                FontSize = 16,
+                Content = $"{driveInfo.Name}: {driveInfo.AvailableFreeSpace.ReadableSize()} free"
+            });
+
+            var percentage = ((driveInfo.TotalSize - driveInfo.AvailableFreeSpace) / (double)driveInfo.TotalSize) * 100;
+            
+            StorageSpaceStackPanel.Children.Add(new ProgressBar()
+            {
+                Value = percentage,
+            });
+        }
+        catch (Exception e)
+        {
+            _app.Logger.Log($"Unable to fetch drive statistics: {e.Message}", LogType.Warn);
+        }
     }
 }

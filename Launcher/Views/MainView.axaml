@@ -51,6 +51,9 @@
                                 <Label FontSize="18" VerticalAlignment="Center">Not Installed</Label>
                             </Border>
                             <Button FontSize="18" Name="DownloadLocationButton" >DownloadLocation</Button>
+                            <StackPanel Orientation="Vertical" Name="StorageSpaceStackPanel">
+                                
+                            </StackPanel>
                         </StackPanel>
                         <ListBox HorizontalAlignment="Center" Name="NotInstalledListBox" Background="Transparent">
                             <ListBox.ItemsPanel>

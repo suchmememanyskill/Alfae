@@ -136,6 +136,7 @@ public class GameDownload : ProgressStatus
 
         try
         {
+            // TODO: Fix security vuln, zips can have backwards paths
             using HttpResponseMessage response = await client.GetAsync(entry.Url, HttpCompletionOption.ResponseHeadersRead, _cts.Token);
             response.EnsureSuccessStatusCode();
             await using var responseStream = await response.Content.ReadAsStreamAsync();
