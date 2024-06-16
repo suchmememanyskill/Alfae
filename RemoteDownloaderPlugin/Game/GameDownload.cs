@@ -1,7 +1,8 @@
-﻿using System.IO.Compression;
+﻿using ICSharpCode.SharpZipLib.Zip;
 using LauncherGamePlugin;
 using LauncherGamePlugin.Interfaces;
 using RemoteDownloaderPlugin.Utils;
+using ZipFile = System.IO.Compression.ZipFile;
 
 namespace RemoteDownloaderPlugin.Game;
 
@@ -128,40 +129,53 @@ public class GameDownload : ProgressStatus
         Type = GameType.Pc;
         BasePath = Path.Join(app.GameDir, "Remote", "Pc", entry.GameId);
         Directory.CreateDirectory(BasePath);
-        var zipFilePath = Path.Join(BasePath, "__game__.zip");
 
         using HttpClient client = new();
-        var fs = new FileStream(zipFilePath, FileMode.Create);
-
         Progress<float> progress = new();
         progress.ProgressChanged += OnProgressUpdate;
 
         try
         {
-            await client.DownloadAsync(entry.Url, fs, progress, _cts.Token);
-        }
-        catch (TaskCanceledException e)
-        {
-            await Task.Run(() => fs.Dispose());
+            using HttpResponseMessage response = await client.GetAsync(entry.Url, HttpCompletionOption.ResponseHeadersRead, _cts.Token);
+            response.EnsureSuccessStatusCode();
+            await using var responseStream = await response.Content.ReadAsStreamAsync();
+            var interceptor =
+                new StreamInterceptor(responseStream, progress, response.Content.Headers.ContentLength!.Value);
+            await using var zipInputStream = new ZipInputStream(interceptor);
 
-            Directory.Delete(BasePath);
-            
+            while (zipInputStream.GetNextEntry() is { } zipEntry)
+            {
+                var destinationPath = Path.Combine(BasePath, zipEntry.Name);
+
+                // Ensure the parent directory exists
+                var directoryPath = Path.GetDirectoryName(destinationPath);
+                if (!string.IsNullOrEmpty(directoryPath) && !Directory.Exists(directoryPath))
+                {
+                    Directory.CreateDirectory(directoryPath);
+                }
+
+                // Skip directory entries
+                if (zipEntry.IsDirectory)
+                {
+                    continue;
+                }
+
+                var fileStream = new FileStream(destinationPath, FileMode.Create, FileAccess.Write);
+                try
+                {
+                    await zipInputStream.CopyToAsync(fileStream, _cts.Token);
+                }
+                finally
+                {
+                    await Task.Run(() => fileStream.Dispose());
+                }
+            }
+        }
+        catch (Exception e)
+        {
+            app.Logger.Log($"Download failed: {e.Message}", LogType.Error, "Remote");
+            Directory.Delete(BasePath, true);
             throw;
-        }
-
-        
-        Percentage = 100;
-        Line1 = "Saving...";
-        InvokeOnUpdate();
-        await Task.Run(() => fs.Dispose());
-        Line1 = "Unzipping...";
-        InvokeOnUpdate();
-        await Task.Run(() => ZipFile.ExtractToDirectory(zipFilePath, BasePath));
-        File.Delete(zipFilePath);
-
-        if (_cts.IsCancellationRequested)
-        {
-            Directory.Delete(BasePath);
         }
         
         TotalSize = await Task.Run(() => LauncherGamePlugin.Utils.DirSize(new(BasePath)));
