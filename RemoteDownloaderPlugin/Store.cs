@@ -1,4 +1,5 @@
 ﻿using System.Text.Json.Serialization;
+using Newtonsoft.Json;
 
 namespace RemoteDownloaderPlugin;
 
@@ -8,6 +9,7 @@ public enum GameType
     Emu,
 }
 
+[Obsolete]
 public interface IInstalledGame
 {
     public string Id { get; }
@@ -25,6 +27,7 @@ public class ContentTypes
     public int Dlc { get; set; }
     public int Extra { get; set; }
 
+    [Obsolete]
     public void Add(string type)
     {
         switch (type)
@@ -44,6 +47,25 @@ public class ContentTypes
         }
     }
 
+    public void Add(DownloadType type)
+    {
+        switch (type)
+        {
+            case DownloadType.Base:
+                Base++;
+                break;
+            case DownloadType.Update:
+                Update++;
+                break;
+            case DownloadType.Dlc:
+                Dlc++;
+                break;
+            case DownloadType.Extra:
+                Extra++;
+                break;
+        }
+    }
+
     public override string ToString()
         => "Content: " + string.Join(", ", new List<string>()
         {
@@ -54,6 +76,7 @@ public class ContentTypes
         }.Where(x => !string.IsNullOrEmpty(x)));
 }
 
+[Obsolete]
 public class InstalledEmuGame : IInstalledGame
 {
     public string Id { get; set; }
@@ -67,6 +90,7 @@ public class InstalledEmuGame : IInstalledGame
     public string BasePath { get; set; }
 }
 
+[Obsolete]
 public class InstalledPcGame : IInstalledGame
 {
     public string Id { get; set; }
@@ -85,11 +109,65 @@ public class EmuProfile
     public string CliArgs { get; set; } = "";
 }
 
+public class InstalledGameContent
+{
+    public string Id { get; set; }
+    public string Name { get; set; }
+    public string Platform { get; set; }
+    public long GameSize { get; set; }
+    public string Version { get; set; }
+    public string Filename { get; set; }
+    public Images Images { get; set; }
+    public ContentTypes InstalledContent { get; set; } = new();
+    public string BasePath { get; set; }
+}
+
 public class Store
 {
+    public List<InstalledGameContent> Games { get; set; } = new();
+    [Obsolete]
     public List<InstalledEmuGame> EmuGames { get; set; } = new();
+    [Obsolete]
     public List<InstalledPcGame> PcGames { get; set; } = new();
     public List<EmuProfile> EmuProfiles { get; set; } = new();
     public List<string> HiddenRemotePlatforms { get; set; } = new();
     public string IndexUrl { get; set; } = "";
+
+    public void Migrate()
+    {
+        EmuGames.ForEach(x =>
+        {
+            Games.Add(new()
+            {
+                Id = x.Id,
+                Name = x.Name,
+                Platform = x.Emu,
+                GameSize = x.GameSize,
+                Version = x.Version,
+                Filename = x.BaseFilename,
+                Images = x.Images,
+                InstalledContent = x.Types,
+                BasePath = x.BasePath,
+            });
+        });
+        
+        PcGames.ForEach(x =>
+        {
+            Games.Add(new()
+            {
+                Id = x.Id,
+                Name = x.Name,
+                Platform = "Pc",
+                GameSize = x.GameSize,
+                Version = x.Version,
+                Filename = null,
+                Images = x.Images,
+                InstalledContent = new(){ Base = 1 },
+                BasePath = x.BasePath,
+            });
+        });
+        
+        PcGames.Clear();
+        EmuGames.Clear();
+    }
 }

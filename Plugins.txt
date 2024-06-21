@@ -6,3 +6,4 @@ LegendaryIntegration
 LocalGames
 SteamExporterPlugin
 SteamGridDbMiddleware
+RemoteDownloaderPlugin

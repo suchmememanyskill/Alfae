@@ -1,4 +1,5 @@
 ﻿using Newtonsoft.Json;
+using Newtonsoft.Json.Converters;
 
 namespace RemoteDownloaderPlugin;
 
@@ -11,56 +12,40 @@ public class Images
     public Uri VerticalCover { get; set; }
 }
 
-public class EmuFileEntry
+public enum DownloadType
+{
+    Base,
+    Update,
+    Dlc,
+    Extra
+}
+
+public class OnlineGameDownloadFileEntry
 {
     [JsonProperty("download_size")]
     public long DownloadSize { get; set; }
+    [JsonProperty("installed_size")]
+    public long InstalledSize { get; set; }
     public string Ext { get; set; }
     public string Name { get; set; }
-    public string Type { get; set; }
+    [JsonConverter(typeof(StringEnumConverter))]
+    public DownloadType Type { get; set; }
     public Uri Url { get; set; }
     public string Version { get; set; }
 }
 
-public interface IEntry
+public class OnlineGameDownload
 {
-    public string GameId { get; }
-    public string GameName { get; }
-    public Images Img { get; }
-    public long GameSize { get; }
-}
-
-public class EmuEntry : IEntry
-{
-    [JsonProperty("game_id")]
-    public string GameId { get; set; }
-    [JsonProperty("game_name")]
-    public string GameName { get; set; }
-    public List<EmuFileEntry> Files { get; set; }
-    public Images Img { get; set; }
-    public string Emu { get; set; }
-
-    [System.Text.Json.Serialization.JsonIgnore] 
-    public long GameSize => Files.Sum(x => x.DownloadSize);
-}
-
-public class PcEntry : IEntry
-{
-    [JsonProperty("game_id")]
-    public string GameId { get; set; }
-    [JsonProperty("game_name")]
-    public string GameName { get; set; }
-    [JsonProperty("download_size")]
-    public long DownloadSize { get; set; }
-    [JsonProperty("game_size")]
-    public long GameSize { get; set; }
-    public Uri Url { get; set; }
-    public string Version { get; set; }
-    public Images Img { get; set; }
+    public IList<OnlineGameDownloadFileEntry> Files { get; set; }
+    public string Id { get; set; }
+    public string Name { get; set; }
+    public Images Images { get; set; }
+    public string Platform { get; set; }
+    [JsonIgnore]
+    public long GameSize => Files.Sum(x => x.InstalledSize);
 }
 
 public class Remote
 {
-    public List<PcEntry> Pc { get; set; } = new();
-    public List<EmuEntry> Emu { get; set; } = new();
+    public IList<OnlineGameDownload> Games { get; set; } = [];
 }

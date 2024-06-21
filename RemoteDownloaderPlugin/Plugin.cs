@@ -28,6 +28,7 @@ public class Plugin : IGameSource
     {
         App = app;
         Storage = new(app, "remote_games.json");
+        Storage.Data.Migrate();
         await FetchRemote();
         
         return null;
@@ -60,7 +61,7 @@ public class Plugin : IGameSource
                 new Command(game.IsRunning ? "Running" : "Launch", installedGame.Play),
                 new Command("Open in File Manager", installedGame.OpenInFileManager),
                 new Command($"Version: {installedGame.Game.Version}"),
-                new Command($"Platform: {installedGame.GamePlatform}"),
+                new Command($"Platform: {installedGame.Game.Platform}"),
             };
 
             if (installedGame.IsEmu)
@@ -83,12 +84,10 @@ public class Plugin : IGameSource
     
     public async Task<List<IGame>> GetGames()
     {
-        List<InstalledGame> installedGames = Storage.Data.EmuGames.Select(x => new InstalledGame(x, this))
-            .Concat(Storage.Data.PcGames.Select(x => new InstalledGame(x, this))).ToList();
-
-        List<string> installedIds = installedGames.Select(x => x.Game.Id).ToList();
-
-        return _onlineGames.Where(x => !(installedIds.Contains(x.Entry.GameId) || Storage.Data.HiddenRemotePlatforms.Contains(x.Platform)))
+        var installedGames = Storage.Data.Games.Select(x => new InstalledGame(x, this)).ToList();
+        var installedIds = new HashSet<string>(installedGames.Select(x => x.InternalName));
+        
+        return _onlineGames.Where(x => !(installedIds.Contains(x.InternalName) || Storage.Data.HiddenRemotePlatforms.Contains(x.Game.Platform)))
             .Select(x => (IGame)x)
             .Concat(installedGames.Select(x => (IGame)x))
             .ToList();
@@ -105,11 +104,9 @@ public class Plugin : IGameSource
             client.Timeout = TimeSpan.FromSeconds(10);
             var data = await client.GetStringAsync(Storage.Data.IndexUrl);
             _cachedRemote = JsonConvert.DeserializeObject<Remote>(data)!;
-            
-            _onlineGames = _cachedRemote.Emu.Select(x => new OnlineGame(x, this))
-                .Concat(_cachedRemote.Pc.Select(x => new OnlineGame(x, this))).ToList();
 
-            _platforms = _onlineGames.Select(x => x.Platform).Distinct().ToList();
+            _onlineGames = _cachedRemote.Games.Select(x => new OnlineGame(x, this)).ToList();
+            _platforms = _onlineGames.Select(x => x.Game.Platform).Distinct().ToList();
             
             return true;
         }

@@ -8,20 +8,20 @@ namespace RemoteDownloaderPlugin.Game;
 
 public class GameDownload : ProgressStatus
 {
-    private IEntry _entry;
+    private OnlineGameDownload _entry;
     private int _lastSecond = 0;
     private readonly CancellationTokenSource _cts = new();
     private bool _doneDownloading = false;
     public long TotalSize { get; private set; }
     public string Version { get; private set; }
     public GameType Type { get; private set; }
-    public string BaseFileName { get; private set; }
+    public string Filename { get; private set; }
     public string BasePath { get; private set; }
     public ContentTypes InstalledEntries { get; private set; }
     
     private DateTimeOffset _downloadStart = DateTimeOffset.Now;
 
-    public GameDownload(IEntry entry)
+    public GameDownload(OnlineGameDownload entry)
     {
         _entry = entry;
         InstalledEntries = new();
@@ -49,50 +49,47 @@ public class GameDownload : ProgressStatus
     {
         _doneDownloading = false;
 
-        if (_entry is EmuEntry emuEntry)
-            await DownloadEmu(app, emuEntry);
-        else if (_entry is PcEntry pcEntry)
-            await DownloadPc(app, pcEntry);
+        if (_entry.Platform == "Pc")
+            await DownloadPc(app);
         else
-            throw new Exception("Download failed: Unknown type");
+            await DownloadEmu(app);
     }
 
-    private async Task DownloadEmu(IApp app, EmuEntry entry)
+    private async Task DownloadEmu(IApp app)
     {
         Type = GameType.Emu;
-        if (entry.Files.Count(x => x.Type == "base") != 1)
+        if (_entry.Files.Count(x => x.Type == DownloadType.Base) != 1)
         {
             throw new Exception("Multiple base images, impossible download");
         }
 
-        Line2 = $"{entry.Files.Count(x => x.Type == "base")} base, {entry.Files.Count(x => x.Type == "update")} update, {entry.Files.Count(x => x.Type == "dlc")} dlc";
-        BasePath = Path.Join(app.GameDir, "Remote", entry.Emu);
+        Line2 = $"{_entry.Files.Count(x => x.Type == DownloadType.Base)} base, {_entry.Files.Count(x => x.Type == DownloadType.Update)} update, {_entry.Files.Count(x => x.Type == DownloadType.Dlc)} dlc";
+        BasePath = Path.Join(app.GameDir, "Remote", _entry.Platform);
         string baseGamePath = null;
-        var extraFilesPath = Path.Join(app.GameDir, "Remote", entry.Emu, entry.GameId);
+        var extraFilesPath = Path.Join(BasePath, _entry.Id);
         Directory.CreateDirectory(BasePath);
         Directory.CreateDirectory(extraFilesPath);
         
         using HttpClient client = new();
 
-        for (int i = 0; i < entry.Files.Count; i++)
+        for (int i = 0; i < _entry.Files.Count; i++)
         {
-            
             Progress<float> localProcess = new();
             localProcess.ProgressChanged += (sender, f) =>
             {
-                var part = (float)1 / entry.Files.Count;
-                var add = (float)i / entry.Files.Count;
+                var part = (float)1 / _entry.Files.Count;
+                var add = (float)i / _entry.Files.Count;
                 OnProgressUpdate(null, part * f + add);
             };
             
-            var fileEntry = entry.Files[i];
-            var destPath = Path.Join(fileEntry.Type == "base" ? BasePath : extraFilesPath, fileEntry.Name);
+            var fileEntry = _entry.Files[i];
+            var destPath = Path.Join(fileEntry.Type == DownloadType.Base ? BasePath : extraFilesPath, fileEntry.Name);
             InstalledEntries.Add(fileEntry.Type);
             
-            if (fileEntry.Type == "base")
+            if (fileEntry.Type == DownloadType.Base)
             {
                 baseGamePath = destPath;
-                BaseFileName = fileEntry.Name;
+                Filename = fileEntry.Name;
             }
             
             var fs = new FileStream(destPath, FileMode.Create);
@@ -121,13 +118,13 @@ public class GameDownload : ProgressStatus
         }
         
         TotalSize = (await Task.Run(() => LauncherGamePlugin.Utils.DirSize(new(extraFilesPath)))) + (new FileInfo(baseGamePath!)).Length;
-        Version = entry.Files.Last(x => x.Type is "base" or "update").Version;
+        Version = _entry.Files.Last(x => x.Type is DownloadType.Base or DownloadType.Update).Version;
     }
 
-    private async Task DownloadPc(IApp app, PcEntry entry)
+    private async Task DownloadPc(IApp app)
     {
         Type = GameType.Pc;
-        BasePath = Path.Join(app.GameDir, "Remote", "Pc", entry.GameId);
+        BasePath = Path.Join(app.GameDir, "Remote", "Pc", _entry.Id);
         Directory.CreateDirectory(BasePath);
 
         using HttpClient client = new();
@@ -137,7 +134,7 @@ public class GameDownload : ProgressStatus
         try
         {
             // TODO: Fix security vuln, zips can have backwards paths
-            using HttpResponseMessage response = await client.GetAsync(entry.Url, HttpCompletionOption.ResponseHeadersRead, _cts.Token);
+            using HttpResponseMessage response = await client.GetAsync(_entry.Files.First().Url, HttpCompletionOption.ResponseHeadersRead, _cts.Token);
             response.EnsureSuccessStatusCode();
             await using var responseStream = await response.Content.ReadAsStreamAsync();
             var interceptor =
@@ -178,9 +175,10 @@ public class GameDownload : ProgressStatus
             Directory.Delete(BasePath, true);
             throw;
         }
-        
+
+        InstalledEntries.Base++;
         TotalSize = await Task.Run(() => LauncherGamePlugin.Utils.DirSize(new(BasePath)));
-        Version = entry.Version;
+        Version = _entry.Files.First().Version;
     }
     
     public void Stop()

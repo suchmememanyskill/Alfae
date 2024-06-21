@@ -8,7 +8,7 @@ namespace RemoteDownloaderPlugin.Game;
 
 public class InstalledGame : IGame
 {
-    public string InternalName => Game.Id;
+    public string InternalName { get; }
     public string Name => Game.Name;
     public bool IsRunning { get; set; } = false;
     public IGameSource Source => _plugin;
@@ -18,12 +18,7 @@ public class InstalledGame : IGame
 
     public bool IsEmu => _type == GameType.Emu;
 
-    public ContentTypes InstalledContentTypes => IsEmu
-        ? _emuGame.Types
-        : new ContentTypes()
-        {
-            Base = 1
-        };
+    public ContentTypes InstalledContentTypes => Game.InstalledContent;
     
     public Task<byte[]?> GetImage(ImageType type)
     {
@@ -38,40 +33,32 @@ public class InstalledGame : IGame
     public InstalledStatus InstalledStatus => InstalledStatus.Installed;
 
     public Platform EstimatedGamePlatform => IsEmu
-        ? LauncherGamePlugin.Utils.GuessPlatformBasedOnString(_plugin.Storage.Data.EmuProfiles.FirstOrDefault(x => x.Platform == _emuGame!.Emu)?.ExecPath)
+        ? LauncherGamePlugin.Utils.GuessPlatformBasedOnString(_plugin.Storage.Data.EmuProfiles.FirstOrDefault(x => x.Platform == Game.Platform)?.ExecPath)
         : LauncherGamePlugin.Utils.GuessPlatformBasedOnString(_pcLaunchDetails!.LaunchExec);
-
-    public string GamePlatform => IsEmu
-        ? _emuGame!.Emu
-        : "Pc";
-
+    
     public ProgressStatus? ProgressStatus => null;
     public event Action? OnUpdate;
 
     public void InvokeOnUpdate()
         => OnUpdate?.Invoke();
 
-    public IInstalledGame Game { get; }
+    public InstalledGameContent Game { get; }
     private Plugin _plugin;
     private PcLaunchDetails? _pcLaunchDetails;
-    private InstalledEmuGame? _emuGame;
     private GameType _type;
     
-    public InstalledGame(IInstalledGame game, Plugin plugin)
+    public InstalledGame(InstalledGameContent game, Plugin plugin)
     {
         Game = game;
         _plugin = plugin;
-        _type = game is InstalledEmuGame ? GameType.Emu : GameType.Pc;
+        _type = game.Platform == "Pc" ? GameType.Pc : GameType.Emu;
         _pcLaunchDetails = null;
+        InternalName = $"{Game.Id}_{LauncherGamePlugin.Utils.OnlyLetters(Game.Platform).ToLower()}";
 
         if (_type == GameType.Pc)
         {
             var fullPath = Path.Join(game.BasePath, "game.json");
             _pcLaunchDetails = PcLaunchDetails.GetFromPath(fullPath);
-        }
-        else
-        {
-            _emuGame = (game as InstalledEmuGame)!;
         }
     }
 
@@ -81,14 +68,14 @@ public class InstalledGame : IGame
         {
             if (IsEmu)
             {
-                var emuProfile = _plugin.Storage.Data.EmuProfiles.FirstOrDefault(x => x.Platform == _emuGame!.Emu);
+                var emuProfile = _plugin.Storage.Data.EmuProfiles.FirstOrDefault(x => x.Platform == Game.Platform);
 
                 if (emuProfile == null)
                 {
-                    throw new Exception($"No '{_emuGame!.Emu}' emulation profile exists");
+                    throw new Exception($"No '{Game.Platform}' emulation profile exists");
                 }
 
-                var baseGamePath = Path.Join(Game.BasePath, _emuGame!.BaseFilename);
+                var baseGamePath = Path.Join(Game.BasePath, Game.Filename);
 
                 LaunchParams args = new(emuProfile.ExecPath,
                     emuProfile.CliArgs.Replace("{EXEC}", $"\"{baseGamePath}\""), emuProfile.WorkingDirectory, this,
@@ -112,12 +99,12 @@ public class InstalledGame : IGame
 
     public void Delete()
     {
+        bool success = false;
         if (IsEmu)
         {
-            var baseGamePath = Path.Join(Game.BasePath, _emuGame.BaseFilename);
+            var baseGamePath = Path.Join(Game.BasePath, Game.Filename);
             var extraDir = Path.Join(Game.BasePath, Game.Id);
-            var success = false;
-
+            
             try
             {
                 File.Delete(baseGamePath);
@@ -125,33 +112,23 @@ public class InstalledGame : IGame
                 success = true;
             }
             catch {}
-
-            var game = _plugin.Storage.Data.EmuGames.Find(x => x.Id == Game.Id);
-            _plugin.Storage.Data.EmuGames.Remove(game!);
-            
-            if (!success)
-            {
-                _plugin.App.ShowTextPrompt("Failed to delete files. Game has been unlinked");
-            }
         }
         else
         {
-            var success = false;
-            
             try
             {
                 Directory.Delete(Game.BasePath, true);
                 success = true;
             }
             catch {}
+        }
+        
+        var game = _plugin.Storage.Data.Games.Find(x => x.Id == Game.Id && x.Platform == Game.Platform);
+        _plugin.Storage.Data.Games.Remove(game!);
 
-            var game = _plugin.Storage.Data.PcGames.Find(x => x.Id == Game.Id);
-            _plugin.Storage.Data.PcGames.Remove(game!);
-
-            if (!success)
-            {
-                _plugin.App.ShowTextPrompt("Failed to delete files. Game has been unlinked");
-            }
+        if (!success)
+        {
+            _plugin.App.ShowTextPrompt("Failed to delete files. Game has been unlinked");
         }
         
         _plugin.App.ReloadGames();

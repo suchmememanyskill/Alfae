@@ -41,6 +41,11 @@ jobs:
         cd ItchIoIntegration
         dotnet publish -o ../Release/plugins/ItchIoIntegration -p:Configuration=Release
 
+    - name: Build RemoteDownloaderPlugin
+      run: |
+        cd RemoteDownloaderPlugin
+        dotnet publish -o ../Release/plugins/RemoteDownloaderPlugin -p:Configuration=Release
+    
     - name: Build SteamGridDb Middleware
       run: |
         cd SteamGridDbMiddleware
@@ -113,6 +118,11 @@ jobs:
         run: |
           cd ItchIoIntegration
           dotnet publish -o ../Release/plugins/ItchIoIntegration -p:Configuration=Release
+
+      - name: Build RemoteDownloaderPlugin
+        run: |
+          cd RemoteDownloaderPlugin
+          dotnet publish -o ../Release/plugins/RemoteDownloaderPlugin -p:Configuration=Release
 
       - name: Build SteamGridDb Middleware
         run: |

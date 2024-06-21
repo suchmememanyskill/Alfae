@@ -8,12 +8,11 @@ namespace RemoteDownloaderPlugin.Game;
 
 public class OnlineGame : IGame
 {
-    public string InternalName => Entry.GameId;
-    public string Name => $"{Entry.GameName} ({Platform})";
+    public string InternalName { get; }
+    public string Name => $"{Game.Name} ({Game.Platform})";
     public bool IsRunning { get; set; } = false;
     public IGameSource Source => _plugin;
-    public long? Size => Entry.GameSize;
-    public string Platform { get; private set; }
+    public long? Size => Game.GameSize;
 
     public bool HasImage(ImageType type)
         => ImageTypeToUri(type) != null;
@@ -25,7 +24,7 @@ public class OnlineGame : IGame
         if (url == null)
             return Task.FromResult<byte[]?>(null);
 
-        return Storage.Cache($"{Entry.GameId}_{type}.jpg", () => Storage.ImageDownload(url));
+        return Storage.Cache($"{Game.Id}_{type}.jpg", () => Storage.ImageDownload(url));
     }
 
     public InstalledStatus InstalledStatus => InstalledStatus.NotInstalled;
@@ -34,45 +33,40 @@ public class OnlineGame : IGame
     public event Action? OnUpdate;
     public void InvokeOnUpdate() => OnUpdate?.Invoke();
 
-    public IEntry Entry { get; }
+    public OnlineGameDownload Game { get; }
     private Plugin _plugin;
     private GameDownload? _download = null;
 
-    public OnlineGame(IEntry entry, Plugin plugin)
+    public OnlineGame(OnlineGameDownload game, Plugin plugin)
     {
-        Entry = entry;
+        Game = game;
         _plugin = plugin;
-        Platform = (entry is EmuEntry emuEntry)
-            ? emuEntry.Emu
-            : "Pc";
+        InternalName = $"{Game.Id}_{LauncherGamePlugin.Utils.OnlyLetters(Game.Platform).ToLower()}";
     }
 
     public async Task Download()
     {
-        if (Entry is EmuEntry emuEntry)
+        var baseFiles = Game.Files.Where(x => x.Type == DownloadType.Base).ToList();
+        if (baseFiles.Count >= 2)
         {
-            var baseFiles = emuEntry.Files.Where(x => x.Type == "base").ToList();
-            if (baseFiles.Count >= 2)
+            var form = new Form(new());
+            
+            form.FormEntries.Add(Form.TextBox("Pick a base edition of the game:", FormAlignment.Center, "Bold"));
+            
+            baseFiles.ForEach(x => form.FormEntries.Add(Form.ClickableLinkBox($"{x.Name}: {x.DownloadSize.ReadableSize()}", _ =>
             {
-                var form = new Form(new());
-                
-                form.FormEntries.Add(Form.TextBox("Pick a base edition of the game:", FormAlignment.Center, "Bold"));
-                
-                baseFiles.ForEach(x => form.FormEntries.Add(Form.ClickableLinkBox($"{x.Name}: {x.DownloadSize.ReadableSize()}", _ =>
-                {
-                    emuEntry.Files.RemoveAll(y => y.Type == "base" && y.Name != x.Name);
-                    Download();
-                    _plugin.App.HideForm();
-                }, FormAlignment.Left)));
-                
-                form.FormEntries.Add(Form.Button("Back", _ => _plugin.App.HideForm()));
-                
-                _plugin.App.ShowForm(form);
-                return;
-            }
+                Game.Files.Where(y => y.Type == DownloadType.Base && y.Name != x.Name).ToList().ForEach(y => Game.Files.Remove(y));
+                Download();
+                _plugin.App.HideForm();
+            }, FormAlignment.Left)));
+            
+            form.FormEntries.Add(Form.Button("Back", _ => _plugin.App.HideForm()));
+            
+            _plugin.App.ShowForm(form);
+            return;
         }
         
-        _download = new GameDownload(Entry);
+        _download = new GameDownload(Game);
         OnUpdate?.Invoke();
         
         try
@@ -85,35 +79,19 @@ public class OnlineGame : IGame
             OnUpdate?.Invoke();
             return;
         }
-
-        if (_download.Type == GameType.Emu)
+        
+        _plugin.Storage.Data.Games.Add(new()
         {
-            var entry = Entry as EmuEntry;
-            _plugin.Storage.Data.EmuGames.Add(new()
-            {
-                Id = Entry.GameId,
-                Name = Entry.GameName,
-                Emu = entry!.Emu,
-                GameSize = _download.TotalSize,
-                Version = _download.Version,
-                BaseFilename = _download.BaseFileName,
-                Images = Entry.Img,
-                Types = _download.InstalledEntries,
-                BasePath = _download.BasePath
-            });
-        }
-        else
-        {
-            _plugin.Storage.Data.PcGames.Add(new()
-            {
-                Id = Entry.GameId,
-                Name = Entry.GameName,
-                GameSize = _download.TotalSize,
-                Version = _download.Version,
-                Images = Entry.Img,
-                BasePath = _download.BasePath
-            });
-        }
+            Id = Game.Id,
+            Name = Game.Name,
+            Platform = Game.Platform,
+            GameSize = _download.TotalSize,
+            Version = _download.Version,
+            Filename = _download.Filename,
+            Images = Game.Images,
+            InstalledContent = _download.InstalledEntries,
+            BasePath = _download.BasePath
+        });
         
         _plugin.Storage.Save();
         _plugin.App.ReloadGames();
@@ -130,11 +108,11 @@ public class OnlineGame : IGame
     private Uri? ImageTypeToUri(ImageType type)
         => type switch
         {
-            ImageType.Background => Entry.Img.Background,
-            ImageType.VerticalCover => Entry.Img.VerticalCover,
-            ImageType.HorizontalCover => Entry.Img.HorizontalCover,
-            ImageType.Logo => Entry.Img.Logo,
-            ImageType.Icon => Entry.Img.Icon,
+            ImageType.Background => Game.Images.Background,
+            ImageType.VerticalCover => Game.Images.VerticalCover,
+            ImageType.HorizontalCover => Game.Images.HorizontalCover,
+            ImageType.Logo => Game.Images.Logo,
+            ImageType.Icon => Game.Images.Icon,
             _ => null
         };
 }
