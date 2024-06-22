@@ -107,6 +107,10 @@ public class EmuProfile
     public string ExecPath { get; set; }
     public string WorkingDirectory { get; set; } = "";
     public string CliArgs { get; set; } = "";
+    
+    public string? PostInstallScriptPath { get; set; }
+    public string? PostInstallScriptArgs { get; set; }
+    public string? PostInstallScriptWorkingDirectory { get; set; }
 }
 
 public class InstalledGameContent

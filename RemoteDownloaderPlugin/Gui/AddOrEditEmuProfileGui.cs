@@ -11,6 +11,9 @@ public class AddOrEditEmuProfileGui
     private string _path;
     private string _args;
     private string _workDir;
+    private string _postInstallScriptPath;
+    private string _postInstallScriptArgs;
+    private string _postInstallScriptWorkDir;
     private readonly bool _addOrUpdate;
 
     public AddOrEditEmuProfileGui(IApp app, Plugin instance)
@@ -22,6 +25,9 @@ public class AddOrEditEmuProfileGui
         _path = "";
         _args = "";
         _workDir = "";
+        _postInstallScriptPath = "";
+        _postInstallScriptArgs = "";
+        _postInstallScriptWorkDir = "";
         _addOrUpdate = false;
     }
 
@@ -32,6 +38,9 @@ public class AddOrEditEmuProfileGui
         _path = profile.ExecPath;
         _args = profile.CliArgs;
         _workDir = profile.WorkingDirectory;
+        _postInstallScriptPath = profile.PostInstallScriptPath ?? string.Empty;
+        _postInstallScriptArgs = profile.PostInstallScriptArgs ?? string.Empty;
+        _postInstallScriptWorkDir = profile.PostInstallScriptWorkingDirectory ?? string.Empty;
         _addOrUpdate = true;
     }
     
@@ -44,6 +53,12 @@ public class AddOrEditEmuProfileGui
             Form.FilePicker("Executable Path:", _path).NotEmpty().Exists(),
             Form.TextInput("CLI Args:", _args).NotEmpty().Contains("{EXEC}"),
             Form.FolderPicker("Working Directory:", _workDir).NotEmpty().Exists(),
+            Form.Separator(),
+            Form.FilePicker("Post Install Script Path:", _postInstallScriptPath).WhenNotEmpty(new ExistsValidation()),
+            Form.TextInput("Post Install Script Args:", _postInstallScriptArgs).WhenNotEmpty(new MultiContainsValidation("{EXEC}", "{DIR}")),
+            Form.FolderPicker("Post Install Script Work Directory:", _postInstallScriptWorkDir).WhenNotEmpty(new ExistsValidation()),
+            Form.Separator(),
+            Form.TextBox("Supported arguments:\n- {EXEC}: Path to base game binary\n- {DIR}: Path to directory with updates/dlcs/extras"),
         };
 
         if (_addOrUpdate)
@@ -94,6 +109,9 @@ public class AddOrEditEmuProfileGui
         _path = form.GetValue("Executable Path:");
         _args = form.GetValue("CLI Args:");
         _workDir = form.GetValue("Working Directory:");
+        _postInstallScriptPath = form.GetValue("Post Install Script Path:");
+        _postInstallScriptArgs = form.GetValue("Post Install Script Args:");
+        _postInstallScriptWorkDir = form.GetValue("Post Install Script Work Directory:");
         
         EmuProfile? existingProfile = _instance.Storage.Data.EmuProfiles.FirstOrDefault(x => x.Platform == _platform);
         if (existingProfile == null)
@@ -103,7 +121,10 @@ public class AddOrEditEmuProfileGui
                 Platform = _platform,
                 ExecPath = _path,
                 CliArgs = _args,
-                WorkingDirectory = _workDir
+                WorkingDirectory = _workDir,
+                PostInstallScriptPath = _postInstallScriptPath,
+                PostInstallScriptArgs = _postInstallScriptArgs,
+                PostInstallScriptWorkingDirectory = _postInstallScriptWorkDir,
             });
         }
         else
@@ -111,6 +132,9 @@ public class AddOrEditEmuProfileGui
             existingProfile.CliArgs = _args;
             existingProfile.ExecPath = _path;
             existingProfile.WorkingDirectory = _workDir;
+            existingProfile.PostInstallScriptPath = _postInstallScriptPath;
+            existingProfile.PostInstallScriptArgs = _postInstallScriptArgs;
+            existingProfile.PostInstallScriptWorkingDirectory = _postInstallScriptWorkDir;
         }
         
         _instance.Storage.Save();

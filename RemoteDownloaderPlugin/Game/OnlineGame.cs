@@ -1,8 +1,10 @@
-﻿using LauncherGamePlugin;
+﻿using System.Diagnostics;
+using LauncherGamePlugin;
 using LauncherGamePlugin.Enums;
 using LauncherGamePlugin.Extensions;
 using LauncherGamePlugin.Forms;
 using LauncherGamePlugin.Interfaces;
+using LauncherGamePlugin.Launcher;
 
 namespace RemoteDownloaderPlugin.Game;
 
@@ -79,8 +81,8 @@ public class OnlineGame : IGame
             OnUpdate?.Invoke();
             return;
         }
-        
-        _plugin.Storage.Data.Games.Add(new()
+
+        var installedContent = new InstalledGameContent()
         {
             Id = Game.Id,
             Name = Game.Name,
@@ -91,9 +93,49 @@ public class OnlineGame : IGame
             Images = Game.Images,
             InstalledContent = _download.InstalledEntries,
             BasePath = _download.BasePath
-        });
+        };
+        
+        var gamePath = Path.Join(installedContent.BasePath, installedContent.Filename);
+        var gameDir = Path.Join(installedContent.BasePath, installedContent.Id);
+        
+        _plugin.Storage.Data.Games.Add(installedContent);
         
         _plugin.Storage.Save();
+        
+        var emuProfile = _plugin.Storage.Data.EmuProfiles.FirstOrDefault(x => x.Platform == Game.Platform);
+
+        if (emuProfile != null && !string.IsNullOrWhiteSpace(emuProfile.PostInstallScriptPath) &&
+            File.Exists(emuProfile.PostInstallScriptPath))
+        {
+            var args = emuProfile.PostInstallScriptArgs;
+
+            if (string.IsNullOrWhiteSpace(args))
+            {
+                args = string.Empty;
+            }
+            else
+            {
+                args = args.Replace("{EXEC}", $"\"{gamePath}\"").Replace("{DIR}", $"\"{gameDir}\"");
+            }
+
+            var workDir = emuProfile.PostInstallScriptWorkingDirectory;
+
+            if (string.IsNullOrWhiteSpace(workDir) || !Directory.Exists(workDir))
+            {
+                workDir = Path.GetDirectoryName(emuProfile.PostInstallScriptPath);
+            }
+
+            _download.Line1 = "Running post install script...";
+            _download.InvokeOnUpdate();
+            Process process = new();
+            
+            process.StartInfo.FileName = emuProfile.PostInstallScriptPath;
+            process.StartInfo.WorkingDirectory = workDir;
+            process.StartInfo.Arguments = args;
+            process.Start();
+            await process.WaitForExitAsync();
+        }
+        
         _plugin.App.ReloadGames();
         _download = null;
         OnUpdate?.Invoke();
