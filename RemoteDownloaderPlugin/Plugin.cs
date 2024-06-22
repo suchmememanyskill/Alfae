@@ -141,7 +141,9 @@ public class Plugin : IGameSource
 
                     Storage.Save();
                     App.ReloadGames();
-                })).ToList())
+                })).ToList()),
+            new Command(),
+            new Command("Server setup", () => LauncherGamePlugin.Utils.OpenUrl("https://github.com/suchmememanyskill/Alfae-Server"))
         };
         
         return commands;
