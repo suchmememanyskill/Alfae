@@ -1,4 +1,5 @@
-﻿using ICSharpCode.SharpZipLib.Zip;
+﻿using System.Net.Http.Headers;
+using ICSharpCode.SharpZipLib.Zip;
 using LauncherGamePlugin;
 using LauncherGamePlugin.Interfaces;
 using RemoteDownloaderPlugin.Utils;
@@ -20,11 +21,13 @@ public class GameDownload : ProgressStatus
     public ContentTypes InstalledEntries { get; private set; }
     
     private DateTimeOffset _downloadStart = DateTimeOffset.Now;
+    private AuthenticationHeaderValue? _auth;
 
-    public GameDownload(OnlineGameDownload entry)
+    public GameDownload(OnlineGameDownload entry, AuthenticationHeaderValue? auth)
     {
         _entry = entry;
         InstalledEntries = new();
+        _auth = auth;
     }
     
     private void OnProgressUpdate(object? obj, float progress)
@@ -71,6 +74,7 @@ public class GameDownload : ProgressStatus
         Directory.CreateDirectory(extraFilesPath);
         
         using HttpClient client = new();
+        client.DefaultRequestHeaders.Authorization = _auth;
 
         for (int i = 0; i < _entry.Files.Count; i++)
         {
@@ -128,6 +132,7 @@ public class GameDownload : ProgressStatus
         Directory.CreateDirectory(BasePath);
 
         using HttpClient client = new();
+        client.DefaultRequestHeaders.Authorization = _auth;
         Progress<float> progress = new();
         progress.ProgressChanged += OnProgressUpdate;
 

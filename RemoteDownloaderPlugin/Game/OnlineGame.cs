@@ -68,7 +68,7 @@ public class OnlineGame : IGame
             return;
         }
         
-        _download = new GameDownload(Game);
+        _download = new GameDownload(Game, _plugin.Storage.Data.GetAuth());
         OnUpdate?.Invoke();
         
         try

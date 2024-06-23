@@ -1,4 +1,5 @@
-﻿using System.Text.Json.Serialization;
+﻿using System.Net.Http.Headers;
+using System.Text.Json.Serialization;
 using Newtonsoft.Json;
 
 namespace RemoteDownloaderPlugin;
@@ -136,6 +137,21 @@ public class Store
     public List<EmuProfile> EmuProfiles { get; set; } = new();
     public List<string> HiddenRemotePlatforms { get; set; } = new();
     public string IndexUrl { get; set; } = "";
+    public string IndexUser { get; set; } = "";
+    public string IndexPass { get; set; } = "";
+
+    public AuthenticationHeaderValue? GetAuth()
+    {
+        if (string.IsNullOrWhiteSpace(IndexUser)) 
+            return null;
+        
+        IndexPass ??= string.Empty;
+        var authenticationString = $"{IndexUser}:{IndexPass}";
+        var base64String = Convert.ToBase64String(
+            System.Text.Encoding.ASCII.GetBytes(authenticationString));
+
+        return new AuthenticationHeaderValue("Basic", base64String);
+    }
 
     public void Migrate()
     {

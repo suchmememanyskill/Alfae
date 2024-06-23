@@ -1,4 +1,5 @@
-﻿using LauncherGamePlugin;
+﻿using System.Net.Http.Headers;
+using LauncherGamePlugin;
 using LauncherGamePlugin.Commands;
 using LauncherGamePlugin.Enums;
 using LauncherGamePlugin.Forms;
@@ -102,6 +103,8 @@ public class Plugin : IGameSource
         {
             using HttpClient client = new();
             client.Timeout = TimeSpan.FromSeconds(10);
+            client.DefaultRequestHeaders.Authorization = Storage.Data.GetAuth();
+            
             var data = await client.GetStringAsync(Storage.Data.IndexUrl);
             _cachedRemote = JsonConvert.DeserializeObject<Remote>(data)!;
 

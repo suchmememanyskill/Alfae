@@ -1,4 +1,5 @@
-﻿using LauncherGamePlugin.Enums;
+﻿using System.Net.Http.Headers;
+using LauncherGamePlugin.Enums;
 using LauncherGamePlugin.Interfaces;
 using Newtonsoft.Json;
 
@@ -31,12 +32,13 @@ public static class Storage
     }
 
     public static Task<byte[]?> ImageDownload(string? url) => ImageDownload((url == null) ? null : new Uri(url));
-    public static async Task<byte[]?> ImageDownload(Uri? uri)
+    public static async Task<byte[]?> ImageDownload(Uri? uri, AuthenticationHeaderValue? auth = null)
     {
         if (uri == null)
             return null;
         
         using HttpClient client = new();
+        client.DefaultRequestHeaders.Authorization = auth;
         try
         {
             HttpResponseMessage response = await client.GetAsync(uri);
